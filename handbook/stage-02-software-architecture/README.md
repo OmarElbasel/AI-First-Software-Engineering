@@ -28,7 +28,7 @@ structure it finds.
 | 04 | [Monolith, Modular Monolith & Microservices](04-monolith-modular-monolith-microservices.md) | Done |
 | 05 | [Service Layer & Repository Pattern](05-service-layer-and-repository-pattern.md) | Done |
 | 06 | [Dependency Injection](06-dependency-injection.md) | Done |
-| 07 | Event-Driven Architecture | Planned |
+| 07 | [Event-Driven Architecture](07-event-driven-architecture.md) | Done |
 
 These seven chapters cover the eleven curriculum topics for this stage. Some
 are deliberately taught together, because they are the same decision seen
