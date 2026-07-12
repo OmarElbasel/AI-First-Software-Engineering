@@ -25,7 +25,7 @@ React into a UI that stays fast, typed, and changeable.
 | 02 | [Next.js & the App Router](02-nextjs-and-the-app-router.md) | Done |
 | 03 | [Server & Client Components](03-server-and-client-components.md) | Done |
 | 04 | [Data Fetching & Server State](04-data-fetching-and-server-state.md) | Done |
-| 05 | State Management | Planned |
+| 05 | [State Management](05-state-management.md) | Done |
 | 06 | Forms & Validation | Planned |
 | 07 | Frontend Performance | Planned |
 | 08 | Frontend Architecture & Folder Structure | Planned |
