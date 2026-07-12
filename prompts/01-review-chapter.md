@@ -54,22 +54,29 @@ If any are missing, flag them.
 
 ## 3. Completeness
 
-Verify the chapter contains:
+Verify the chapter contains every section from the canonical list in
+`meta/00-CONSTITUTION.md`, in order:
 
 - Introduction
+- Why It Matters
 - Mental Model
 - Production Example
 - Folder Structure
+- Implementation
 - Engineering Decisions
 - Trade-offs
-- Best Practices
 - Common Mistakes
 - AI Mistakes
+- Best Practices
 - Anti-Patterns
 - Decision Tree
 - Checklist
 - Exercises
 - Further Reading
+
+For a conceptual chapter, sections Production Example + Folder Structure +
+Implementation are validly replaced by a single Real-World Scenario (v1.1
+amendment). Every other section must still be present.
 
 List anything missing.
 

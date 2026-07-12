@@ -1,7 +1,7 @@
 # AI-First Software Engineering Handbook
 ## Project Constitution
 
-Version: 1.0
+Version: 1.1
 
 ---
 
@@ -239,9 +239,14 @@ Always discuss complexity versus benefits.
 
 # Every Chapter Must Include
 
+This list is the single source of truth for chapter structure.
+
+`CLAUDE.md`, `prompts/00-new-chapter.md`, and `prompts/01-review-chapter.md`
+must match it exactly. If they ever diverge, this Constitution wins.
+
 1. Introduction
 
-2. Why this topic matters
+2. Why It Matters
 
 3. Mental Model
 
@@ -249,25 +254,27 @@ Always discuss complexity versus benefits.
 
 5. Folder Structure
 
-6. Step-by-step explanation
+6. Implementation
 
-7. Trade-offs
+7. Engineering Decisions
 
-8. Common Mistakes
+8. Trade-offs
 
-9. AI Mistakes
+9. Common Mistakes
 
-10. Best Practices
+10. AI Mistakes
 
-11. Anti Patterns
+11. Best Practices
 
-12. Decision Tree
+12. Anti-Patterns
 
-13. Checklist
+13. Decision Tree
 
-14. Exercises
+14. Checklist
 
-15. Further Reading
+15. Exercises
+
+16. Further Reading
 
 ---
 
@@ -370,6 +377,25 @@ Books.
 Engineering blogs from respected companies.
 
 Avoid low-quality sources.
+
+---
+
+# Conceptual Chapters (Amendment — v1.1)
+
+Some chapters teach mindset, judgment, or process rather than a technology.
+
+For those chapters, sections 4, 5, and 6 — Production Example, Folder Structure,
+and Implementation — are replaced by a single section:
+
+Real-World Scenario
+
+The Real-World Scenario must ground the concept in a realistic production
+situation (a real feature, a real team, a real consequence). It carries the
+same weight as a Production Example in technical chapters.
+
+Section 7 (Engineering Decisions) and all remaining sections stay mandatory.
+
+Technical chapters are unaffected: they include the full 16-section list above.
 
 ---
 

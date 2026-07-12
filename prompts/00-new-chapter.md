@@ -52,13 +52,15 @@ Only then finish.
 
 ## Every Chapter Must Include
 
+Canonical list — must match `meta/00-CONSTITUTION.md` exactly (Constitution wins):
+
 # Introduction
 
-# Why It Exists
+# Why It Matters
 
 # Mental Model
 
-# Real Production Example
+# Production Example
 
 # Folder Structure
 
@@ -74,7 +76,7 @@ Only then finish.
 
 # Best Practices
 
-# Anti Patterns
+# Anti-Patterns
 
 # Decision Tree
 
@@ -83,6 +85,10 @@ Only then finish.
 # Exercises
 
 # Further Reading
+
+For conceptual chapters (mindset/judgment/process), replace Production Example,
+Folder Structure, and Implementation with a single Real-World Scenario, per the
+Constitution's v1.1 amendment. All other sections remain mandatory.
 
 ---
 

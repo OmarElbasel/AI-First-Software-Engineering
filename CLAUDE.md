@@ -117,22 +117,31 @@ Only then generate the chapter.
 
 # Every Chapter Must Include
 
-- Introduction
-- Why it matters
-- Mental model
-- Real production example
-- Folder structure
-- Engineering decisions
-- Trade-offs
-- Common mistakes
-- AI mistakes
-- Best practices
-- Anti-patterns
-- Checklist
-- Exercises
-- Further reading
+The canonical section list lives in `meta/00-CONSTITUTION.md`. This list must
+match it exactly (Constitution wins on any conflict):
+
+1. Introduction
+2. Why It Matters
+3. Mental Model
+4. Production Example
+5. Folder Structure
+6. Implementation
+7. Engineering Decisions
+8. Trade-offs
+9. Common Mistakes
+10. AI Mistakes
+11. Best Practices
+12. Anti-Patterns
+13. Decision Tree
+14. Checklist
+15. Exercises
+16. Further Reading
 
 If any section is missing, the chapter is incomplete.
+
+Conceptual chapters (mindset/judgment/process) replace sections 4–6 with a
+single Real-World Scenario, per the Constitution's v1.1 amendment. All other
+sections remain mandatory.
 
 ---
 
