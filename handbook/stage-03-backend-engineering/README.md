@@ -28,7 +28,7 @@ Stage 2, with the judgment from Stage 1.
 | 06 | [Background Jobs](06-background-jobs.md) | Done |
 | 07 | [Caching](07-caching.md) | Done |
 | 08 | [Logging & Observability](08-logging-and-observability.md) | Done |
-| 09 | File Storage & Email | Planned |
+| 09 | [File Storage & Email](09-file-storage-and-email.md) | Done |
 
 These nine chapters cover the fourteen curriculum topics for this stage.
 Related topics are taught together where they are one concern seen from two
