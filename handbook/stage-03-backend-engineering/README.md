@@ -27,7 +27,7 @@ Stage 2, with the judgment from Stage 1.
 | 05 | [Error Handling & API Versioning](05-error-handling-and-api-versioning.md) | Done |
 | 06 | [Background Jobs](06-background-jobs.md) | Done |
 | 07 | [Caching](07-caching.md) | Done |
-| 08 | Logging & Observability | Planned |
+| 08 | [Logging & Observability](08-logging-and-observability.md) | Done |
 | 09 | File Storage & Email | Planned |
 
 These nine chapters cover the fourteen curriculum topics for this stage.
