@@ -26,7 +26,7 @@ Stage 2, with the judgment from Stage 1.
 | 04 | [Authorization](04-authorization.md) | Done |
 | 05 | [Error Handling & API Versioning](05-error-handling-and-api-versioning.md) | Done |
 | 06 | [Background Jobs](06-background-jobs.md) | Done |
-| 07 | Caching | Planned |
+| 07 | [Caching](07-caching.md) | Done |
 | 08 | Logging & Observability | Planned |
 | 09 | File Storage & Email | Planned |
 
