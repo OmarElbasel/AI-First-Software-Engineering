@@ -18,7 +18,7 @@ maintain. Those decisions are the engineer's job — and they are learnable.
 |---|---|---|
 | 01 | [What is Software Engineering?](01-what-is-software-engineering.md) | Done |
 | 02 | [Product Thinking](02-product-thinking.md) | Done |
-| 03 | AI-First Development | Planned |
+| 03 | [AI-First Development](03-ai-first-development.md) | Done |
 | 04 | Engineering Trade-offs | Planned |
 | 05 | Technical Debt | Planned |
 | 06 | Build vs Buy | Planned |
