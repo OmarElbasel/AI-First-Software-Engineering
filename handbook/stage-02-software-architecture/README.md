@@ -26,7 +26,7 @@ structure it finds.
 | 02 | [Feature-Based & Vertical Slice Architecture](02-feature-based-and-vertical-slice.md) | Done |
 | 03 | [Clean Architecture](03-clean-architecture.md) | Done |
 | 04 | [Monolith, Modular Monolith & Microservices](04-monolith-modular-monolith-microservices.md) | Done |
-| 05 | Service Layer & Repository Pattern | Planned |
+| 05 | [Service Layer & Repository Pattern](05-service-layer-and-repository-pattern.md) | Done |
 | 06 | Dependency Injection | Planned |
 | 07 | Event-Driven Architecture | Planned |
 
