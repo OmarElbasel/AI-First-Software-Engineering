@@ -24,7 +24,7 @@ Stage 2, with the judgment from Stage 1.
 | 02 | [Data Persistence: SQLAlchemy & Alembic](02-data-persistence-sqlalchemy-alembic.md) | Done |
 | 03 | [Authentication](03-authentication.md) | Done |
 | 04 | [Authorization](04-authorization.md) | Done |
-| 05 | Error Handling & API Versioning | Planned |
+| 05 | [Error Handling & API Versioning](05-error-handling-and-api-versioning.md) | Done |
 | 06 | Background Jobs | Planned |
 | 07 | Caching | Planned |
 | 08 | Logging & Observability | Planned |
