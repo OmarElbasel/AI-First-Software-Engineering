@@ -27,7 +27,7 @@ React into a UI that stays fast, typed, and changeable.
 | 04 | [Data Fetching & Server State](04-data-fetching-and-server-state.md) | Done |
 | 05 | [State Management](05-state-management.md) | Done |
 | 06 | [Forms & Validation](06-forms-and-validation.md) | Done |
-| 07 | Frontend Performance | Planned |
+| 07 | [Frontend Performance](07-frontend-performance.md) | Done |
 | 08 | Frontend Architecture & Folder Structure | Planned |
 
 These eight chapters cover the ten curriculum topics for this stage. React and
