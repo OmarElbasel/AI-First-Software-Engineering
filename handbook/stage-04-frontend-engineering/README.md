@@ -28,7 +28,7 @@ React into a UI that stays fast, typed, and changeable.
 | 05 | [State Management](05-state-management.md) | Done |
 | 06 | [Forms & Validation](06-forms-and-validation.md) | Done |
 | 07 | [Frontend Performance](07-frontend-performance.md) | Done |
-| 08 | Frontend Architecture & Folder Structure | Planned |
+| 08 | [Frontend Architecture & Folder Structure](08-frontend-architecture-and-folder-structure.md) | Done |
 
 These eight chapters cover the ten curriculum topics for this stage. React and
 TypeScript are taught together (Ch 01, since typed components are the unit of
