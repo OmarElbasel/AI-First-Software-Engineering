@@ -54,13 +54,27 @@ exercises that resemble real engineering work.
 
 The full topic list per stage lives in [meta/02-curriculum.md](meta/02-curriculum.md).
 
+## Engineering Assets
+
+Chapters teach judgment; these compress it for daily use:
+
+- **[Templates](templates/README.md)** — ADR, pull request, project brief,
+  and a CLAUDE.md starter for your own AI-first repositories.
+- **[Checklists](checklists/README.md)** — code review (including a
+  dedicated AI-generated-code section) and production readiness.
+- **[Playbooks](playbooks/README.md)** — end-to-end processes, starting
+  with [Starting an AI-First Project](playbooks/starting-an-ai-first-project.md).
+
 ## Repository Structure
 
 ```
-meta/       Project constitution, vision, and curriculum — the rules everything follows
-prompts/    Reusable prompts for generating and reviewing chapters
-handbook/   The content, one folder per curriculum stage
-docs/       Design specs and implementation plans for the repo itself
+meta/        Project constitution, vision, and curriculum — the rules everything follows
+prompts/     Reusable prompts for generating and reviewing chapters
+handbook/    The content, one folder per curriculum stage
+templates/   Documents to copy and fill in: ADR, PR, project brief, CLAUDE.md starter
+checklists/  Verification lists for moments of action: code review, production readiness
+playbooks/   Step-by-step processes that tie the templates and checklists together
+docs/        Design specs and implementation plans for the repo itself
 ```
 
 `meta/00-CONSTITUTION.md` is the highest authority. When documents conflict:

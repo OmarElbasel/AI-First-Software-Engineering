@@ -1,7 +1,7 @@
 # AI-First Software Engineering Handbook
 ## Project Constitution
 
-Version: 1.2
+Version: 1.3
 
 ---
 
@@ -241,7 +241,8 @@ Always discuss complexity versus benefits.
 
 This list is the single source of truth for chapter structure.
 
-`CLAUDE.md`, `prompts/00-new-chapter.md`, and `prompts/01-review-chapter.md`
+`CLAUDE.md`, `prompts/00-new-chapter.md`, `prompts/01-review-chapter.md`,
+`templates/chapter-technical.md`, and `templates/chapter-conceptual.md`
 must match it exactly. If they ever diverge, this Constitution wins.
 
 1. Introduction
@@ -411,6 +412,27 @@ The Deployment Checklist remains "if applicable".
 
 Technical chapters are unaffected: the checklist list in the Checklists
 section above applies in full.
+
+---
+
+# Engineering Assets (Amendment — v1.3)
+
+The handbook ships reusable assets alongside chapters:
+
+- `templates/` — documents to copy and fill in (ADR, pull request,
+  project brief, CLAUDE.md starter, chapter templates).
+- `checklists/` — verification lists for moments of action (code review,
+  production readiness).
+- `playbooks/` — opinionated step-by-step processes for recurring
+  situations, referencing the templates and checklists.
+
+Assets follow the same standards as chapters: production-oriented, every
+item justified, no filler. Where a chapter and an asset cover the same
+topic, the chapter teaches the judgment and the asset compresses it for
+use — they must not contradict each other.
+
+The two chapter templates mirror the canonical section list above and are
+bound by it.
 
 ---
 
