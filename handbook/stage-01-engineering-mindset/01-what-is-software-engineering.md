@@ -104,7 +104,8 @@ Two developers, same task, same AI assistant.
 Developer A opens the editor and prompts the AI: *"Add Stripe subscription
 billing to this FastAPI app. Monthly and annual plans."* The AI delivers:
 a checkout endpoint, a webhook handler, a `plan` column on the `accounts`
-table, and a pricing page. It works in testing. A ships in **3 days**.
+table, and a pricing page. It works in testing — the tests exercise only the
+happy path. A ships in **3 days**.
 
 What the code does: on `invoice.paid` webhook, mark the account active and
 insert a payment record. On checkout, create a Stripe subscription.
@@ -140,8 +141,9 @@ With answers in hand, B prompts the same AI — but section by section, against
 a written design, reviewing each piece. The webhook handler records processed
 Stripe event IDs in a `webhook_events` table and skips duplicates. Failed
 payments put the account into a `past_due` state with a banner, not a
-lockout. Plan changes use Stripe's proration. B ships in **8 days**, with the
-out-of-scope list written down.
+lockout. Plan changes use Stripe's proration, and plan definitions live in
+configuration rather than code, so a pricing change is an edit, not a
+deployment. B ships in **8 days**, with the out-of-scope list written down.
 
 ### Six months later
 
@@ -149,6 +151,8 @@ Developer A's half-year included two incident weekends chasing duplicate
 payment records, a hot-patched webhook handler, and a batch of manual refunds
 — roughly ten unplanned engineering days before the team gave up and
 scheduled a rewrite.
+
+The numbers below are illustrative; the mechanism they illustrate is not.
 
 | | Developer A | Developer B |
 |---|---|---|
@@ -160,11 +164,10 @@ scheduled a rewrite.
 | Outcome at month 6 | Rewrite scheduled (est. 15 days) | Unchanged |
 | Total engineering cost | 3 + ~10 firefighting + 15 rewrite = **~28 days** | 8 + 2 = **~10 days** |
 
-The numbers are illustrative; the mechanism is not. The AI wrote most of the
-code in both cases. The 18-day difference — plus the refunds and the
-customers who quietly churned after a double charge — is largely attributable
-to the questions Developer B asked before prompting. That is what this
-handbook means by engineering.
+The AI wrote most of the code in both cases. The 18-day difference — plus
+the refunds and the customers who quietly churned after a double charge — is
+largely attributable to the questions Developer B asked before prompting.
+That is what this handbook means by engineering.
 
 ## Engineering Decisions
 
@@ -207,7 +210,9 @@ natural key, and some events have no natural key to upsert on.
 **Recommendation:** the event-ID ledger, written in the same database
 transaction as the handler's other writes so a crash cannot record an event
 as processed without its effects (or vice versa). Uniform, cheap, and
-enforced by the database rather than by developer discipline.
+enforced by the database rather than by developer discipline. Note that this
+deduplicates *inbound* webhooks — distinct from Stripe's API idempotency
+keys, which protect your *outbound* requests from duplicate submission.
 
 ### Failed-payment handling
 

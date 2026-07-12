@@ -16,7 +16,7 @@ maintain. Those decisions are the engineer's job — and they are learnable.
 
 | # | Chapter | Status |
 |---|---|---|
-| 01 | [What is Software Engineering?](01-what-is-software-engineering.md) | In progress |
+| 01 | [What is Software Engineering?](01-what-is-software-engineering.md) | Done |
 | 02 | Product Thinking | Planned |
 | 03 | AI-First Development | Planned |
 | 04 | Engineering Trade-offs | Planned |
