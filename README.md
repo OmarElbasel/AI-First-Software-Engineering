@@ -38,7 +38,7 @@ exercises that resemble real engineering work.
 | Stage | Topic | Status |
 |---|---|---|
 | 1 | [Engineering Mindset](handbook/stage-01-engineering-mindset/README.md) | Complete |
-| 2 | Software Architecture | Planned |
+| 2 | [Software Architecture](handbook/stage-02-software-architecture/README.md) | In progress |
 | 3 | Backend Engineering | Planned |
 | 4 | Frontend Engineering | Planned |
 | 5 | Mobile Engineering | Planned |
