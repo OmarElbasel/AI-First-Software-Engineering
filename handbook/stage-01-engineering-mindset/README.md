@@ -23,7 +23,7 @@ maintain. Those decisions are the engineer's job — and they are learnable.
 | 05 | [Technical Debt](05-technical-debt.md) | Done |
 | 06 | [Build vs Buy](06-build-vs-buy.md) | Done |
 | 07 | [Simplicity](07-simplicity.md) | Done |
-| 08 | Maintainability | Planned |
+| 08 | [Maintainability](08-maintainability.md) | Done |
 
 Chapter 01 merges the curriculum topics "What is Software Engineering?" and
 "Programming vs Engineering" — the two cannot be taught separately without
