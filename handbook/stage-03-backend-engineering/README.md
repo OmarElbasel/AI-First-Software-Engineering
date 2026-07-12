@@ -23,7 +23,7 @@ Stage 2, with the judgment from Stage 1.
 | 01 | [Building APIs with FastAPI](01-building-apis-with-fastapi.md) | Done |
 | 02 | [Data Persistence: SQLAlchemy & Alembic](02-data-persistence-sqlalchemy-alembic.md) | Done |
 | 03 | [Authentication](03-authentication.md) | Done |
-| 04 | Authorization | Planned |
+| 04 | [Authorization](04-authorization.md) | Done |
 | 05 | Error Handling & API Versioning | Planned |
 | 06 | Background Jobs | Planned |
 | 07 | Caching | Planned |
