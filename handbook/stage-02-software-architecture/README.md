@@ -24,7 +24,7 @@ structure it finds.
 |---|---------|--------|
 | 01 | [Layered Architecture](01-layered-architecture.md) | Done |
 | 02 | [Feature-Based & Vertical Slice Architecture](02-feature-based-and-vertical-slice.md) | Done |
-| 03 | Clean Architecture | Planned |
+| 03 | [Clean Architecture](03-clean-architecture.md) | Done |
 | 04 | Monolith, Modular Monolith & Microservices | Planned |
 | 05 | Service Layer & Repository Pattern | Planned |
 | 06 | Dependency Injection | Planned |
