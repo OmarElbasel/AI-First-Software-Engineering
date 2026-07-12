@@ -19,7 +19,7 @@ chapters, starting with Chapter 01.
 | Reading format | Plain Markdown on GitHub | Zero tooling, simplest option, a docs site can be added later without restructuring. |
 | Repo layout | Stage folders under `handbook/` | Mirrors the curriculum exactly, keeps reading order obvious, adding chapters never renumbers other stages. |
 | Chapter 01 scope | Merge "What is Software Engineering?" + "Programming vs Engineering" | The topics overlap almost completely; one strong chapter beats two thin ones. |
-| Constitution amendment | Conceptual chapters swap "Folder Structure" + "Implementation" for "Real-World Scenario" | Prevents filler sections in mindset chapters, which the Constitution itself forbids. Technical chapters keep all 16 sections. |
+| Constitution amendment | Conceptual chapters swap "Folder Structure" + "Implementation" for "Real-World Scenario" | Prevents filler sections in mindset chapters, which the Constitution itself forbids. Technical chapters keep the full required section list. |
 
 ## Repository Layout
 
