@@ -21,7 +21,7 @@ maintain. Those decisions are the engineer's job — and they are learnable.
 | 03 | [AI-First Development](03-ai-first-development.md) | Done |
 | 04 | [Engineering Trade-offs](04-engineering-trade-offs.md) | Done |
 | 05 | [Technical Debt](05-technical-debt.md) | Done |
-| 06 | Build vs Buy | Planned |
+| 06 | [Build vs Buy](06-build-vs-buy.md) | Done |
 | 07 | Simplicity | Planned |
 | 08 | Maintainability | Planned |
 
