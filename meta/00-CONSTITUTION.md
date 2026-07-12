@@ -1,7 +1,7 @@
 # AI-First Software Engineering Handbook
 ## Project Constitution
 
-Version: 1.1
+Version: 1.2
 
 ---
 
@@ -396,6 +396,21 @@ same weight as a Production Example in technical chapters.
 Section 7 (Engineering Decisions) and all remaining sections stay mandatory.
 
 Technical chapters are unaffected: they include the full 16-section list above.
+
+---
+
+# Checklists in Conceptual Chapters (Amendment — v1.2)
+
+In conceptual chapters, the Implementation Checklist and Architecture
+Checklist are replaced by one or more checklists appropriate to the judgment
+being taught (for example, an Engineering Judgment Checklist).
+
+The Code Review Checklist remains mandatory.
+
+The Deployment Checklist remains "if applicable".
+
+Technical chapters are unaffected: the checklist list in the Checklists
+section above applies in full.
 
 ---
 

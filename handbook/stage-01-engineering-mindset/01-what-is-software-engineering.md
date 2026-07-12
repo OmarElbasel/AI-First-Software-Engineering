@@ -145,6 +145,11 @@ out-of-scope list written down.
 
 ### Six months later
 
+Developer A's half-year included two incident weekends chasing duplicate
+payment records, a hot-patched webhook handler, and a batch of manual refunds
+— roughly ten unplanned engineering days before the team gave up and
+scheduled a rewrite.
+
 | | Developer A | Developer B |
 |---|---|---|
 | Time to ship | 3 days | 8 days |
@@ -155,10 +160,87 @@ out-of-scope list written down.
 | Outcome at month 6 | Rewrite scheduled (est. 15 days) | Unchanged |
 | Total engineering cost | 3 + ~10 firefighting + 15 rewrite = **~28 days** | 8 + 2 = **~10 days** |
 
-The AI wrote most of the code in both cases. The 18-day difference — plus the
-refunds and the customers who quietly churned after a double charge — is
-entirely attributable to the questions Developer B asked before prompting.
-That is what this handbook means by engineering.
+The numbers are illustrative; the mechanism is not. The AI wrote most of the
+code in both cases. The 18-day difference — plus the refunds and the
+customers who quietly churned after a double charge — is largely attributable
+to the questions Developer B asked before prompting. That is what this
+handbook means by engineering.
+
+## Engineering Decisions
+
+The scenario's outcome was determined by four decisions Developer B made
+before any code existed. Each recurs in almost every production billing
+system, and each follows the shape every engineering decision should:
+options, trade-offs, recommendation, reasoning.
+
+### Source of truth for subscription state
+
+**Options:** (1) the local database is authoritative and pushes changes to
+Stripe; (2) Stripe is authoritative and the local database holds a cached
+copy, updated only by verified webhooks.
+
+**Trade-offs:** local-authoritative gives fast reads and full control, but it
+reimplements retry, dunning, and proration logic the processor already runs —
+and it drifts the moment anyone touches the Stripe dashboard directly.
+Stripe-authoritative accepts eventual consistency (webhook latency) and
+deeper vendor coupling in exchange for having exactly one billing state
+machine.
+
+**Recommendation:** Stripe authoritative, verified-webhook cache. The
+processor executes the billing state machine whether you like it or not;
+maintaining a second one that must always agree with it creates a permanent,
+unpaid reconciliation job. Developer A's code had no answer to this question,
+which is why its two sources of truth diverged.
+
+### Webhook idempotency
+
+**Options:** (1) process every delivery as new; (2) record processed Stripe
+event IDs in a `webhook_events` table and skip duplicates; (3) write every
+handler as a natural-key upsert so reprocessing is harmless.
+
+**Trade-offs:** option 1 is the double-charge bug — redelivery is documented,
+normal Stripe behavior, not an edge case. The event-ID ledger costs one small
+table and a unique constraint and works uniformly for every event type.
+Upserts are elegant per-handler, but each new handler must re-derive its
+natural key, and some events have no natural key to upsert on.
+
+**Recommendation:** the event-ID ledger, written in the same database
+transaction as the handler's other writes so a crash cannot record an event
+as processed without its effects (or vice versa). Uniform, cheap, and
+enforced by the database rather than by developer discipline.
+
+### Failed-payment handling
+
+**Options:** (1) restrict access immediately; (2) a `past_due` grace state
+with a visible banner and restricted writes after a deadline; (3) retry
+silently and hope.
+
+**Trade-offs:** immediate lockout protects revenue but converts the most
+common failure — an expired card on an otherwise happy customer — into a
+churn event. Silent retries protect the user experience while unpaid usage
+accumulates invisibly. The grace state costs one more account state and some
+UI, but it matches how the failure actually resolves: the customer updates
+their card.
+
+**Recommendation:** the `past_due` grace state. Design for the common case
+(recoverable payment failure), and make the uncommon case (genuine
+non-payment) a deadline rather than an accident.
+
+### Plan changes mid-cycle
+
+**Options:** (1) cancel the subscription and create a new one on the new
+plan; (2) update the existing subscription and let Stripe prorate.
+
+**Trade-offs:** cancel-and-recreate is easier to reason about locally, but it
+forfeits proration credit — the overcharge in Developer A's version — resets
+the billing anchor, and can trigger cancellation side effects. Updating in
+place delegates the proration math to the processor.
+
+**Recommendation:** update in place. Billing math you do not write is billing
+math that cannot be wrong in your code.
+
+None of these decisions requires seniority or special talent. They require
+asking the questions while they are still cheap — before the code exists.
 
 ## Trade-offs
 
@@ -246,7 +328,7 @@ never discussed.
 
 ### GPT: happy-path code with decorative error handling
 
-GPT-family models reliably produce code where error handling *exists* but
+GPT-family models tend to produce code where error handling *exists* but
 does not match real failure modes — the classic form is a broad
 `try/except Exception` that logs the error and continues, converting a loud
 failure into silent data corruption. Retryable and permanent failures get
@@ -299,7 +381,7 @@ production.
 **Review AI output like a junior engineer's PR.** Trust it to compile;
 verify its judgment. Concretely: read every line before committing, run the
 failure cases yourself, and reject code you cannot explain. "It works" is not
-a review. The `AI Mistakes` section above gives you the three most common
+a review. The AI Mistakes section above gives you the three most common
 things to look for.
 
 **Ask "what breaks in six months?"** Six months is when the requirements have
