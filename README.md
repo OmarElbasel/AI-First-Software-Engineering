@@ -6,6 +6,10 @@ AI has made writing code cheap. The bottleneck is no longer typing — it is
 engineering judgment: architecture, trade-offs, reviewing AI output, and
 shipping systems that survive real users. This handbook teaches that judgment.
 
+> **New here and want to learn from it?** Read **[START-HERE.md](START-HERE.md)** —
+> a reading guide covering what to read, in what order, and how to actually
+> learn from it (not just skim it). Stages 1–3 are ready now.
+
 ## What This Is
 
 - An engineering handbook, not a tutorial and not documentation.
