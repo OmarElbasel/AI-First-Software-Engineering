@@ -23,7 +23,7 @@ structure it finds.
 | # | Chapter | Status |
 |---|---------|--------|
 | 01 | [Layered Architecture](01-layered-architecture.md) | Done |
-| 02 | Feature-Based & Vertical Slice Architecture | Planned |
+| 02 | [Feature-Based & Vertical Slice Architecture](02-feature-based-and-vertical-slice.md) | Done |
 | 03 | Clean Architecture | Planned |
 | 04 | Monolith, Modular Monolith & Microservices | Planned |
 | 05 | Service Layer & Repository Pattern | Planned |
