@@ -47,7 +47,7 @@ exercises that resemble real engineering work.
 | 4 | [Frontend Engineering](handbook/stage-04-frontend-engineering/README.md) | Complete |
 | 5 | [Mobile Engineering](handbook/stage-05-mobile-engineering/README.md) | Complete |
 | 6 | [Database Engineering](handbook/stage-06-database-engineering/README.md) | Complete |
-| 7 | [DevOps](handbook/stage-07-devops/README.md) | In progress |
+| 7 | [DevOps](handbook/stage-07-devops/README.md) | Complete |
 | 8 | Testing | Planned |
 | 9 | Security | Planned |
 | 10 | AI Engineering | Planned |

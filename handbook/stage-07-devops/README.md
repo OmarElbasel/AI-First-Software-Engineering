@@ -35,7 +35,7 @@ scale, and sleep behind from one you hope keeps working.
 | 04 | [Nginx, Reverse Proxy, Domains & TLS](04-nginx-reverse-proxy-domains-and-tls.md) | Done |
 | 05 | [CI/CD with GitHub Actions](05-ci-cd-with-github-actions.md) | Done |
 | 06 | [Deploying to a VPS](06-deploying-to-a-vps.md) | Done |
-| 07 | [Monitoring & Logging](07-monitoring-and-logging.md) | Planned |
+| 07 | [Monitoring & Logging](07-monitoring-and-logging.md) | Done |
 
 These seven chapters cover the eleven curriculum topics for this stage. Linux (Ch 01) is the
 foundation the rest stands on. Docker (Ch 02) and Compose (Ch 03) are containerization and
