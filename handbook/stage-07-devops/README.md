@@ -31,8 +31,8 @@ scale, and sleep behind from one you hope keeps working.
 |---|---------|--------|
 | 01 | [Linux for Production Servers](01-linux-for-production-servers.md) | Done |
 | 02 | [Docker & Containerization](02-docker-and-containerization.md) | Done |
-| 03 | [Docker Compose & Multi-Service Environments](03-docker-compose-and-multi-service-environments.md) | Planned |
-| 04 | [Nginx, Reverse Proxy, Domains & TLS](04-nginx-reverse-proxy-domains-and-tls.md) | Planned |
+| 03 | [Docker Compose & Multi-Service Environments](03-docker-compose-and-multi-service-environments.md) | Done |
+| 04 | [Nginx, Reverse Proxy, Domains & TLS](04-nginx-reverse-proxy-domains-and-tls.md) | Done |
 | 05 | [CI/CD with GitHub Actions](05-ci-cd-with-github-actions.md) | Planned |
 | 06 | [Deploying to a VPS](06-deploying-to-a-vps.md) | Planned |
 | 07 | [Monitoring & Logging](07-monitoring-and-logging.md) | Planned |
