@@ -33,8 +33,8 @@ scale, and sleep behind from one you hope keeps working.
 | 02 | [Docker & Containerization](02-docker-and-containerization.md) | Done |
 | 03 | [Docker Compose & Multi-Service Environments](03-docker-compose-and-multi-service-environments.md) | Done |
 | 04 | [Nginx, Reverse Proxy, Domains & TLS](04-nginx-reverse-proxy-domains-and-tls.md) | Done |
-| 05 | [CI/CD with GitHub Actions](05-ci-cd-with-github-actions.md) | Planned |
-| 06 | [Deploying to a VPS](06-deploying-to-a-vps.md) | Planned |
+| 05 | [CI/CD with GitHub Actions](05-ci-cd-with-github-actions.md) | Done |
+| 06 | [Deploying to a VPS](06-deploying-to-a-vps.md) | Done |
 | 07 | [Monitoring & Logging](07-monitoring-and-logging.md) | Planned |
 
 These seven chapters cover the eleven curriculum topics for this stage. Linux (Ch 01) is the
