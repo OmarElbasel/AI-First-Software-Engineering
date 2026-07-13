@@ -8,7 +8,7 @@ shipping systems that survive real users. This handbook teaches that judgment.
 
 > **New here and want to learn from it?** Read **[START-HERE.md](START-HERE.md)** —
 > a reading guide covering what to read, in what order, and how to actually
-> learn from it (not just skim it). Stages 1–3 are ready now.
+> learn from it (not just skim it). Stages 1–5 are ready now.
 
 ## What This Is
 
@@ -45,7 +45,7 @@ exercises that resemble real engineering work.
 | 2 | [Software Architecture](handbook/stage-02-software-architecture/README.md) | Complete |
 | 3 | [Backend Engineering](handbook/stage-03-backend-engineering/README.md) | Complete |
 | 4 | [Frontend Engineering](handbook/stage-04-frontend-engineering/README.md) | Complete |
-| 5 | Mobile Engineering | Planned |
+| 5 | [Mobile Engineering](handbook/stage-05-mobile-engineering/README.md) | Complete |
 | 6 | Database Engineering | Planned |
 | 7 | DevOps | Planned |
 | 8 | Testing | Planned |
