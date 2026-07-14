@@ -44,7 +44,7 @@ that produced them.
 | 03 | [Context Engineering](03-context-engineering.md) | Done |
 | 04 | [Prompt Engineering](04-prompt-engineering.md) | Done |
 | 05 | [Multi-Agent Systems](05-multi-agent-systems.md) | Done |
-| 06 | [AI Code Review](06-ai-code-review.md) | Planned |
+| 06 | [AI Code Review](06-ai-code-review.md) | Done |
 | 07 | [AI Debugging](07-ai-debugging.md) | Planned |
 | 08 | [AI Workflows](08-ai-workflows.md) | Planned |
 
