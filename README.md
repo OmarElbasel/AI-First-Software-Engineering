@@ -52,7 +52,7 @@ exercises that resemble real engineering work.
 | 9 | [Security](handbook/stage-09-security/README.md) | Complete |
 | 10 | [AI Engineering](handbook/stage-10-ai-engineering/README.md) | Complete |
 | 11 | [System Design](handbook/stage-11-system-design/README.md) | Complete |
-| 12 | SaaS Engineering | Planned |
+| 12 | [SaaS Engineering](handbook/stage-12-saas-engineering/README.md) | In progress |
 | 13 | Engineering Leadership | Planned |
 | 14 | Case Studies | Planned |
 
