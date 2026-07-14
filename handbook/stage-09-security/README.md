@@ -34,7 +34,7 @@ and shipping breaches fast.
 | # | Chapter | Status |
 |---|---------|--------|
 | 01 | [Security Mindset & the OWASP Top 10](01-security-mindset-and-owasp-top-10.md) | Done |
-| 02 | JWT Security | Planned |
+| 02 | [JWT Security](02-jwt-security.md) | Done |
 | 03 | OAuth 2.0 & OpenID Connect | Planned |
 | 04 | Secrets Management | Planned |
 | 05 | SQL Injection & Input Handling | Planned |
