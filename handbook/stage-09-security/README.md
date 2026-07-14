@@ -38,7 +38,7 @@ and shipping breaches fast.
 | 03 | [OAuth 2.0 & OpenID Connect](03-oauth2-and-oidc.md) | Done |
 | 04 | [Secrets Management](04-secrets-management.md) | Done |
 | 05 | [SQL Injection & Input Handling](05-sql-injection-and-input-handling.md) | Done |
-| 06 | XSS & Content Security | Planned |
+| 06 | [XSS & Content Security](06-xss-and-content-security.md) | Done |
 | 07 | CSRF, CORS & Browser Security | Planned |
 | 08 | Rate Limiting & Abuse Prevention | Planned |
 
