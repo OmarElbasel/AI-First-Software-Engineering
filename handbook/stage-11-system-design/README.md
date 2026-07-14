@@ -35,7 +35,7 @@ justifies it can direct that firepower precisely. This stage builds that enginee
 
 | # | Chapter | Status |
 |---|---------|--------|
-| 01 | [Scalability](01-scalability.md) | Planned |
+| 01 | [Scalability](01-scalability.md) | Done |
 | 02 | [Load Balancing](02-load-balancing.md) | Planned |
 | 03 | [Horizontal Scaling](03-horizontal-scaling.md) | Planned |
 | 04 | [Redis](04-redis.md) | Planned |
