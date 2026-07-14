@@ -49,7 +49,7 @@ exercises that resemble real engineering work.
 | 6 | [Database Engineering](handbook/stage-06-database-engineering/README.md) | Complete |
 | 7 | [DevOps](handbook/stage-07-devops/README.md) | Complete |
 | 8 | [Testing](handbook/stage-08-testing/README.md) | Complete |
-| 9 | Security | Planned |
+| 9 | [Security](handbook/stage-09-security/README.md) | In progress |
 | 10 | AI Engineering | Planned |
 | 11 | System Design | Planned |
 | 12 | SaaS Engineering | Planned |
