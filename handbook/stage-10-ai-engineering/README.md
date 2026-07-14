@@ -40,7 +40,7 @@ that produced them.
 | # | Chapter | Status |
 |---|---------|--------|
 | 01 | [Claude Code](01-claude-code.md) | Done |
-| 02 | [OpenAI Codex & Cursor](02-openai-codex-and-cursor.md) | Planned |
+| 02 | [OpenAI Codex & Cursor](02-openai-codex-and-cursor.md) | Done |
 | 03 | [Context Engineering](03-context-engineering.md) | Planned |
 | 04 | [Prompt Engineering](04-prompt-engineering.md) | Planned |
 | 05 | [Multi-Agent Systems](05-multi-agent-systems.md) | Planned |
