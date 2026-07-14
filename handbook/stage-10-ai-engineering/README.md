@@ -45,7 +45,7 @@ that produced them.
 | 04 | [Prompt Engineering](04-prompt-engineering.md) | Done |
 | 05 | [Multi-Agent Systems](05-multi-agent-systems.md) | Done |
 | 06 | [AI Code Review](06-ai-code-review.md) | Done |
-| 07 | [AI Debugging](07-ai-debugging.md) | Planned |
+| 07 | [AI Debugging](07-ai-debugging.md) | Done |
 | 08 | [AI Workflows](08-ai-workflows.md) | Planned |
 
 Eight chapters cover the stage's nine curriculum topics (Codex and Cursor share a chapter — the
