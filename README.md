@@ -8,7 +8,7 @@ shipping systems that survive real users. This handbook teaches that judgment.
 
 > **New here and want to learn from it?** Read **[START-HERE.md](START-HERE.md)** —
 > a reading guide covering what to read, in what order, and how to actually
-> learn from it (not just skim it). Stages 1–9 are ready now.
+> learn from it (not just skim it). Stages 1–10 are ready now.
 
 ## What This Is
 
@@ -50,7 +50,7 @@ exercises that resemble real engineering work.
 | 7 | [DevOps](handbook/stage-07-devops/README.md) | Complete |
 | 8 | [Testing](handbook/stage-08-testing/README.md) | Complete |
 | 9 | [Security](handbook/stage-09-security/README.md) | Complete |
-| 10 | [AI Engineering](handbook/stage-10-ai-engineering/README.md) | In progress |
+| 10 | [AI Engineering](handbook/stage-10-ai-engineering/README.md) | Complete |
 | 11 | System Design | Planned |
 | 12 | SaaS Engineering | Planned |
 | 13 | Engineering Leadership | Planned |

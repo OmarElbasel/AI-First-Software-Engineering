@@ -46,7 +46,7 @@ that produced them.
 | 05 | [Multi-Agent Systems](05-multi-agent-systems.md) | Done |
 | 06 | [AI Code Review](06-ai-code-review.md) | Done |
 | 07 | [AI Debugging](07-ai-debugging.md) | Done |
-| 08 | [AI Workflows](08-ai-workflows.md) | Planned |
+| 08 | [AI Workflows](08-ai-workflows.md) | Done |
 
 Eight chapters cover the stage's nine curriculum topics (Codex and Cursor share a chapter — the
 judgment they require is comparative). The tool chapters come first because everything after them

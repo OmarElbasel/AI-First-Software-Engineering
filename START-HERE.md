@@ -60,11 +60,12 @@ Availability, right now:
 | 7 — DevOps | Containerize, deploy, and operate the system on real infrastructure with CI/CD | **Ready** |
 | 8 — Testing | Build a trustworthy test suite: strategy, unit, mocking, integration, E2E | **Ready** |
 | 9 — Security | Attack and harden the system: JWT, OAuth, secrets, injection, XSS, CSRF/CORS, rate limiting | **Ready** |
-| 10+ (AI Engineering, System Design, SaaS, Leadership, Case Studies) | The rest of the senior-engineer path | In progress |
+| 10 — AI Engineering | Engineer the AI collaboration itself: configure agents, context, prompts, multi-agent patterns, review, debugging, and team workflows | **Ready** |
+| 11+ (System Design, SaaS, Leadership, Case Studies) | The rest of the senior-engineer path | In progress |
 
-**You do not need to wait for the rest.** Stages 1–9 take you from mindset to a
-built, deployed, tested, and secured production system. Start now; new stages
-become readable the moment they land.
+**You do not need to wait for the rest.** Stages 1–10 take you from mindset to a
+built, deployed, tested, and secured production system — engineered with AI as a
+disciplined teammate. Start now; new stages become readable the moment they land.
 
 ## How every chapter is structured — and how to use each part
 
