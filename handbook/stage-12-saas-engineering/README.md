@@ -44,7 +44,7 @@ roughly right — can direct that firepower precisely. This stage builds that en
 | 01 | [MVP](01-mvp.md) | Done |
 | 02 | [Pricing](02-pricing.md) | Done |
 | 03 | [Payments](03-payments.md) | Done |
-| 04 | [Analytics](04-analytics.md) | Planned |
+| 04 | [Analytics](04-analytics.md) | Done |
 | 05 | [User Feedback](05-user-feedback.md) | Planned |
 | 06 | [Product Metrics](06-product-metrics.md) | Planned |
 | 07 | [Growth](07-growth.md) | Planned |
