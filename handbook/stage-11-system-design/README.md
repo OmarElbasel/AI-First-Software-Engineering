@@ -39,7 +39,7 @@ justifies it can direct that firepower precisely. This stage builds that enginee
 | 02 | [Load Balancing](02-load-balancing.md) | Done |
 | 03 | [Horizontal Scaling](03-horizontal-scaling.md) | Done |
 | 04 | [Redis](04-redis.md) | Done |
-| 05 | [Queues](05-queues.md) | Planned |
+| 05 | [Queues](05-queues.md) | Done |
 | 06 | [CDN](06-cdn.md) | Planned |
 | 07 | [Event Streaming](07-event-streaming.md) | Planned |
 
