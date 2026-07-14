@@ -59,11 +59,12 @@ Availability, right now:
 | 6 — Database Engineering | Design, index, and evolve a production PostgreSQL schema | **Ready** |
 | 7 — DevOps | Containerize, deploy, and operate the system on real infrastructure with CI/CD | **Ready** |
 | 8 — Testing | Build a trustworthy test suite: strategy, unit, mocking, integration, E2E | **Ready** |
-| 9+ (Security, AI Engineering, System Design, SaaS, Leadership, Case Studies) | The rest of the senior-engineer path | In progress |
+| 9 — Security | Attack and harden the system: JWT, OAuth, secrets, injection, XSS, CSRF/CORS, rate limiting | **Ready** |
+| 10+ (AI Engineering, System Design, SaaS, Leadership, Case Studies) | The rest of the senior-engineer path | In progress |
 
-**You do not need to wait for the rest.** Stages 1–8 take you from mindset to a
-built, deployed, and tested production system. Start now; new stages become
-readable the moment they land.
+**You do not need to wait for the rest.** Stages 1–9 take you from mindset to a
+built, deployed, tested, and secured production system. Start now; new stages
+become readable the moment they land.
 
 ## How every chapter is structured — and how to use each part
 
