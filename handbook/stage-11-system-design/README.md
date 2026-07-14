@@ -41,7 +41,7 @@ justifies it can direct that firepower precisely. This stage builds that enginee
 | 04 | [Redis](04-redis.md) | Done |
 | 05 | [Queues](05-queues.md) | Done |
 | 06 | [CDN](06-cdn.md) | Done |
-| 07 | [Event Streaming](07-event-streaming.md) | Planned |
+| 07 | [Event Streaming](07-event-streaming.md) | Done |
 
 Seven chapters, one per curriculum topic, ordered as a growing system meets them. Scalability
 (Ch 01) is the conceptual foundation — load, bottlenecks, vertical vs horizontal, and the
