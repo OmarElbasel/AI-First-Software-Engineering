@@ -39,7 +39,7 @@ and shipping breaches fast.
 | 04 | [Secrets Management](04-secrets-management.md) | Done |
 | 05 | [SQL Injection & Input Handling](05-sql-injection-and-input-handling.md) | Done |
 | 06 | [XSS & Content Security](06-xss-and-content-security.md) | Done |
-| 07 | CSRF, CORS & Browser Security | Planned |
+| 07 | [CSRF, CORS & Browser Security](07-csrf-cors-and-browser-security.md) | Done |
 | 08 | Rate Limiting & Abuse Prevention | Planned |
 
 Eight chapters cover the stage's eight curriculum topics in the order an attacker meets your
