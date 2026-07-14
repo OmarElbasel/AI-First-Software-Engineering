@@ -36,7 +36,7 @@ and shipping breaches fast.
 | 01 | [Security Mindset & the OWASP Top 10](01-security-mindset-and-owasp-top-10.md) | Done |
 | 02 | [JWT Security](02-jwt-security.md) | Done |
 | 03 | [OAuth 2.0 & OpenID Connect](03-oauth2-and-oidc.md) | Done |
-| 04 | Secrets Management | Planned |
+| 04 | [Secrets Management](04-secrets-management.md) | Done |
 | 05 | SQL Injection & Input Handling | Planned |
 | 06 | XSS & Content Security | Planned |
 | 07 | CSRF, CORS & Browser Security | Planned |
