@@ -32,8 +32,8 @@ passes. The judgment this stage teaches is what makes a green build mean somethi
 | # | Chapter | Status |
 |---|---------|--------|
 | 01 | [Test Strategy](01-test-strategy.md) | Done |
-| 02 | [Unit Testing](02-unit-testing.md) | Planned |
-| 03 | [Mocking & Test Doubles](03-mocking-and-test-doubles.md) | Planned |
+| 02 | [Unit Testing](02-unit-testing.md) | Done |
+| 03 | [Mocking & Test Doubles](03-mocking-and-test-doubles.md) | Done |
 | 04 | [Integration Testing](04-integration-testing.md) | Planned |
 | 05 | [End-to-End Testing](05-end-to-end-testing.md) | Planned |
 
