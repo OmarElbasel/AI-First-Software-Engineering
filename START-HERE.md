@@ -54,11 +54,16 @@ Availability, right now:
 | 1 — Engineering Mindset | Think about cost, trade-offs, and product value before writing code | **Ready** |
 | 2 — Software Architecture | Choose and justify how to structure a system before building it | **Ready** |
 | 3 — Backend Engineering | Build a production API: persistence, auth, jobs, caching, observability | **Ready** |
-| 4+ (Frontend, Mobile, Database, DevOps, Testing, Security, AI, System Design, SaaS, Leadership, Case Studies) | The rest of the full-stack and senior-engineer path | In progress |
+| 4 — Frontend Engineering | Build the Next.js/React frontend: components, data fetching, state, forms, performance | **Ready** |
+| 5 — Mobile Engineering | Ship a React Native app: navigation, auth, offline, notifications, releases | **Ready** |
+| 6 — Database Engineering | Design, index, and evolve a production PostgreSQL schema | **Ready** |
+| 7 — DevOps | Containerize, deploy, and operate the system on real infrastructure with CI/CD | **Ready** |
+| 8 — Testing | Build a trustworthy test suite: strategy, unit, mocking, integration, E2E | **Ready** |
+| 9+ (Security, AI Engineering, System Design, SaaS, Leadership, Case Studies) | The rest of the senior-engineer path | In progress |
 
-**You do not need to wait for the rest.** Stages 1–3 are a complete learning
-path on their own: how to think, how to design, how to build a backend. Start
-now; new stages become readable the moment they land.
+**You do not need to wait for the rest.** Stages 1–8 take you from mindset to a
+built, deployed, and tested production system. Start now; new stages become
+readable the moment they land.
 
 ## How every chapter is structured — and how to use each part
 
