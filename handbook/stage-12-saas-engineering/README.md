@@ -41,7 +41,7 @@ roughly right — can direct that firepower precisely. This stage builds that en
 
 | # | Chapter | Status |
 |---|---------|--------|
-| 01 | [MVP](01-mvp.md) | Planned |
+| 01 | [MVP](01-mvp.md) | Done |
 | 02 | [Pricing](02-pricing.md) | Planned |
 | 03 | [Payments](03-payments.md) | Planned |
 | 04 | [Analytics](04-analytics.md) | Planned |
