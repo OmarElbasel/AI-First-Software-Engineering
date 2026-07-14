@@ -42,7 +42,7 @@ that produced them.
 | 01 | [Claude Code](01-claude-code.md) | Done |
 | 02 | [OpenAI Codex & Cursor](02-openai-codex-and-cursor.md) | Done |
 | 03 | [Context Engineering](03-context-engineering.md) | Done |
-| 04 | [Prompt Engineering](04-prompt-engineering.md) | Planned |
+| 04 | [Prompt Engineering](04-prompt-engineering.md) | Done |
 | 05 | [Multi-Agent Systems](05-multi-agent-systems.md) | Planned |
 | 06 | [AI Code Review](06-ai-code-review.md) | Planned |
 | 07 | [AI Debugging](07-ai-debugging.md) | Planned |
@@ -62,7 +62,7 @@ composing everything into repeatable team workflows and CI automation (Ch 08).
 ## Boundaries with other stages
 
 - **The AI-first mindset** — why AI is a teammate, what stays human, delegation philosophy — is
-  **Stage 1, Chapter 04**. This stage assumes that conviction and teaches the practice: tools,
+  **Stage 1, Chapter 03**. This stage assumes that conviction and teaches the practice: tools,
   configuration, techniques, workflows.
 - **Verification mechanics** — test strategy, what to test, the test pyramid — are **Stage 8**.
   This stage wires those tests into agent feedback loops and CI gates; it does not re-teach how to
