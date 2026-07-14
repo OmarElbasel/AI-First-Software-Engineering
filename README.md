@@ -50,7 +50,7 @@ exercises that resemble real engineering work.
 | 7 | [DevOps](handbook/stage-07-devops/README.md) | Complete |
 | 8 | [Testing](handbook/stage-08-testing/README.md) | Complete |
 | 9 | [Security](handbook/stage-09-security/README.md) | Complete |
-| 10 | AI Engineering | Planned |
+| 10 | [AI Engineering](handbook/stage-10-ai-engineering/README.md) | In progress |
 | 11 | System Design | Planned |
 | 12 | SaaS Engineering | Planned |
 | 13 | Engineering Leadership | Planned |
