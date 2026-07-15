@@ -3,4 +3,4 @@
 # Requires uv (https://docs.astral.sh/uv/) — no other setup needed.
 set -euo pipefail
 cd "$(dirname "$0")"
-exec uvx --with mkdocs-material mkdocs serve -f mkdocs.yml -a 127.0.0.1:8000
+exec uvx --with mkdocs-material --with mkdocs-static-i18n mkdocs serve -f mkdocs.yml -a 127.0.0.1:8000
