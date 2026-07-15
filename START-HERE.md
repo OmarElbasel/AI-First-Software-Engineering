@@ -62,12 +62,13 @@ Availability, right now:
 | 9 — Security | Attack and harden the system: JWT, OAuth, secrets, injection, XSS, CSRF/CORS, rate limiting | **Ready** |
 | 10 — AI Engineering | Engineer the AI collaboration itself: configure agents, context, prompts, multi-agent patterns, review, debugging, and team workflows | **Ready** |
 | 11 — System Design | Scale the system when load grows: find bottlenecks, load balance, scale out, Redis, queues, CDN, event streaming | **Ready** |
-| 12+ (SaaS, Leadership, Case Studies) | The rest of the senior-engineer path | In progress |
+| 12 — SaaS Engineering | Turn the system into a business: MVP scoping, pricing, payments, analytics, feedback, product metrics, growth | **Ready** |
+| 13+ (Leadership, Case Studies) | The rest of the senior-engineer path | In progress |
 
-**You do not need to wait for the rest.** Stages 1–11 take you from mindset to a
-built, deployed, tested, secured, and scalable production system — engineered with
-AI as a disciplined teammate. Start now; new stages become readable the moment they
-land.
+**You do not need to wait for the rest.** Stages 1–12 take you from mindset to a
+built, deployed, tested, secured, and scalable production system — and the business
+around it — engineered with AI as a disciplined teammate. Start now; new stages
+become readable the moment they land.
 
 ## How every chapter is structured — and how to use each part
 
