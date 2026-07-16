@@ -1,0 +1,5579 @@
+
+<!doctype html>
+<html lang="ar" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A production-grade handbook for engineering software with AI as a disciplined teammate.">
+      
+      
+      
+      
+        <link rel="prev" href="../02-jwt-security/">
+      
+      
+        <link rel="next" href="../04-secrets-management/">
+      
+      
+        
+          <link rel="alternate" href="../../../../handbook/stage-09-security/03-oauth2-and-oidc/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ar">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>OAuth 2.0 و OpenID Connect - هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="rtl" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#oauth-20-openid-connect" class="md-skip">
+          انتقل إلى المحتوى
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="عنوان العارضة">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-header__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OAuth 2.0 و OpenID Connect
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="إختر اللغة">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../handbook/stage-09-security/03-oauth2-and-oidc/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ar" class="md-select__link">
+              العربية
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="بحث" placeholder="بحث" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="إبحث">
+        
+        <button type="reset" class="md-search__icon md-icon" title="مسح كلي" aria-label="مسح كلي" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            بدء البحث
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="تصفح" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-nav__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الرئيسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../START-HERE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ابدأ من هنا
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/01-what-is-software-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ما هي هندسة البرمجيات؟
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/02-product-thinking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفكير بعقلية المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/03-ai-first-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطوير بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/04-engineering-trade-offs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المفاضلات الهندسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/05-technical-debt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الدَّين التقني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/06-build-vs-buy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء مقابل الشراء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/07-simplicity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البساطة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/08-maintainability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية الصيانة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/01-layered-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية الطبقية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/02-feature-based-and-vertical-slice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية القائمة على الميزات والشرائح الرأسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/03-clean-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية النظيفة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/04-monolith-modular-monolith-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المتراصّ والمتراصّ المعياري والخدمات المصغّرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/05-service-layer-and-repository-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    طبقة الخدمات ونمط المستودع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/06-dependency-injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن التبعيات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/07-event-driven-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية المدفوعة بالأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/01-building-apis-with-fastapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء واجهات API باستخدام FastAPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/02-data-persistence-sqlalchemy-alembic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حفظ البيانات: SQLAlchemy و Alembic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/03-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/04-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/05-error-handling-and-api-versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معالجة الأخطاء وإصدارات API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/06-background-jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المهام الخلفية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/07-caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التخزين المؤقت
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/08-logging-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسجيل وقابلية المراقبة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/09-file-storage-and-email/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/01-building-uis-with-react-and-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء الواجهات باستخدام React و TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/02-nextjs-and-the-app-router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next.js وموجّه التطبيق App Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/03-server-and-client-components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مكوّنات الخادم والعميل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/04-data-fetching-and-server-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    جلب البيانات وحالة الخادم
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/05-state-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الحالة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/06-forms-and-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النماذج والتحقق من الإدخال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/07-frontend-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/08-frontend-architecture-and-folder-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معمارية الواجهة الأمامية وهيكل المجلدات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/01-react-native-and-expo-foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أساسيات React Native و Expo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/02-navigation-and-deep-linking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التنقّل والروابط العميقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/03-authentication-on-mobile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة على الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/04-offline-support-and-data-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دعم العمل دون اتصال ومزامنة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/05-push-notifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الإشعارات الفورية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/06-mobile-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/07-building-shipping-and-ota-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء والنشر وتحديثات OTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/01-relational-databases-and-data-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قواعد البيانات العلائقية ونمذجة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/02-schema-design-and-normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصميم المخطط والتطبيع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/03-indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الفهرسة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/04-transactions-and-concurrency-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعاملات والتحكم في التزامن
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/05-query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحسين الاستعلامات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/06-migrations-and-schema-evolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الترحيلات وتطوّر المخطط
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 7 · DevOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 7 · DevOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/01-linux-for-production-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux لخوادم الإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/02-docker-and-containerization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker والحاويات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/03-docker-compose-and-multi-service-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose والبيئات متعددة الخدمات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/05-ci-cd-with-github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD باستخدام GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/06-deploying-to-a-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النشر على خادم VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/07-monitoring-and-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المراقبة والتسجيل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 8 · الاختبارات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 8 · الاختبارات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/01-test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    استراتيجية الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/02-unit-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات الوحدة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/03-mocking-and-test-doubles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المحاكاة وبدائل الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/04-integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/05-end-to-end-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الاختبارات الشاملة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 9 · الأمان
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 9 · الأمان
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-security-mindset-and-owasp-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عقلية الأمان وقائمة OWASP العشرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-jwt-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أمان JWT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القرارات الهندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="القرارات الهندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أي تدفق؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oidc-oauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المصادقة (OIDC) أو التفويض (OAuth) — أيهما تفعل فعليًا؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redirect_uri" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ما مدى صرامة مطابقة redirect_uri؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أين تعيش معاملات الأمن، وكم من الوقت؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المصادقة الذاتية، شراء مزوّد مصادقة، أو التفويض المباشر؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: التدفق بلا state (رد نداء غير محمي)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: رمز الوصول المُستخدم كإثبات هوية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor-id-token-nonce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: ID token مفكوك الترميز وغير مُتحقَّق منه (ودون nonce)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة التحقق">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق من التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق المعمارية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق من مراجعة الكود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق من النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الأسرار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-sql-injection-and-input-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن SQL ومعالجة المدخلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-xss-and-content-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-csrf-cors-and-browser-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSRF و CORS وأمان المتصفح
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-rate-limiting-and-abuse-prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحديد المعدل ومنع إساءة الاستخدام
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/01-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/02-openai-codex-and-cursor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Codex و Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/03-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/04-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة الموجّهات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/05-multi-agent-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الأنظمة متعددة الوكلاء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/06-ai-code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/07-ai-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصحيح الأخطاء بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/08-ai-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    سير عمل الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/01-scalability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية التوسّع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/02-load-balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    موازنة الحمل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/03-horizontal-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التوسّع الأفقي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/04-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/05-queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الطوابير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/06-cdn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CDN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/07-event-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بثّ الأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/01-mvp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنتج الأولي (MVP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/02-pricing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسعير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/03-payments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المدفوعات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/04-analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التحليلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/05-user-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ملاحظات المستخدمين
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/06-product-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مقاييس المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/07-growth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النمو
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوائم التحقق
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    قوائم التحقق
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة مراجعة الكود
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة الجاهزية للإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أدلة العمل
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    أدلة العمل
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/starting-an-ai-first-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دليل عمل: بدء مشروع بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    القوالب
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    القوالب
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب سجل القرار المعماري (ADR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-conceptual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-technical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/claude-md-starter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/project-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب موجز المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/pull-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب طلب الدمج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عن المشروع
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    عن المشروع
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/00-CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دستور المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/01-project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    رؤية المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/02-curriculum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنهج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطبيق المرجعي (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../starter-kits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوالب البدء (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القرارات الهندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="القرارات الهندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أي تدفق؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oidc-oauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المصادقة (OIDC) أو التفويض (OAuth) — أيهما تفعل فعليًا؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redirect_uri" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ما مدى صرامة مطابقة redirect_uri؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أين تعيش معاملات الأمن، وكم من الوقت؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المصادقة الذاتية، شراء مزوّد مصادقة، أو التفويض المباشر؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: التدفق بلا state (رد نداء غير محمي)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: رمز الوصول المُستخدم كإثبات هوية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor-id-token-nonce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: ID token مفكوك الترميز وغير مُتحقَّق منه (ودون nonce)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة التحقق">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق من التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق المعمارية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق من مراجعة الكود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق من النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="oauth-20-openid-connect">OAuth 2.0 و OpenID Connect<a class="headerlink" href="#oauth-20-openid-connect" title="Permanent link">&para;</a></h1>
+<h2 id="_1">المقدمة<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>تُبدو خاصية "تسجيل الدخول عبر Google" كميزةٍ تُضاف في فترة ما بعد الظهر: سجّل تطبيقًا، أدخل معرّف العميل، أعِد التوجيه، احصل على رمز مميز، سجّل دخول المستخدم. المكتبة تقوم بمعظم العمل. وتلك النسخة التي تُبنى في فترة ما بعد الظهر هي بالضبط المكان الذي تعيش فيه عائلة محددة وموثّقة من الثغرات الأمنية — لأن OAuth ليس بروتوكول تسجيل دخول، بل هو بروتوكول <em>تفويض تفويضي</em> (authorization delegation) أُعيد توظيفه على نطاق واسع لتسجيل الدخول، والفجوة بين ما يثبته فعلاً وما يفترض الناس أنه يثبته هي بالضبط مكان الهجمات.</p>
+<p>يدور هذا الفصل حول دمج هوية الطرف الثالث — OAuth 2.0 للتفويض التفويضي وOpenID Connect (OIDC) للمصادقة — <em>بشكل آمن</em>. يغطي التدفقات ولماذا يُعدّ أحدها الخيار الآمن الوحيد الافتراضي (Authorization Code مع PKCE)، والمعاملات التي تُعدّ ضوابط أمنية حاسمة وليست مجرد تفاصيل روتينية (<code>state</code>، <code>redirect_uri</code>، <code>nonce</code>، PKCE)، والتمييز الجوهري الذي يسهّل OAuth الخطأ فيه (رمز الوصول access token يثبت أنه يحق لك <em>استدعاء واجهة API</em>، وليس من أنت — هذه مهمة رمز ID token)، والهجمات الكلاسيكية: CSRF على رد النداء، التلاعب بإعادة التوجيه، استبدال الرمز المميز، وهجوم mix-up.</p>
+<p>ثمة حدودان يؤطّران الموضوع. أولاً، هذا فصل <em>الدمج والهجوم</em>: بناء المصادقة الذاتية من الطرف الأول — تجزئة كلمات المرور، إصدار الرموز المميزة الخاصة بك — كان في المرحلة 3، الفصل 03، وصلابة تلك الرموز كانت في الفصل 02 هنا؛ هذا الفصل يدور حول تفويض الهوية لمزوّد خارجي والقيام بذلك دون وراثة أخطاء OAuth. ثانيًا، رموز OIDC ID token <em>هي</em> رموز JWT، لذا فإن كل ما قاله الفصل 02 عن التحقق من JWT (تثبيت الخوارزمية، التحقق من المطالبات claims، جلب المفاتيح من JWKS) ينطبق مباشرة على التحقق من ID token — يبني هذا الفصل على ذلك بدلاً من تكراره. سبب فهم OAuth بعمق على الرغم من أن المكتبة تنفّذه: المكتبة تمنحك الآليات، لكن <em>أي تدفق، وأي معاملات، وأي رمز مميز يثبت ماذا</em> هي قرارات تتركها المكتبة لك، والخطأ فيها يشحن تسجيل دخول يعمل ويمكن اختطافه.</p>
+<h2 id="_2">لماذا هذا مهم<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>تفشل عمليات دمج OAuth بطرق غير مرئية في العرض التجريبي ووخيمة في الإنتاج، لأن مرونة البروتوكول هي بالضبط خطره — معظم طرق استخدامه غير آمنة، ولا يوجد سوى مسار ضيق آمن.</p>
+<ul>
+<li><strong>رمز الوصول (access token) ليس إثباتًا للهوية — افتراض ذلك ثغرة حقيقية.</strong> يعني رمز الوصول "يجوز لحامله استدعاء واجهات API هذه نيابةً عن هذا المستخدم." إنه لا يصادق على <em>من يقدّمه</em>. يمكن إعادة تشغيل رمز صُكّ لتطبيق خبيث، أو سُرق، ضد خلفية تعامل "لديه رمز وصول Google صالح" على أنه "هو مستخدم Google هذا" — هجوم confused-deputy / استبدال الرمز. المصادقة هي مهمة ID token (OIDC)، وخلط الاثنتين هو الخطأ الأكثر شيوعًا في استخدام OAuth لتسجيل الدخول.</li>
+<li><strong>معامل <code>state</code> هو دفاع CSRF مطلوب وليس مجرد تفصيل اختياري.</strong> بدونه، يمكن للمهاجم بدء تدفق OAuth بحسابه <em>الخاص</em> وخداع متصفح الضحية لإكماله، مما يُسجّل دخول الضحية بصمت في حساب المهاجم (login CSRF) — أو العكس، ربط هوية المهاجم بجلسة الضحية. يربط <code>state</code> رد النداء بالطلب الذي بدأه؛ إغفاله يعرض رد النداء للتزوير.</li>
+<li><strong><code>redirect_uri</code> هو المكان الذي تُسلَّم إليه الرموز المميزة — المطابقة الفضفاضة تسلّمها للمهاجمين.</strong> إذا كان المزوّد أو تطبيقك يقبل redirect URI حسب البادئة، أو يسمح بإعادة التوجيه المفتوحة على نطاقك، فسيسجّل المهاجم أو يصوغ redirect يُرسل رمز التفويض أو الرمز المميز إلى مُضيف يسيطر عليه. تسجيل redirect URI بالمطابقة التامة هو ما يحفظ بيانات الاعتماد من أن تُسلَّم إلى الباب الخطأ.</li>
+<li><strong>يجب التحقق من ID token كما يُتحقق من أي JWT — الملف الشخصي المُجلب ليس تحققًا.</strong> استدعاء نقطة نهاية userinfo للمزوّد أو فك ترميز ID token لقراءة البريد الإلكتروني لا يُعدّ مصادقة ما لم يُتحقق من توقيع ID token، والمُصدِر (issuer)، والجمهور (audience)، وnonce (الفصل 02). رمز ID token غير المُتحقق منه هو بيانات قابلة للتعديل من المهاجم.</li>
+<li><strong>يُغلق PKCE ثغرة اعتراض الكود، وهو الآن الخط الأساسي للجميع.</strong> كان في الأصل لتطبيقات الجوال التي لا تستطيع حفظ سر، Proof Key for Code Exchange يُوصى به الآن لـ<em>جميع</em> العملاء، بما في ذلك الويب: يربط رمز التفويض بالعميل الذي طلبه، بحيث يكون الكود المُعترض عديم الفائدة لأي شخص آخر. تخطّيه يُبقي هجوم اعتراض الكود مفتوحًا.</li>
+<li><strong>البُعد الخاص بالذكاء الاصطناعي حاد.</strong> يُولّد المساعدون تدفقات OAuth تُكمل الدورة الكاملة وتُسجّل دخول المستخدم مع إغفال <code>state</code>، أو مطابقة <code>redirect_uri</code> بشكل فضفاض، أو التعامل مع رمز الوصول كهوية، أو تخطّي التحقق من ID token — كل واحدة منها تصادق على مستخدم happy path وتُسلّم للمهاجم إمكانية الاختطاف. إن "عمل" التدفق لا يقول شيئًا عمّا إذا كان آمنًا.</li>
+</ul>
+<h2 id="_3">النموذج الذهني<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>OAuth رقصة تفويضية بين أربعة أطراف، والأمن يكمن في المعاملات التي تربط الخطوات ببعضها بحيث لا يستطيع المهاجم زرع خطوته الخاصة في تدفقك.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>   THE FOUR PARTIES
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>     Resource Owner  = the user            Client       = your app (Invoicely)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>     Authorization Server = the provider (Google)    Resource Server = the provider&#39;s API
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   AUTHORIZATION CODE FLOW + PKCE (the ONE safe default for web, mobile, SPA)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>     1. Client → browser → Auth Server:  /authorize?client_id&amp;redirect_uri&amp;scope
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                                          &amp;state=RANDOM&amp;nonce=RANDOM&amp;code_challenge=HASH(verifier)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>     2. user authenticates &amp; consents at the Auth Server (your app never sees their password)
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>     3. Auth Server → browser → redirect_uri?code=AUTHZ_CODE&amp;state=RANDOM
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                          │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                                          ▼  CHECK state == what you sent  (CSRF defense)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>     4. Client → Auth Server (back channel): exchange code + code_VERIFIER (+client secret)
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                                          │
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                                          ▼  PKCE: verifier must hash to the challenge from step 1
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>     5. Auth Server → Client:  access_token (call APIs)  +  id_token (WHO the user is, OIDC)
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                          │
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                                          ▼  VERIFY id_token as a JWT (Ch 02): sig, iss, aud, exp,
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>                                             and nonce == what you sent
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>     6. Client establishes ITS OWN session for the user (your session, not the provider&#39;s token)
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>   WHAT EACH TOKEN PROVES  (getting this wrong is the headline bug)
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>     access_token → &quot;bearer may call these APIs for this user&quot;   NOT identity
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>     id_token     → &quot;this user authenticated at this provider&quot;   ← authentication (OIDC only)
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>   THE LOAD-BEARING PARAMETERS (each defends a specific attack)
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>     state          → CSRF on the callback (bind callback to your request)
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>     redirect_uri   → token delivery address; EXACT match, pre-registered (no prefix/open redirect)
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>     PKCE           → binds code to this client (defeats code interception) — use everywhere
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>     nonce          → binds id_token to this request (defeats id_token replay)
+</code></pre></div>
+<p>ثلاثة مبادئ يحملها الفصل:</p>
+<p><strong>المصادقة هي مهمة ID token؛ رمز الوصول مخصص لاستدعاء واجهات API.</strong> إذا كنت تُسجّل دخول مستخدم، فأنت بحاجة إلى OIDC ورمز <em>ID token مُتحقَّق منه</em>. لا تستنتج الهوية أبدًا من رمز الوصول، ولا تثق أبدًا في رد userinfo حصلت عليه بتقديم رمز مميز لم تتحقق من مصدره.</p>
+<p><strong>كل معامل ربط هو ضابط أمني — عامل المفقود منها كأنه ثغرة.</strong> <code>state</code>، و<code>redirect_uri</code> التام، وPKCE، و<code>nonce</code> كل منها يدافع عن هجوم مُسمّى. ليست إعدادات اختيارية؛ تدفق ينقصه أي منها هو تدفق ينقصه دفاع، على الرغم من أنه لا يزال يُسجّل دخول الناس.</p>
+<p><strong>استخدم تدفق Authorization Code مع PKCE، ولا شيء غيره.</strong> التدفق الضمني (الرموز في جزء fragment من URL) وتدفق resource-owner-password مهجوران لأسباب وجيهة — يُسرّبان الرموز ويُسلّمان تطبيقك كلمة مرور المستخدم لدى المزوّد. يوجد خيار آمن افتراضي واحد؛ استخدمه للويب وSPA والجوال على حد سواء.</p>
+<p>تعريف عملي:</p>
+<blockquote>
+<p><strong>يُفوِّض OAuth 2.0 الصلاحيات؛ ويُضيف OpenID Connect المصادقة فوق ذلك عبر رمز ID token قابل للتحقق. يعني دمجهما بأمان استخدام تدفق Authorization Code مع PKCE، ومعاملة <code>state</code>، والمطابقة التامة لـ<code>redirect_uri</code>، وPKCE، و<code>nonce</code> كدفاعات إلزامية خاصة بكل هجوم، واستخلاص الهوية فقط من ID token مُتحقَّق منه بالكامل (أبدًا من رمز وصول)، وإنهاء التدفق بإنشاء جلستك الخاصة بدلاً من تمرير رمز المزوّد.</strong></p>
+</blockquote>
+<h2 id="_4">مثال إنتاجي<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>تُضيف <strong>Invoicely</strong> خاصية "تسجيل الدخول عبر Google" ليتسنى للمستخدمين البدء دون إنشاء كلمة مرور أخرى، وتُحضّر للسماح لهم بربط <strong>Stripe</strong> بحيث تتمكّن Invoicely من إنشاء رسوم نيابةً عنهم. هذان هما وجهان للبروتوكول: تسجيل الدخول عبر Google هو <em>مصادقة</em> (OIDC — من هذا المستخدم)، وStripe Connect هو <em>تفويض</em> (OAuth — هل يجوز لـInvoicely التصرف نيابةً عن هذا الحساب). بناء الاثنين في فصل واحد يجعل التمييز ملموسًا، لأن متطلبات الأمن تتباعد تمامًا حيث تتباعد معاني الرموز.</p>
+<p>بالنسبة لتسجيل الدخول عبر Google، تستخدم Invoicely تدفق Authorization Code مع PKCE. تُولّد قيمتي <code>state</code> و<code>nonce</code> عشوائيتين لكل محاولة، وتخزّنهما مربوطتَين بجلسة المتصفح، وتُسجّل <code>redirect_uri</code> التام مسبقًا في وحدة تحكم Google — لا أحرف بدل، ولا مطابقة بالبادئة. في رد النداء، تتحقق من <code>state</code> قبل فعل أي شيء آخر (CSRF)، وتُبادل الكود مع مُحقّق PKCE عبر القناة الخلفية، ثم تتحقق من <strong>ID token</strong> المُعاد كرمز JWT باستخدام قواعد الفصل 02: التوقيع مقابل JWKS من Google، و<code>iss</code> هو مُصدِر Google، و<code>aud</code> هو معرّف عميل Invoicely، و<code>exp</code> مستقبلي، و<code>nonce</code> يطابق ما أرسلته. فقط بعد كل ذلك تُطابق Invoicely الـ<code>sub</code> المُتحقَّق منه مع حساب محلي وتُنشئ <em>جلستها الخاصة</em> — لا تتعامل أبدًا مع رمز وصول Google كهوية، ولا تخزّنه أبدًا كجلسة للمستخدم.</p>
+<p>بالنسبة لـStripe Connect، تستخدم Invoicely OAuth للتفويض: تستقبل رمز وصول مُقيَّد النطاق لإنشاء رسوم على الحساب المتصل، وتخزّن هذا الرمز (مشفّرًا، الفصل 04) كـ<em>قدرة</em> (capability) — دليل على أنه يجوز لها استدعاء Stripe لهذا الحساب — وليس كدليل على هوية أي شخص. ربط الحساب مربوط بجلسة مستخدم Invoicely الذي تمّت مصادقته بالفعل، بحيث لا يستطيع المهاجم تطعيم حساب Stripe الخاص به على تسجيل دخول الضحية.</p>
+<p>في هذا الفصل، نبني تدفق Google OIDC مع وجود كل معامل ربط في مكانه، ونقارنه بنسخة الإعداد الافتراضي لدى المساعد (بلا <code>state</code>، رمز وصول يُعامل كهوية، ID token يُفك ترميزه لا يُتحقق منه)، ونُبيّن أن كل إغفال هو الاختطاف المُحدّد الذي يُمكّنه.</p>
+<h2 id="_5">بنية المجلدات<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>modules/auth/oauth/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── router.py             # /auth/google/start (build authorize URL) and /auth/google/callback
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── _flow.py              # state+nonce+PKCE generation and one-time storage; the callback checks
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── _providers.py        # provider config: issuer, JWKS URL, client id, EXACT redirect_uri, scopes
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├── _idtoken.py           # ID-token verification — reuses Ch 02&#39;s JWT verifier against provider JWKS
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>├── _link.py              # map verified sub -&gt; local account; connect-account bound to session
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>core/
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>├── auth.py               # establishes Invoicely&#39;s OWN session after verification (not the provider token)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>tests/
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>└── security/
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    └── test_oauth_flow.py   # missing/forged state, tampered id_token, wrong aud, code without PKCE
+</code></pre></div>
+<p>لماذا هذا الشكل:</p>
+<ul>
+<li><strong><code>_flow.py</code></strong> يملك حالة الأمن المؤقتة (<code>state</code>، <code>nonce</code>، مُحقّق PKCE): تُولّد لكل محاولة، وتُخزّن في جانب الخادم مربوطة بالجلسة، وتُستخدم مرة واحدة، وتُفحص في رد النداء. مركزيتها تعني أن دفاعات CSRF وإعادة التشغيل لا يمكن تنفيذها جزئيًا لكل مسار.</li>
+<li><strong><code>_providers.py</code></strong> يُثبّت مُصدِر كل مزوّد، وJWKS URL، ومعرّف العميل، وredirect URI التام، والنطاقات scopes في إعداد واحد، بحيث تتحقق الفحوصات دائمًا من المُصدِر/الجمهور الصحيحين ولا يكون redirect URI فضفاضًا أو مُشتقًا من الطلب.</li>
+<li><strong><code>_idtoken.py</code></strong> يعيد عمدًا استخدام مُحقّق JWT من الفصل 02 بدلاً من إدخال فحص رمز ثانٍ أضعف — ID token هو رمز JWT ويحصل على نفس المعاملة الصارمة، إضافةً إلى <code>nonce</code>.</li>
+<li><strong><code>core/auth.py</code></strong> يُنهي كل تدفق بسكّ جلسة Invoicely الخاصة، راسمًا الخط: لقد صادق المزوّد على المستخدم <em>لحسابنا مرة واحدة</em>؛ من هناك تحمل جلستنا الهوية، ورموز المزوّد ليست أبدًا بيانات اعتماد جلسة التطبيق.</li>
+</ul>
+<h2 id="_6">التنفيذ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p><strong>بدء التدفق (<code>_flow.py</code> + <code>router.py</code>): توليد معاملات الأمن وربطها.</strong> القيم العشوائية هي الدفاع كله؛ يجب أن تكون لكل محاولة، ومخزنة في جانب الخادم، ومُستخدمة مرة واحدة.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">build_authorize_url</span><span class="p">(</span><span class="n">session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">verifier</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_urlsafe</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>                 <span class="c1"># PKCE: kept server-side</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">state</span>    <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_urlsafe</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>                 <span class="c1"># CSRF: bind callback to this request</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">nonce</span>    <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_urlsafe</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>                 <span class="c1"># replay: bind id_token to this request</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">session</span><span class="o">.</span><span class="n">store_oauth_attempt</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">nonce</span><span class="o">=</span><span class="n">nonce</span><span class="p">,</span> <span class="n">verifier</span><span class="o">=</span><span class="n">verifier</span><span class="p">)</span>  <span class="c1"># single-use, TTL&#39;d</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="k">return</span> <span class="n">google</span><span class="o">.</span><span class="n">authorize_url</span><span class="p">(</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="n">client_id</span><span class="o">=</span><span class="n">CFG</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="n">redirect_uri</span><span class="o">=</span><span class="n">CFG</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">,</span>                   <span class="c1"># EXACT, pre-registered — never from the request</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>        <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;openid email profile&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>        <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        <span class="n">nonce</span><span class="o">=</span><span class="n">nonce</span><span class="p">,</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>        <span class="n">code_challenge</span><span class="o">=</span><span class="n">pkce_challenge</span><span class="p">(</span><span class="n">verifier</span><span class="p">),</span>         <span class="c1"># S256(verifier)</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>        <span class="n">code_challenge_method</span><span class="o">=</span><span class="s2">&quot;S256&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="p">)</span>
+</code></pre></div>
+<p><strong>رد النداء (<code>router.py</code>): تحقّق من <code>state</code> أولًا، ثم ابدل مع PKCE، وتحقق من ID token.</strong> الترتيب مهم — ارفض ردود النداء المزوّرة قبل إنفاق عملية تبادل عليها.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/auth/google/callback&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">google_callback</span><span class="p">(</span><span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">session</span><span class="p">):</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">attempt</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">pop_oauth_attempt</span><span class="p">()</span>                <span class="c1"># single-use: remove as you read it</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="k">if</span> <span class="n">attempt</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">secrets</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">attempt</span><span class="o">.</span><span class="n">state</span><span class="p">):</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        <span class="k">raise</span> <span class="n">AuthError</span><span class="p">(</span><span class="s2">&quot;invalid state&quot;</span><span class="p">)</span>                 <span class="c1"># CSRF defense — fail closed, first thing</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">tokens</span> <span class="o">=</span> <span class="n">google</span><span class="o">.</span><span class="n">exchange_code</span><span class="p">(</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        <span class="n">code</span><span class="o">=</span><span class="n">code</span><span class="p">,</span> <span class="n">redirect_uri</span><span class="o">=</span><span class="n">CFG</span><span class="o">.</span><span class="n">redirect_uri</span><span class="p">,</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>        <span class="n">code_verifier</span><span class="o">=</span><span class="n">attempt</span><span class="o">.</span><span class="n">verifier</span><span class="p">,</span>                  <span class="c1"># PKCE: proves this is the client that started</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="p">)</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>    <span class="n">claims</span> <span class="o">=</span> <span class="n">verify_id_token</span><span class="p">(</span><span class="n">tokens</span><span class="o">.</span><span class="n">id_token</span><span class="p">,</span> <span class="n">expected_nonce</span><span class="o">=</span><span class="n">attempt</span><span class="o">.</span><span class="n">nonce</span><span class="p">)</span>  <span class="c1"># Ch 02 verifier + nonce</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="n">account</span> <span class="o">=</span> <span class="n">link_or_create_account</span><span class="p">(</span><span class="n">sub</span><span class="o">=</span><span class="n">claims</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">],</span> <span class="n">email</span><span class="o">=</span><span class="n">claims</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">])</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="k">return</span> <span class="n">establish_invoicely_session</span><span class="p">(</span><span class="n">account</span><span class="p">)</span>          <span class="c1"># OUR session — not google&#39;s tokens</span>
+</code></pre></div>
+<p><strong>التحقق من ID token (<code>_idtoken.py</code>): فحص JWT، مع <code>nonce</code>.</strong> هذا هو الفصل 02 مُطبَّقًا على رمز صُكّه شخص آخر — لذا تأتي المفاتيح من <em>JWKS الخاص بهم</em> والجمهور هو معرّف <em>عميلك</em>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">verify_id_token</span><span class="p">(</span><span class="n">id_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expected_nonce</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">claims</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>        <span class="n">id_token</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>        <span class="n">key</span><span class="o">=</span><span class="n">PROVIDER_JWKS</span><span class="o">.</span><span class="n">public_key_for</span><span class="p">(</span><span class="n">id_token</span><span class="p">),</span>      <span class="c1"># provider&#39;s keys, by kid, over TLS, cached</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>        <span class="n">algorithms</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;RS256&quot;</span><span class="p">],</span>                            <span class="c1"># PINNED (Ch 02)</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        <span class="n">audience</span><span class="o">=</span><span class="n">CFG</span><span class="o">.</span><span class="n">client_id</span><span class="p">,</span>                          <span class="c1"># aud == US: this token was minted for Invoicely</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        <span class="n">issuer</span><span class="o">=</span><span class="n">CFG</span><span class="o">.</span><span class="n">issuer</span><span class="p">,</span>                               <span class="c1"># iss == the provider we trust</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;require&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;exp&quot;</span><span class="p">,</span> <span class="s2">&quot;iat&quot;</span><span class="p">,</span> <span class="s2">&quot;aud&quot;</span><span class="p">,</span> <span class="s2">&quot;iss&quot;</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="s2">&quot;nonce&quot;</span><span class="p">]},</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="p">)</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">secrets</span><span class="o">.</span><span class="n">compare_digest</span><span class="p">(</span><span class="n">claims</span><span class="p">[</span><span class="s2">&quot;nonce&quot;</span><span class="p">],</span> <span class="n">expected_nonce</span><span class="p">):</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>        <span class="k">raise</span> <span class="n">AuthError</span><span class="p">(</span><span class="s2">&quot;invalid nonce&quot;</span><span class="p">)</span>                 <span class="c1"># replay defense: this id_token is for THIS attempt</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="k">return</span> <span class="n">claims</span>
+</code></pre></div>
+<p><strong>لماذا لا يظهر رمز الوصول هنا:</strong> تأتي الهوية بالكامل من <code>sub</code> الخاص بـID token المُتحقَّق منه. وصول Invoicely إلى واجهات Google (إن وُجد) يستخدم رمز الوصول كـ<em>قدرة</em>، مخزّنًا على حدة؛ لا يُستشار أبدًا للإجابة على سؤال "من هذا المستخدم؟" هذا الفصل هو الحلّ لهجوم استبدال الرمز — رمز صُكّ لتطبيق آخر لا يمكن استبداله، لأن الهوية تركب على ID token يجب أن يكون <code>aud</code> الخاص به مساويًا لمعرّف عميل Invoicely.</p>
+<p><strong>اختبارات الهجوم (<code>tests/security/test_oauth_flow.py</code>): تُثبت أن الربط محكم.</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_callback_with_mismatched_state_is_rejected</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">start_flow</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>                                   <span class="c1"># stores a state</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/auth/google/callback?code=x&amp;state=attacker&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_id_token_for_another_audience_is_rejected</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">id_token_aud</span><span class="o">=</span><span class="s2">&quot;some-other-app&quot;</span><span class="p">):</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="k">assert</span> <span class="n">complete_flow</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">id_token</span><span class="o">=</span><span class="n">forge</span><span class="p">(</span><span class="n">aud</span><span class="o">=</span><span class="n">id_token_aud</span><span class="p">))</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_access_token_cannot_be_used_as_identity</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">provider_access_token</span><span class="p">):</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="c1"># presenting a raw provider access token must NOT establish an Invoicely session</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="k">assert</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/auth/session&quot;</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">provider_access_token</span><span class="p">)</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span>
+</code></pre></div>
+<p>تُثبت المجموعة الأشياء الثلاثة التي يخطئ فيها التدفق الافتراضي لدى المساعد: <code>state</code> مُفروض، وجمهور ID token مُفحوص، ورمز الوصول لا يمكنه التنكّر كهوية.</p>
+<h2 id="_7">القرارات الهندسية<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>خمسة قرارات تُعرّف دمج OAuth/OIDC آمنًا.</p>
+<h3 id="_8">أي تدفق؟<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) Authorization Code مع PKCE؛ (2) التدفق الضمني (الرموز في جزء fragment من URL)؛ (3) بيانات اعتماد مالك المورد resource-owner password؛ (4) client credentials (بلا مستخدم).</p>
+<p><strong>المقايضات:</strong> يتبادل Authorization Code مع PKCE رمزًا قصير العمر عبر قناة خلفية ويربطه بالعميل — الرمز لا يركب في redirect URL، والكود المُعترض عديم الفائدة. يعرض التدفق الضمني الرموز مباشرة في الـfragment، مما يعرّضها لتاريخ المتصفح، والمُحيلين، والنصوص البرمجية — مهجور. يُسلّم resource-owner password لتطبيقك كلمة مرور المستخدم لدى المزوّد، مما يهزم نقطة التفويض بأكملها — لا تستخدمه أبدًا لتسجيل دخول الطرف الثالث. client credentials مخصص للخدمة إلى الخدمة بلا مستخدم ولا ينطبق على تسجيل الدخول.</p>
+<p><strong>التوصية:</strong> Authorization Code مع PKCE لكل عميل موجّه للمستخدم — الويب وSPA والجوال على حد سواء. لم يعد PKCE مقصورًا على الجوال؛ إنه الخط الأساسي. ينبغي ألا يظهر التدفق الضمني وتدفق كلمة المرور في التعليمات البرمجية الجديدة؛ عامل وجودهما كثغرة.</p>
+<h3 id="oidc-oauth">المصادقة (OIDC) أو التفويض (OAuth) — أيهما تفعل فعليًا؟<a class="headerlink" href="#oidc-oauth" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) OIDC مع ID token مُتحقَّق منه لتسجيل الدخول؛ (2) رمز وصول OAuth للوصول إلى API؛ (3) معاملة رمز الوصول كتسجيل دخول (الخطأ).</p>
+<p><strong>المقايضات:</strong> إذا كان الهدف "سجّل دخول هذا المستخدم"، فأنت بحاجة إلى OIDC وID token مُتحقَّق منه — الرمز الذي <em>غرضه</em> تأكيد المصادقة. إذا كان الهدف "استدعِ API المزوّد لهذا المستخدم"، فأنت بحاجة إلى رمز وصول، يُستخدم كقدرة. استخدام رمز الوصول لتسجيل الدخول هو ثغرة استبدال الرمز؛ واستخدام ID token لاستدعاء واجهات API ببساطة لا يعمل.</p>
+<p><strong>التوصية:</strong> سمّ ما تفعله لكل دمج واستخدم الرمز المُطابق. تسجيل الدخول ← ID token مُتحقَّق منه ← جلستك الخاصة. الوصول إلى API ← رمز وصول مخزّن كقدرة مشفّرة، لا يُستشار أبدًا للهوية. عندما تحتاج إلى كليهما (تسجيل الدخول <em>و</em> الوصول إلى API)، تحصل على الرمزين وتبقي مهمتَيْهما منفصلتين.</p>
+<h3 id="redirect_uri">ما مدى صرامة مطابقة <code>redirect_uri</code>؟<a class="headerlink" href="#redirect_uri" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) مطابقة تامة لـURI مُسجّل مسبقًا؛ (2) مطابقة بالبادئة/النطاق الفرعي؛ (3) يُبنى ديناميكيًا من الطلب.</p>
+<p><strong>المقايضات:</strong> تعني المطابقة التامة أنه لا يمكن تسليم رمز التفويض/الرمز المميز إلا إلى URI سجّلته — لا يستطيع المهاجم إعادة توجيهه إلى مكان آخر. تفتح المطابقة بالبادئة أو النطاق الفرعي الباب لمسار أو مُضيف يسيطر عليه المهاجم يستوفي القاعدة الفضفاضة. بناء redirect من الطلب هو الأسوأ — redirect مفتوح يُسلّم بيانات الاعتماد لأي مُضيف.</p>
+<p><strong>التوصية:</strong> مطابقة تامة، redirect URI مُسجّل مسبقًا، واحد لكل بيئة، لا يُشتق أبدًا من مدخلات الطلب. تُجمع مع عدم وجود redirect مفتوح في أي مكان على نطاقك (يمكن ربط redirect مفتوح في مكان آخر لسرقة الكود). هذا قرار إعدادات ذو عواقب كلية.</p>
+<h3 id="_9">أين تعيش معاملات الأمن، وكم من الوقت؟<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) جلسة في جانب الخادم، تُستخدم مرة واحدة، TTL قصير؛ (2) كوكيز موقّعة؛ (3) غير مخزّنة (الثغرة).</p>
+<p><strong>المقايضات:</strong> يجب أن يُولّد <code>state</code>، و<code>nonce</code>، ومُحقّق PKCE بواسطة خادمك، ومربوطًا بالمتصفح المحدد الذي بدأ التدفق، ويُستخدم مرة واحدة بالضبط، وينتهي صلاحيته بسرعة. التخزين في جانب الخادم هو النموذج النظيف. يمكن أن يعمل الكوكيز الموقّع <code>HttpOnly</code> إذا كان لكل محاولة ومُتحقَّقًا منه. عدم تخزينها — أو تخزينها عالميًا بدلاً من تخزينها لكل محاولة — يعني أن دفاعات CSRF وإعادة التشغيل لا تربط فعليًا أي شيء.</p>
+<p><strong>التوصية:</strong> وُلّد لكل محاولة، وخزّن في جانب الخادم (أو في كوكيز موقّع لكل محاولة) مربوطًا بالجلسة، وأجبر الاستخدام مرة واحدة بحذفه عند قراءته، وأعطِه TTL قصيرًا (دقائق). تدفق OAuth يعيد استخدام هذه القيم أو يُغفلها لديه دفاعات زخرفية، لا حقيقية.</p>
+<h3 id="_10">المصادقة الذاتية، شراء مزوّد مصادقة، أو التفويض المباشر؟<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) ابنِ مصادقة الطرف الأول الخاصة بك (المرحلة 3)؛ (2) ادمج المزوّدين مباشرة بنفسك (هذا الفصل)؛ (3) استخدم وسيط مصادقة (Auth0، Clerk، Supabase Auth، Better Auth) يكون واجهة للمزوّدين.</p>
+<p><strong>المقايضات:</strong> يمنحك الدمج المباشر سيطرة كاملة ولا تكلفة لكل مستخدم، على حساب ضرورة صحة كل معامل ربط لكل مزوّد بنفسك. يُنفّذ الوسيط التدفقات بشكل صحيح مرة واحدة، ويتعامل مع تعدد المزوّدين ودورة حياة الرمز، ويزيل فئة من المخاطر عن كاهلك — بتكلفة وبقفل. تعني الطرف الأول فقط أن المستخدمين يديرون كلمة مرور أخرى.</p>
+<p><strong>التوصية:</strong> بالنسبة لمعظم الفرق، وسيط المصادقة هو الخيار الهندسي السليم تحديدًا لأن هجمات هذا الفصل يسهل أن تخطئ فيها بشكل خفي والمتخصّص يُحكمها — نفس منطق "اشترِ المصادقة" من المرحلة 1، الفصل 06 والمرحلة 3، الفصل 03. ادمج مباشرة عندما يكون لديك سبب محدد (التكلفة على نطاق واسع، السيطرة، لا طرف ثالث)، وعندما تفعل ذلك، التزم بكل قرار أعلاه.</p>
+<h2 id="_11">المقايضات<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<p><strong>تفويض الهوية يقايض تبعية بعدم حمل كلمات المرور.</strong> يعني "تسجيل الدخول عبر Google" أنك لا تخزّن كلمة مرور وترث أمان المزوّد وMFA — ويعني أن تسجيل دخولك يعتمد على توفرهم ويحتاج مستخدموك إلى حساب لديهم. بالنسبة للمنتجات الاستهلاكية، يميل التبادل لصالح التفويض؛ أما في بعض سياقات B2B فيجب أن يوجد خيار الطرف الأول إلى جانبه.</p>
+<p><strong>PKCE ومعاملات الربط تقايض قليلًا من التعقيد بإغلاق هجمات مُسمّاة.</strong> يُضيف <code>state</code>، و<code>nonce</code>، وPKCE، والمطابقة التامة لـredirect تعليمات برمجية وحالة لكل محاولة. كل واحد منها يشتري إغلاق هجوم محدد ومُستغَل. ليس هذا تعقيدًا لذاته؛ إنه الحد الأدنى الذي يجعل التدفق آمنًا، وتخطّي أي قطعة يعيد فتح ثغرة معروفة.</p>
+<p><strong>استخدام وسيط يقايض السيطرة والمال مقابل الصحة.</strong> يُنفّذ مزوّد المصادقة التدفقات بشكل صحيح ويُحافظ عليها مع تطور المواصفات، على حساب الرسوم، والقفل، ووجود طرف ثالث في مسار تسجيل الدخول. البديل هو امتلاك دمج حرج أمنيًا تُعدّ إخفاقاته الخفية خروقات. طابق الاختيار مع عمق الأمان في فريقك ومستوى المخاطر الكبيرة.</p>
+<p><strong>الإنهاء بجلستك الخاصة (مقابل تمرير رموز المزوّد) يقايض خطوة بالسيطرة.</strong> سكّ جلستك الخاصة بعد التحقق هو قطعة إضافية يجب بناؤها، لكنه يعني أن عمر رمز المزوّد وإلغاءه ونطاقه لا يتسرّب إلى نموذج التفويض في تطبيقك — جلستك هي التي تنتهي صلاحيتها وتُلغى أنت. تمرير رمز المزوّد كبيانات اعتماد التطبيق يربطك بدلالاته ويوسّع نصف قطر انفجار سرقته.</p>
+<h2 id="_12">الأخطاء الشائعة<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p><strong>معاملة رمز الوصول كهوية.</strong> تسجيل دخول المستخدم لأنّه قدّم رمز وصول صالحًا من المزوّد، مما يثبت تفويض الوصول إلى API وليس هويته — ثغرة استبدال الرمز. الإصلاح: صادق فقط من ID token مُتحقَّق منه (OIDC)؛ استخدم رموز الوصول كقدرات.</p>
+<p><strong>إغفال <code>state</code> أو عدم التحقق منه.</strong> لا ربط CSRF على رد النداء، لذلك يمكن للمهاجم إكمال تدفق في متصفح الضحية (login CSRF / تطعيم الحساب). الإصلاح: وُلّد <code>state</code> لكل محاولة، وخزّنه في جانب الخادم، وقارنه أول شيء في رد النداء.</p>
+<p><strong>مطابقة <code>redirect_uri</code> فضفاضة.</strong> redirect URI بالبادئة أو النطاق الفرعي أو المُشتق من الطلب تتيح للمهاجم استلام الكود/الرمز. الإصلاح: مطابقة تامة، URI مُسجّل مسبقًا؛ لا توجد redirect مفتوحة في أي مكان على النطاق.</p>
+<p><strong>فك ترميز ID token بدلاً من التحقق منه.</strong> قراءة <code>email</code>/<code>sub</code> من ID token أو userinfo دون التحقق من التوقيع والمُصدِر والجمهور وnonce. الإصلاح: تحقق من ID token كرمز JWT (الفصل 02) مقابل JWKS الخاص بالمزوّد مع <code>aud</code> = معرّف عميلك.</p>
+<p><strong>تخطّي PKCE.</strong> الاعتماد على سر العميل وحده (أو لا شيء، للعملاء العامين)، مما يعرّض رمز التفويض للاعتراض. الإصلاح: PKCE في كل تدفق، طريقة تحدّي <code>S256</code>.</p>
+<p><strong>تمرير رمز المزوّد كجلسة التطبيق.</strong> استخدام رمز وصول Google كبيانات اعتماد جلسة Invoicely، مما يربط مصادقة التطبيق بعمر رمز المزوّد ونطاقه. الإصلاح: سكّ جلستك الخاصة بعد التحقق؛ أبقِ رموز المزوّد كقدرات منفصلة ومشفّرة.</p>
+<h2 id="_13">أخطاء الذكاء الاصطناعي<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<p>OAuth بروتوكول يختلف فيه المسار السعيد (happy path) عن المسار الآمن، لذا مخرجات المساعد التي تُسجّل دخول المستخدم بشكل موثوق تُشحن دفاعات ناقصة. راجع التدفق بحثًا عن معاملات الربط ودلالات الرمز، وليس عمّا إذا كان تسجيل الدخول ينجح.</p>
+<h3 id="claude-code-state">Claude Code: التدفق بلا <code>state</code> (رد نداء غير محمي)<a class="headerlink" href="#claude-code-state" title="Permanent link">&para;</a></h3>
+<p>عند طلب "أضف تسجيل الدخول عبر Google"، يُولّد Claude Code غالبًا تدفق Authorization Code نظيفًا يُغفل <code>state</code> تمامًا — بناء عنوان URL للتفويض، ومعالجة رد النداء، وتبادل الكود، وتسجيل الدخول. يعمل بشكل مثالي لمستخدم حقيقي ويترك رد النداء مفتوحًا لـCSRF: يبدأ المهاجم تدفقًا بحسابه الخاص ويُوصل الضحية إليه، أو يُطعّم هويته في جلسة الضحية. ولأن الإغفال معامل <em>مفقود</em>، لا يحدث خطأ ولا اختبار يتحقق فقط من "تسجيل الدخول يعمل" يكشفه.</p>
+<p><strong>الاكتشاف:</strong> عنوان URL للتفويض مبني دون معامل <code>state</code>؛ معالج رد نداء يقرأ <code>code</code> لكن لا يقارن <code>state</code> بقيمة مخزّنة؛ لا تخزين في جانب الخادم لـ<code>state</code> لكل محاولة؛ رد النداء ينجح عند غياب <code>state</code> أو كونه عشوائيًا.</p>
+<p><strong>الإصلاح:</strong> اجعل <code>state</code> إلزاميًا ومُفحوصًا أولًا:</p>
+<blockquote>
+<p>يجب على تدفق OAuth توليد <code>state</code> عشوائي لكل محاولة، وتخزينه في جانب الخادم مربوطًا بالجلسة، ورفض رد النداء (401) قبل أي تبادل للكود إذا لم يتطابق <code>state</code> المُعاد. أضف اختبارًا بأن رد النداء بـ<code>state</code> مفقود أو خاطئ مرفوض.</p>
+</blockquote>
+<h3 id="gpt">GPT: رمز الوصول المُستخدم كإثبات هوية<a class="headerlink" href="#gpt" title="Permanent link">&para;</a></h3>
+<p>تُشوّش نماذج عائلة GPT كثيرًا بين المصادقة والتفويض: بعد التبادل، تقرأ ملف المستخدم بتقديم رمز <em>الوصول</em> (أو تفك ترميزه) وتُنشئ جلسة من ذلك — معاملة "يحمل رمز وصول صالحًا من المزوّد" على أنها "هو مستخدم المزوّد هذا". هذه هي ثغرة استبدال الرمز: رمز حصل عليه عميل خبيث، أو لتطبيق آخر، يمكن إعادة تشغيله لتسجيل الدخول كضحية، لأن الهوية لم تُربط أبدًا برمز صُكّ <em>لتطبيقك</em>.</p>
+<p><strong>الاكتشاف:</strong> جلسات تُنشأ من رمز وصول أو استدعاء userinfo بدلاً من ID token مُتحقَّق منه؛ لا ID token مطلوب (نطاق <code>openid</code> مفقود) أو مطلوب لكن غير مُتحقَّق منه؛ الهوية (<code>sub</code>/<code>email</code>) مأخوذة من استدعاء API مُخوَّل برمز وصول لم يُتحقق أبدًا من جمهوره.</p>
+<p><strong>الإصلاح:</strong> صادق من ID token مُتحقَّق منه فقط:</p>
+<blockquote>
+<p>يجب أن تستخدم المصادقة OIDC: اطلب نطاق <code>openid</code>، واستخلص الهوية فقط من ID token بعد التحقق من توقيعه، و<code>iss</code>، و<code>aud</code> (يجب أن يساوي معرّف عميلنا)، و<code>exp</code>، و<code>nonce</code>. لا تُنشئ أبدًا جلسة من رمز وصول أو رد userinfo غير مُتحقَّق منه. أضف اختبارًا بأن رمز وصول خام من المزوّد لا يمكنه إنشاء جلسة.</p>
+</blockquote>
+<h3 id="cursor-id-token-nonce">Cursor: ID token مفكوك الترميز وغير مُتحقَّق منه (ودون <code>nonce</code>)<a class="headerlink" href="#cursor-id-token-nonce" title="Permanent link">&para;</a></h3>
+<p>عند إكمال معالج رد نداء، يقرأ Cursor غالبًا مطالبات ID token بفك ترميز غير مُتحقَّق منه — <code>jwt.decode(id_token, options={"verify_signature": False})</code> أو تقسيم base64 — للحصول على البريد الإلكتروني، لأن المهمة المباشرة كانت "احصل على معلومات المستخدم"، ويُغفل جلب JWKS الخاص بالمزوّد والتحقق من <code>aud</code>/<code>nonce</code>. المطالبات قابلة للتعديل من المهاجم، وبدون <code>nonce</code> يكون ID token قابلًا لإعادة التشغيل. يعمل تسجيل الدخول برمز حقيقي ويقبل رمزًا مزوّرًا.</p>
+<p><strong>الاكتشاف:</strong> قراءات ID token مع <code>verify_signature: False</code> أو فك ترميز base64 يدويًا؛ لا استدعاء لـJWKS الخاص بالمزوّد؛ <code>aud</code>/<code>iss</code> غير مُؤكَّدَين مقابل إعداداتك؛ لا <code>nonce</code> مولّد في البدء أو مُفحوص في الإعادة.</p>
+<p><strong>الإصلاح:</strong> تحقق من ID token باستخدام مُحقّق الفصل 02 واربط nonce:</p>
+<blockquote>
+<p>يجب التحقق من ID token، لا فك ترميزه: التوقيع مقابل JWKS الخاص بالمزوّد (حسب <code>kid</code>)، و<code>algorithms</code> مُثبَّتة، و<code>iss</code> و<code>aud</code> (معرّف عميلنا) مُؤكَّدَين، و<code>exp</code> مُفروض، و<code>nonce</code> مُطابق للقيمة المولّدة في بداية التدفق. أضف اختبارًا بأن ID token مُعدَّل وID token بجمهور خاطئ كلاهما مرفوض.</p>
+</blockquote>
+<h2 id="_14">أفضل الممارسات<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p><strong>استخدم Authorization Code مع PKCE، دائمًا.</strong> تدفق واحد للويب وSPA والجوال؛ لا تدفق ضمني، لا resource-owner-password. PKCE مع <code>S256</code> في كل محاولة.</p>
+<p><strong>سمّ المصادقة مقابل التفويض لكل دمج.</strong> تسجيل الدخول يستخلص الهوية من ID token مُتحقَّق منه وينتهي بجلستك الخاصة؛ الوصول إلى API يستخدم رمز وصول كقدرة مشفّرة. لا تخلط الأسلاك أبدًا.</p>
+<p><strong>عامل <code>state</code>، و<code>redirect_uri</code> التام، وPKCE، و<code>nonce</code> كإلزامية.</strong> كل واحد يدافع عن هجوم مُسمّى (CSRF، سوء تسليم الرمز، اعتراض الكود، إعادة التشغيل). وُلّد العشوائية لكل محاولة، وخزّن في جانب الخادم، تُستخدم مرة واحدة، TTL قصير؛ تحقّق من <code>state</code> قبل أي شيء آخر.</p>
+<p><strong>تحقق من ID token كما يُتحقق من أي JWT.</strong> JWKS الخاص بالمزوّد حسب <code>kid</code>، خوارزمية مُثبّتة، <code>iss</code>/<code>aud</code>/<code>exp</code> مُؤكَّدة، <code>nonce</code> مُطابق — قواعد الفصل 02 ضد رمز سكّه شخص آخر.</p>
+<p><strong>أنهِ التدفق بجلستك الخاصة.</strong> سكّ جلسة Invoicely بعد التحقق؛ أبقِ رموز المزوّد منفصلة ومشفّرة. جلستك هي ما تتحكم فيه، وتنتهي صلاحيتها، وتُلغيها.</p>
+<p><strong>فضّل وسيط مصادقة مُختبَرًا ما لم يكن لديك سببًا لعدم ذلك.</strong> من السهل أن تخطئ في هذه الهجمات بشكل خفي؛ يُنفّذ المتخصّص التدفقات بشكل صحيح ويُحافظ عليها. الدمج المباشر خيار متعمّد بتكلفة أمنية تقبلها عن دراية.</p>
+<p><strong>اختبر الهجمات.</strong> <code>state</code> مفقود/مزوّر، ID token مُعدَّل وبجمهور خاطئ، تبادل كود دون PKCE، رمز وصول كهوية — اختبار أمني لكل هجوم، أخضر في CI.</p>
+<h2 id="_15">الأنماط المضادة<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p><strong>التدفق الضمني.</strong> الرموز المُعادة في جزء fragment من URL، مكشوفة للتاريخ والمُحيلين والنصوص البرمجية. العلامة: <code>response_type=token</code>؛ رموز وصول تظهر في redirect URL؛ لا تبادل كود عبر قناة خلفية.</p>
+<p><strong>الهوية من رمز الوصول.</strong> تسجيل دخول المستخدمين من رمز وصول أو userinfo غير مُتحقَّق منه. العلامة: جلسات تُنشأ دون ID token؛ نطاق <code>openid</code> مفقود؛ رمز خام من المزوّد مقبول كبيانات اعتماد تسجيل دخول.</p>
+<p><strong>رد النداء عديم الحالة.</strong> رد نداء OAuth بلا فحص <code>state</code>. العلامة: لا تخزين لـ<code>state</code> لكل محاولة؛ رد النداء ينجح بـ<code>state</code> عشوائي أو غائب.</p>
+<p><strong>redirect الفضفاض.</strong> <code>redirect_uri</code> بالبادئة/النطاق الفرعي/المُشتق من الطلب. العلامة: تسجيل redirect بأحرف بدل أو بادئة؛ تجميع redirect URI من مدخلات الطلب؛ redirect مفتوحة في مكان آخر على النطاق.</p>
+<p><strong>ID token مفكوك الترميز.</strong> مطالبات ID token تُقرأ دون تحقق. العلامة: <code>verify_signature: False</code> أو تقسيم base64 لقراءة المطالبات؛ لا جلب JWKS من المزوّد؛ <code>aud</code>/<code>nonce</code> لا تُفحص أبدًا.</p>
+<p><strong>رمز المزوّد كجلسة.</strong> رمز وصول المزوّد يُستخدم كبيانات اعتماد جلسة التطبيق. العلامة: لا سكّ لجلسة الطرف الأول؛ تفويض التطبيق مرتبط بعمر رمز المزوّد ونطاقه.</p>
+<h2 id="_16">شجرة القرار<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<p>"أنا أدمج مزوّد هوية/تفويض طرف ثالث — كيف أفعل ذلك بأمان؟"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>What am I actually doing?
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── LOGGING A USER IN ──► OIDC.
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>│     ├── flow: Authorization Code + PKCE (never implicit/password)
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>│     ├── request `openid` scope; generate state + nonce + PKCE verifier per attempt (server-side)
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>│     ├── callback: check `state` FIRST → exchange code with PKCE verifier
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>│     ├── verify the ID TOKEN as a JWT (Ch 02): sig via provider JWKS, iss, aud==our client id,
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>│     │     exp, nonce==ours
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>│     └── establish YOUR OWN session from the verified `sub` — never the provider&#39;s token
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>│
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>├── CALLING A PROVIDER API FOR THE USER ──► OAuth authorization.
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>│     ├── flow: Authorization Code + PKCE; request the specific scopes only
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>│     ├── store the access token as an ENCRYPTED capability (Ch 04), bound to the app user
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>│     └── never consult it for identity; refresh/rotate per the provider&#39;s rules
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>│
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>└── UNSURE WHETHER TO BUILD IT AT ALL ──►
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>      strongly consider a vetted auth broker — these attacks are subtle and specialists get
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>      them right. integrate directly only for a concrete reason, holding every decision above.
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>Any flow: redirect_uri EXACT-match pre-registered · no open redirects on the domain ·
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>          state/nonce/verifier single-use + short TTL · fail closed on any mismatch.
+</code></pre></div>
+<h2 id="_17">قائمة التحقق<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<h3 id="_18">قائمة التحقق من التنفيذ<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] جميع التدفقات الموجّهة للمستخدم تستخدم Authorization Code مع PKCE (<code>S256</code>)؛ لا تدفق ضمني ولا تدفق resource-owner-password موجود.</li>
+<li>[ ] يُولّد <code>state</code>، و<code>nonce</code>، ومُحقّق PKCE لكل محاولة، ويُخزّن في جانب الخادم مربوطًا بالجلسة، ويُستخدم مرة واحدة، وTTL قصير.</li>
+<li>[ ] يقارن رد النداء <code>state</code> قبل أي تبادل كود ويفشل بشكل مغلق عند عدم التطابق.</li>
+<li>[ ] تُستخلص الهوية فقط من ID token مُتحقَّق منه كرمز JWT (التوقيع عبر JWKS الخاص بالمزوّد، الخوارزمية مُثبّتة، <code>iss</code>، <code>aud</code> = معرّف العميل، <code>exp</code>، <code>nonce</code>).</li>
+<li>[ ] ينتهي التدفق بإنشاء جلسة من الطرف الأول؛ تُخزّن رموز وصول المزوّد على حدة كقدرات مشفّرة، أبدًا كهوية.</li>
+<li>[ ] <code>redirect_uri</code> مطابقة تامة ومُسجّل مسبقًا لكل بيئة؛ لا توجد redirect مفتوحة على النطاق.</li>
+</ul>
+<h3 id="_19">قائمة التحقق المعمارية<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] يُصنَّف كل دمج صراحةً كمصادقة (OIDC/ID token) أو تفويض (OAuth/access token)، مع استخدام الرمز المُطابق.</li>
+<li>[ ] إعدادات المزوّد (المُصدِر، JWKS URL، معرّف العميل، redirect URI، النطاقات) مركزية وغير مُشتقّة من مدخلات الطلب.</li>
+<li>[ ] ربط الحساب (ربط مزوّد بمستخدم موجود) مربوط بجلسة التطبيق المصادق عليها بحيث لا يمكن تطعيم الهويات.</li>
+<li>[ ] يُتخذ قرار البناء مقابل الوسيط بشكل متعمّد؛ إذا كان الدمج مباشرًا، تُسنَد مسؤولية صحة معاملات الربط.</li>
+<li>[ ] التحقق من ID token يعيد استخدام مُحقّق JWT المُصلَّب (الفصل 02)، لا فحصًا ثانيًا أضعف.</li>
+</ul>
+<h3 id="_20">قائمة التحقق من مراجعة الكود<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] لا يُبنى عنوان URL للتفويض دون <code>state</code>، و<code>nonce</code>، وتحدّي PKCE.</li>
+<li>[ ] لا جلسة تُنشأ من رمز وصول أو فك ترميز userinfo/ID token غير مُتحقَّق منه.</li>
+<li>[ ] لا <code>redirect_uri</code> يُطابق بالبادئة، أو بأحرف بدل، أو يُبنى من الطلب.</li>
+<li>[ ] معاملات الأمن تُستخدم مرة واحدة (تُحذف عند القراءة) ولا تكون عالمية أو مُعاد استخدامها عبر المحاولات.</li>
+<li>[ ] اختبارات الهجوم موجودة لـ<code>state</code> مفقود/مزوّر، وID token مُعدَّل وبجمهور خاطئ، ورمز وصول كهوية.</li>
+</ul>
+<h3 id="_21">قائمة التحقق من النشر<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] تأتي أسرار العميل وبيانات اعتماد المزوّد من مدير الأسرار (الفصل 04)، لا من الكود أو ملفات الإعداد.</li>
+<li>[ ] تُسجّل redirect URI تامة لكل بيئة (dev/staging/prod) دون أحرف بدل مشتركة.</li>
+<li>[ ] يُجلب JWKS الخاص بالمزوّد عبر TLS ويُخزّن مؤقتًا بـTTL يدعم تدوير مفاتيح المزوّد.</li>
+<li>[ ] يمنح إعداد نطاق <code>openid</code>/النطاقات الحد الأدنى من الامتياز؛ تُزال النطاقات غير المستخدمة (وموافقتها).</li>
+</ul>
+<h2 id="_22">التمارين<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h2>
+<p><strong>1. اختطف رد نداء عديم الحالة، ثم أغلقه.</strong> ابنِ (أو خذ) تسجيل دخول OAuth يُغفل <code>state</code>. أثبت login-CSRF: أكمل تدفقًا بحيث ينتهي متصفح الضحية في جلسة بدأها المهاجم. ثم أضف <code>state</code> لكل محاولة وأثبت أن الهجوم نفسه يفشل الآن عند رد النداء. المُخرج هو شرح الهجوم والحالة قبل/بعد.</p>
+<p><strong>2. أثبت أن رمز الوصول ليس هوية.</strong> في دمجك، حاول إنشاء جلسة باستخدام رمز وصول من المزوّد (رمز صُكّ لعميل مختلف، إن أمكنك الحصول عليه). أثبت ما إذا كان مقبولًا. إذا كان كذلك، انقل الهوية إلى ID token مُتحقَّق منه مع فحص <code>aud</code>، وأثبت أن الاستبدال مرفوض الآن. المُخرج هو التشغيلتان وفحص الجمهور الذي أغلقه.</p>
+<p><strong>3. تحقق من ID token من الصفر.</strong> بالنظر إلى ID token حقيقي وJWKS URL الخاص بالمزوّد، اكتب التحقق الكامل: جلب المفاتيح حسب <code>kid</code>، تثبيت الخوارزمية، تأكيد <code>iss</code>/<code>aud</code>/<code>exp</code>، ومطابقة <code>nonce</code> ولّدته أنت. ثم أطعمه رمزًا مُعدّلًا، ورمزًا بجمهور خاطئ، ورمزًا منتهي الصلاحية وأثبت أن كل واحد مرفوض. المُخرج هو المُحقّق وحالات الاختبار الأربع.</p>
+<p><strong>4. قارن الدمج المباشر بالوسيط.</strong> نفّذ تسجيل الدخول عبر Google مرتين: مرة مباشرة مع كل معامل ربط، ومرة عبر وسيط مصادقة (Auth0/Clerk/Supabase/Better Auth). قارن الكود الذي كان عليك كتابته وتأمينه، واذكر أي هجمات من هذا الفصل يجعلك كل نهج مسؤولاً عنها. قرر أيهما ستشحن وبرّر ذلك. المُخرج هو المقارنة والقرار.</p>
+<h2 id="_23">قراءات إضافية<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>OAuth 2.0 Security Best Current Practice (RFC 9700 / datatracker.ietf.org)</strong> — إرشادات الأمان المُحدَّثة والمُوحَّدة من IETF: لماذا يُعدّ Authorization Code + PKCE الخيار الافتراضي، ومعالجة redirect URI، والهجمات (CSRF، mix-up، حقن الكود) التي يدافع عنها هذا الفصل.</li>
+<li><strong>OpenID Connect Core 1.0 (openid.net/specs)</strong> — مواصفات طبقة المصادقة: ID token، و<code>nonce</code>، وقواعد التحقق التي تفصل مصادقة OIDC عن OAuth المجرد.</li>
+<li><strong>RFC 7636 — Proof Key for Code Exchange (PKCE)</strong> — الآلية ونموذج التهديد لربط رمز التفويض بالعميل؛ يُوصى به الآن لجميع أنواع العملاء.</li>
+<li><strong>OAuth 2.0 Simplified بقلم Aaron Parecki (oauth.com)</strong> — شرح واضح وعملي للتدفقات والمعاملات، جيد لبناء النموذج الذهني قبل قراءة RFCs.</li>
+<li><strong>الفصل 02 — أمان JWT</strong> و<strong>المرحلة 3، الفصل 03 — المصادقة</strong> — قواعد التحقق من ID token التي يعيد هذا الفصل استخدامها، ومصادقة الطرف الأول التي يُعدّ هذا التدفق المفوَّض بديلاً عنها.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  عد إلى الأعلى
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="هامش سفلي" >
+        
+          
+          <a href="../02-jwt-security/" class="md-footer__link md-footer__link--prev" aria-label="السابقة: أمان JWT">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                السابقة
+              </span>
+              <div class="md-ellipsis">
+                أمان JWT
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../04-secrets-management/" class="md-footer__link md-footer__link--next" aria-label="التالية: إدارة الأسرار">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                التالية
+              </span>
+              <div class="md-ellipsis">
+                إدارة الأسرار
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tracking", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "clipboard.copy": "\u0646\u0633\u062e \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "search.result.more.one": "\u0623\u0643\u062b\u0631 \u0645\u0646 1 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.more.other": "\u0623\u0643\u062b\u0631 \u0645\u0646 # \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.none": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c", "search.result.one": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b \u0645\u0633\u062a\u0646\u062f \u0648\u0627\u062d\u062f", "search.result.other": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b # \u0645\u0633\u062a\u0646\u062f\u0627\u062a", "search.result.placeholder": "\u0627\u0643\u062a\u0628 \u0644\u0628\u062f\u0621 \u0627\u0644\u0628\u062d\u062b", "search.result.term.missing": "\u0645\u0641\u0642\u0648\u062f", "select.version": "\u0625\u062e\u062a\u0631 \u0627\u0644\u0625\u0635\u062f\u0627\u0631"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

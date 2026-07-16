@@ -1,0 +1,5597 @@
+
+<!doctype html>
+<html lang="ar" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A production-grade handbook for engineering software with AI as a disciplined teammate.">
+      
+      
+      
+      
+        <link rel="prev" href="../03-authentication/">
+      
+      
+        <link rel="next" href="../05-error-handling-and-api-versioning/">
+      
+      
+        
+          <link rel="alternate" href="../../../../handbook/stage-03-backend-engineering/04-authorization/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ar">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>التفويض - هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="rtl" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#authorization" class="md-skip">
+          انتقل إلى المحتوى
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="عنوان العارضة">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-header__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              التفويض
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="إختر اللغة">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../handbook/stage-03-backend-engineering/04-authorization/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ar" class="md-select__link">
+              العربية
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="بحث" placeholder="بحث" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="إبحث">
+        
+        <button type="reset" class="md-search__icon md-icon" title="مسح كلي" aria-label="مسح كلي" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            بدء البحث
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="تصفح" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-nav__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الرئيسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../START-HERE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ابدأ من هنا
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/01-what-is-software-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ما هي هندسة البرمجيات؟
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/02-product-thinking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفكير بعقلية المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/03-ai-first-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطوير بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/04-engineering-trade-offs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المفاضلات الهندسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/05-technical-debt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الدَّين التقني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/06-build-vs-buy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء مقابل الشراء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/07-simplicity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البساطة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/08-maintainability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية الصيانة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/01-layered-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية الطبقية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/02-feature-based-and-vertical-slice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية القائمة على الميزات والشرائح الرأسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/03-clean-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية النظيفة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/04-monolith-modular-monolith-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المتراصّ والمتراصّ المعياري والخدمات المصغّرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/05-service-layer-and-repository-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    طبقة الخدمات ونمط المستودع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/06-dependency-injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن التبعيات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/07-event-driven-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية المدفوعة بالأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-building-apis-with-fastapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء واجهات API باستخدام FastAPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-data-persistence-sqlalchemy-alembic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حفظ البيانات: SQLAlchemy و Alembic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قرارات هندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قرارات هندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أي نموذج تفويض؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أين يُفرض التفويض؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف يُفرض عزل المستأجرين — تقييد نطاق على مستوى التطبيق أو RLS في قاعدة البيانات؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الرفض افتراضيًا أم السماح افتراضيًا؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        سياسة مُركَّزة أم فحوص مُضمَّنة؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-idor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: ثغرة IDOR — الجلب بالمعرّف دون فحص ملكية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: الثقة في الهوية أو الدور المُقدَّم من العميل
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: فحوص مُشتتة وافتراضيات الفشل المفتوح
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط السيئة (Anti-Patterns)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة المراجعة">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة مراجعة الشيفرة
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-error-handling-and-api-versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معالجة الأخطاء وإصدارات API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-background-jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المهام الخلفية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التخزين المؤقت
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-logging-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسجيل وقابلية المراقبة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-file-storage-and-email/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/01-building-uis-with-react-and-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء الواجهات باستخدام React و TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/02-nextjs-and-the-app-router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next.js وموجّه التطبيق App Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/03-server-and-client-components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مكوّنات الخادم والعميل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/04-data-fetching-and-server-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    جلب البيانات وحالة الخادم
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/05-state-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الحالة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/06-forms-and-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النماذج والتحقق من الإدخال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/07-frontend-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/08-frontend-architecture-and-folder-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معمارية الواجهة الأمامية وهيكل المجلدات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/01-react-native-and-expo-foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أساسيات React Native و Expo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/02-navigation-and-deep-linking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التنقّل والروابط العميقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/03-authentication-on-mobile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة على الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/04-offline-support-and-data-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دعم العمل دون اتصال ومزامنة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/05-push-notifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الإشعارات الفورية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/06-mobile-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/07-building-shipping-and-ota-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء والنشر وتحديثات OTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/01-relational-databases-and-data-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قواعد البيانات العلائقية ونمذجة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/02-schema-design-and-normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصميم المخطط والتطبيع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/03-indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الفهرسة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/04-transactions-and-concurrency-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعاملات والتحكم في التزامن
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/05-query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحسين الاستعلامات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/06-migrations-and-schema-evolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الترحيلات وتطوّر المخطط
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 7 · DevOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 7 · DevOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/01-linux-for-production-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux لخوادم الإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/02-docker-and-containerization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker والحاويات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/03-docker-compose-and-multi-service-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose والبيئات متعددة الخدمات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/05-ci-cd-with-github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD باستخدام GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/06-deploying-to-a-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النشر على خادم VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/07-monitoring-and-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المراقبة والتسجيل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 8 · الاختبارات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 8 · الاختبارات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/01-test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    استراتيجية الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/02-unit-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات الوحدة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/03-mocking-and-test-doubles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المحاكاة وبدائل الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/04-integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/05-end-to-end-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الاختبارات الشاملة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 9 · الأمان
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 9 · الأمان
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/01-security-mindset-and-owasp-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عقلية الأمان وقائمة OWASP العشرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/02-jwt-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أمان JWT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/03-oauth2-and-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/04-secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الأسرار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/05-sql-injection-and-input-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن SQL ومعالجة المدخلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/06-xss-and-content-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/07-csrf-cors-and-browser-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSRF و CORS وأمان المتصفح
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/08-rate-limiting-and-abuse-prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحديد المعدل ومنع إساءة الاستخدام
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/01-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/02-openai-codex-and-cursor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Codex و Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/03-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/04-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة الموجّهات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/05-multi-agent-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الأنظمة متعددة الوكلاء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/06-ai-code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/07-ai-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصحيح الأخطاء بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/08-ai-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    سير عمل الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/01-scalability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية التوسّع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/02-load-balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    موازنة الحمل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/03-horizontal-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التوسّع الأفقي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/04-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/05-queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الطوابير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/06-cdn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CDN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/07-event-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بثّ الأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/01-mvp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنتج الأولي (MVP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/02-pricing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسعير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/03-payments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المدفوعات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/04-analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التحليلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/05-user-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ملاحظات المستخدمين
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/06-product-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مقاييس المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/07-growth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النمو
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوائم التحقق
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    قوائم التحقق
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة مراجعة الكود
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة الجاهزية للإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أدلة العمل
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    أدلة العمل
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/starting-an-ai-first-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دليل عمل: بدء مشروع بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    القوالب
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    القوالب
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب سجل القرار المعماري (ADR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-conceptual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-technical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/claude-md-starter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/project-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب موجز المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/pull-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب طلب الدمج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عن المشروع
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    عن المشروع
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/00-CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دستور المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/01-project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    رؤية المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/02-curriculum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنهج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطبيق المرجعي (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../starter-kits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوالب البدء (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قرارات هندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قرارات هندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أي نموذج تفويض؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أين يُفرض التفويض؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف يُفرض عزل المستأجرين — تقييد نطاق على مستوى التطبيق أو RLS في قاعدة البيانات؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الرفض افتراضيًا أم السماح افتراضيًا؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        سياسة مُركَّزة أم فحوص مُضمَّنة؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-idor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: ثغرة IDOR — الجلب بالمعرّف دون فحص ملكية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: الثقة في الهوية أو الدور المُقدَّم من العميل
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: فحوص مُشتتة وافتراضيات الفشل المفتوح
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط السيئة (Anti-Patterns)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة المراجعة">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة مراجعة الشيفرة
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="authorization">التفويض (Authorization)<a class="headerlink" href="#authorization" title="Permanent link">&para;</a></h1>
+<h2 id="_1">المقدمة<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>التحقّق من الهوية (Authentication) يُحدّد <em>مَن</em> الذي يُقدّم الطلب؛ أمّا التفويض (Authorization) فيُقرّر <em>ما الذي يُسمح له بفعله</em>. يبني هذا الفصل نظام التفويض بشكل صحيح: النماذج للتعبير عن الصلاحيات (الملكية، الأدوار، السمات)، وأين يتم فرضها (عند نقطة الوصول وفي الاستعلام)، والأهم من ذلك في نظام SaaS — كيف تُبقي بيانات مستأجر (tenant) واحد غير قابلة للوصول تمامًا من قبل مستأجر آخر.</p>
+<p>كما في الفصل السابق، النطاق هو <em>بناؤه بشكل صحيح</em>؛ الإطار العدائي — Broken Access Control بوصفه الخطر رقم واحد في OWASP، تصعيد الصلاحيات، تقنيات الهجوم — هو <strong>المرحلة 9 (الأمن)</strong>. لكن الخط الفاصل رفيع هنا، لأن أكثر أخطاء التفويض شيوعًا <em>هو</em> أكثر ثغرات الويب شيوعًا: <strong>الإشارة المباشرة غير الآمنة إلى كائن (Insecure Direct Object Reference - IDOR)</strong>، حيث تجلب نقطة الوصول موردًا بالمعرّف (ID) دون التحقق من أن المُتصل يملكه، فبإمكان أي مستخدم مسجّل الدخول قراءة بيانات أي شخص بمجرد تغيير رقم في الـ URL. الرسالة المركزية لهذا الفصل هي جعل هذه الفئة من الأخطاء مستحيلة هيكليًا في شيفرتك.</p>
+<p>السبب في أن التفويض يستحق فصلًا مستقلًا، منفصلًا عن المصادقة، هو أن المصادقة الصحيحة لا تفيد بشيء إذا منحت بعد ذلك كل مستخدم مُصادَق وصولًا إلى كل مورد. المصادقة هي قفل الباب الأمامي؛ التفويض هو مَن يستطيع فتح أيّ غرف — والمبنى الذي يستطيع فيه أي حامل مفتاح دخول أي غرفة ليس آمنًا لمجرد أن الباب الأمامي مُقفَل.</p>
+<h2 id="_2">لماذا هذا مهم<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>أخطاء التفويض هي الأكثر تدميرًا والأكثر سهوًا من بين فئات عيوب الواجهة الخلفية (backend)، والسبب في إغفالها هيكلي: <strong>أنت تختبر بصفتك نفسك.</strong> تسجّل الدخول كمستخدم واحد، وتتنقّل في بياناتك، وكل شيء يعمل — ولا تلاحظ أبدًا أن نقطة الوصول نفسها تُرجع بيانات <em>المستخدم التالي</em> إذا غيّرت المعرّف، لأنك لم تحاول. الخطأ غير مرئي من مقعد المستخدم الواحد الذي يجلس عليه كل مطوّر، وهو كارثي في اللحظة التي يكتشفه فيها عميل (أو مهاجم): مستأجر يقرأ فواتير وعملاء وإيرادات مستأجر آخر.</p>
+<p>في نظام SaaS متعدد المستأجرين مثل Invoicely، هذا هو الشاغل الأمني المُحدِّد:</p>
+<ul>
+<li><strong>عزل المستأجرين (Tenant isolation).</strong> كل قطعة بيانات تنتمي إلى حساب، ولا يجوز لأي طلب أن يلمس بيانات حساب آخر. يجب فرض ذلك في <em>الاستعلام</em> — كل قراءة وكتابة مُقيَّدة بنطاق مستأجر المُتصِل الرئيسي (principal) — وليس مجرد أملٍ في واجهة المستخدم. استعلام واحد غير مُقيَّد النطاق هو اختراق بيانات عابر للمستأجرين.</li>
+<li><strong>ملكية المورد (فئة IDOR).</strong> مصادقة مستخدم لا تُصرّح له لمورد معيّن. يجب أن تتحقق <code>GET /invoices/42</code> من أن الفاتورة 42 تنتمي إلى حساب <em>هذا</em> المُتصِل قبل إرجاعها. الجلب بالمعرّف وحده — وهو الشيفرة الطبيعية والبديهية — هو الثغرة.</li>
+<li><strong>حدود الدور والصلاحية.</strong> داخل المستأجر، ليس بوسع الجميع فعل كل شيء: العضو يعرض، والمدير يعدّل، والمالك يدير الفوترة. يجب فرض هذه الحدود من جانب الخادم، مستمدة من المُتصِل الرئيسي المُصادَق، لا من أي شيء يُرسله العميل.</li>
+</ul>
+<p>البُعد المتعلق بالذكاء الاصطناعي حادّ تحديدًا لأن التفويض غير مرئي في المسار السعيد. سيُصادق المساعد المستخدم بشكل صحيح ثم يكتب ثغرة IDOR: يجلب المورد بالمعرّف دون فحص ملكية، لأن تلك الشيفرة أبسط و<em>تعمل عندما تختبرها بصفتك المالك</em>. كما سيصل إلى <code>account_id</code> أو الدور في جسم الطلب — واثقًا من العميل أنه يقول مَن هو — ويُشتّت فحوصًا غير متسقة عبر نقاط الوصول. الثلاثة تنتج عرضًا تجريبيًا ناجحًا وبابًا مفتوحًا.</p>
+<h2 id="_3">النموذج الذهني<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>يُفرض التفويض على مستويين، وكلاهما إلزامي:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>   المُتصِل الرئيسي المُصادَق (من الفصل 03 — الحساب الحالي + المستخدم + الدور)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        │  الهوية والدور يأتيان من هنا، أبدًا من مدخلات العميل
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        ▼
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   المستوى 1 — نقطة الوصول (عام: &quot;هل بوسع هذا الدور فعل هذا النوع من الإجراءات؟&quot;)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        اشترط الدور/الصلاحية للعملية (ارفض افتراضيًا)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        مثال: لا يحق لـ admin/owner فقط حذف فاتورة
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        ▼
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>   المستوى 2 — الاستعلام (دقيق: &quot;هل بوسع هذا المُتصِل لمس هذا المورد؟&quot;)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        قيّد كل استعلام بنطاق مستأجر المُتصِل الرئيسي، وتحقق من الملكية
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        مثال: SELECT ... WHERE id = 42 AND account_id = &lt;حساب المُتصِل&gt;
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        ▼
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   (الدفاع في العمق) ROW-LEVEL SECURITY في قاعدة البيانات — شبكة أمان إذا انزلق استعلام
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>   إذا فاتك المستوى 2 فستكون لديك IDOR: أي مستخدم يقرأ أي مورد بتغيير معرّف.
+</code></pre></div>
+<p>أربعة مبادئ تجعل التفويض سليمًا:</p>
+<p><strong>الرفض افتراضيًا.</strong> الوصول ممنوع ما لم يُمنح صراحة. نقاط الوصول الجديدة، والأدوار غير المعروفة، والفحوص الناقصة يجب أن <em>تفشل مُغلقة</em> (ترفض)، لا أن تفشل مفتوحة (تسمح). نظام صلاحيات افتراضه "السماح" يُسرّب كل وصول نسي شخص ما تقييده.</p>
+<p><strong>الهوية والصلاحيات تأتي من المُتصِل الرئيسي المُصادَق، أبدًا من العميل.</strong> حساب المُتصِل، ومستخدمه، ودوره تُستمد من الـ token أو الجلسة المُتحقَّق منهما (الفصل 03) — لا تُقرأ أبدًا من جسم الطلب، أو معامل استعلام، أو ترويسة يُعيّنها العميل. عميل يستطيع قول <code>account_id=7</code> في طلب يستطيع قراءة بيانات الحساب 7؛ يجب أن يأتي معرّف الحساب من <em>هويّته عند المصادقة</em>، لا مما كتبه.</p>
+<p><strong>فوّت المورد المحدد، لا الفعل فحسب.</strong> اجتياز فحص الدور في نقطة الوصول ("بوسع المديرين تعديل الفواتير") لا يُصرّح بتعديل <em>هذه</em> الفاتورة. كل وصول إلى مورد محدد يجب أن يؤكد أن المورد ينتمي إلى مستأجر المُتصِل — يُفرض في الاستعلام (<code>WHERE id = ? AND account_id = ?</code>)، بحيث يُعيد المعرّف الذي ليس لهم لا شيء. هذا هو العلاج الهيكلي لـ IDOR.</p>
+<p><strong>فرض التفويض من جانب الخادم، وركّز السياسة في مكان واحد.</strong> الفحوص من جانب العميل (إخفاء زر) هي تجربة مستخدم (UX)، لا أمن — يجب أن تفرض الـ API كل شيء بنفسها. والقواعد تنتمي إلى مكان واحد (طبقة سياسة، اعتماديات مشتركة، طرق مستودع مُقيَّدة النطاق)، لا مُشتتة كشروط <code>if</code> مخصّصة تنزلق خارج التزام وتُنسى عند نقطة الوصول التالية.</p>
+<p>تعريف عملي:</p>
+<blockquote>
+<p><strong>التفويض يُقرّر ما الذي يجوز للمُتصِل الرئيسي المُصادَق فعله، يُفرض على مستويين — الدور/الصلاحية للإجراء عند نقطة الوصول، وملكية المورد المحدد في الاستعلام — دائمًا الرفض افتراضيًا، دائمًا مستمدًا من المُتصِل الرئيسي، لا يثق بالعميل أبدًا. إغفال فحص مستوى الاستعلام هو IDOR، أكثر ثغرات الويب شيوعًا.</strong></p>
+</blockquote>
+<h2 id="_4">مثال إنتاجي<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p><strong>Invoicely</strong> نظام متعدد المستأجرين: كل مستخدم ينتمي إلى حساب، وجميع البيانات (الفواتير، العملاء، المدفوعات) تنتمي إلى حساب. داخل الحساب، يمتلك المستخدمون دورًا — <code>owner</code>، أو <code>admin</code>، أو <code>member</code> — بصلاحيات تصاعدية: العضو يعرض، والمدير يدير الفواتير والعملاء، والمالك بالإضافة إلى ذلك يدير الفوترة والمستخدمين.</p>
+<p>تعمل وظيفتا تفويض في كل طلب. أولاً، <strong>عزل المستأجرين</strong>: مستخدم في الحساب A يجب ألا يقرأ أو يكتب أبدًا، تحت أي ظرف، بيانات الحساب B — ويُفرض ذلك بتقييد كل استعلام بـ <code>account_id</code> الخاص بالمُتصِل. ثانيًا، <strong>فرض الدور</strong>: داخل حسابه، لا يستطيع عضو حذف فاتورة على الرغم من أنها تنتمي إلى مستأجره.</p>
+<p>سنبني الاثنين، وسنُركز المثال على تباين IDOR — نقطة الوصول الضعيفة <code>GET /invoices/{id}</code> التي تجلب بالمعرّف وحده مقابل النسخة المُقيَّدة النطاق التي لا تستطيع إرجاع بيانات مستأجر آخر — لأن هذا الفرق الوحيد هو الخط الفاصل بين SaaS آمن وخرق بيانات، وهو بالضبط الخط الذي يتجاوزه المساعد افتراضيًا.</p>
+<h2 id="_5">بنية المجلدات<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>core/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── auth.py               # المُتصِل الرئيسي الحالي (الفصل 03) + اعتماديات الدور/الصلاحية
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>└── authz.py              # السياسة: خريطة الدور→الصلاحية، require_permission، مساعدات الملكية
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>modules/invoicing/
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├── router.py             # نقاط الوصول: اشترط الصلاحية (المستوى 1)، مرّر المُتصِل الرئيسي للأسفل
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>├── _repository.py        # الاستعلامات مُقيَّدة النطاق دائمًا بـ account_id (المستوى 2 — عزل المستأجرين)
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>└── _service.py           # فحوص ملكية المورد عند الحاجة
+</code></pre></div>
+<p>لماذا هذا الشكل:</p>
+<ul>
+<li><strong><code>core/authz.py</code></strong> يُركّز السياسة — ربط الأدوار بالصلاحيات والاعتمادية القابلة لإعادة الاستخدام <code>require_permission</code> — بحيث تعيش قواعد التفويض في مكان واحد وتُطبّق بشكل موحّد، لا تُخترع من جديد لكل نقطة وصول.</li>
+<li><strong><code>_repository.py</code></strong> يفرض عزل المستأجرين هيكليًا: كل دالة تأخذ <code>account_id</code> الخاص بالمُتصِل وتُصفّي وفقه، بحيث لا يمكن كتابة استعلام <em>يُعيد</em> بيانات مستأجر آخر. هنا يُصمَّم IDOR ليخرج من الوجود.</li>
+<li><strong><code>router.py</code></strong> يطبّق فحص الدور العام (المستوى 1) عبر اعتمادية ويمرّر المُتصِل الرئيسي المُصادَق إلى الأسفل؛ لا يقرأ الهوية أبدًا من مدخلات العميل.</li>
+</ul>
+<h2 id="_6">التنفيذ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p><strong>السياسة وفحص مستوى نقطة الوصول (<code>core/authz.py</code>).</strong> تُربط الأدوار بالصلاحيات في مكان واحد؛ اعتمادية تفرض الصلاحية لعملية ما، الرفض افتراضيًا.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">status</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.core.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">CurrentPrincipalDep</span>     <span class="c1"># the authenticated user+account+role (Ch 03)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">Permission</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">INVOICE_VIEW</span> <span class="o">=</span> <span class="s2">&quot;invoice:view&quot;</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">INVOICE_MANAGE</span> <span class="o">=</span> <span class="s2">&quot;invoice:manage&quot;</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">INVOICE_DELETE</span> <span class="o">=</span> <span class="s2">&quot;invoice:delete&quot;</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">BILLING_MANAGE</span> <span class="o">=</span> <span class="s2">&quot;billing:manage&quot;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="n">ROLE_PERMISSIONS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="n">Permission</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="s2">&quot;member&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">Permission</span><span class="o">.</span><span class="n">INVOICE_VIEW</span><span class="p">},</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    <span class="s2">&quot;admin&quot;</span><span class="p">:</span>  <span class="p">{</span><span class="n">Permission</span><span class="o">.</span><span class="n">INVOICE_VIEW</span><span class="p">,</span> <span class="n">Permission</span><span class="o">.</span><span class="n">INVOICE_MANAGE</span><span class="p">,</span> <span class="n">Permission</span><span class="o">.</span><span class="n">INVOICE_DELETE</span><span class="p">},</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    <span class="s2">&quot;owner&quot;</span><span class="p">:</span>  <span class="nb">set</span><span class="p">(</span><span class="n">Permission</span><span class="p">),</span>   <span class="c1"># all permissions</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="p">}</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="k">def</span><span class="w"> </span><span class="nf">require_permission</span><span class="p">(</span><span class="n">permission</span><span class="p">:</span> <span class="n">Permission</span><span class="p">):</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_checker</span><span class="p">(</span><span class="n">principal</span><span class="p">:</span> <span class="n">CurrentPrincipalDep</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>        <span class="n">granted</span> <span class="o">=</span> <span class="n">ROLE_PERMISSIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">principal</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="nb">set</span><span class="p">())</span>   <span class="c1"># unknown role → empty → DENY</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>        <span class="k">if</span> <span class="n">permission</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">granted</span><span class="p">:</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>            <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_403_FORBIDDEN</span><span class="p">,</span> <span class="s2">&quot;Insufficient permissions&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>    <span class="k">return</span> <span class="n">_checker</span>
+</code></pre></div>
+<p><strong>الاستعلامات المُقيَّدة بنطاق المستأجر — IDOR مُصمَّم للخروج (<code>_repository.py</code>).</strong> كل دالة تأخذ <code>account_id</code> وتُصفّي وفقه. لا توجد دالة تجلب فاتورة بالمعرّف <em>بدون</em> المستأجر، لذا لا يمكن كتابة الاستعلام الضعيف عن غير قصد.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.modules.invoicing._models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Invoice</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">InvoiceRepository</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="c1"># SCOPED: id AND account_id. An id from another tenant simply returns None.</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">invoice_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">account_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Invoice</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>        <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">Invoice</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>            <span class="n">Invoice</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">invoice_id</span><span class="p">,</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>            <span class="n">Invoice</span><span class="o">.</span><span class="n">account_id</span> <span class="o">==</span> <span class="n">account_id</span><span class="p">,</span>     <span class="c1"># tenant isolation, enforced in SQL</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        <span class="p">)</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_for_account</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Invoice</span><span class="p">]:</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>        <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>            <span class="n">select</span><span class="p">(</span><span class="n">Invoice</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Invoice</span><span class="o">.</span><span class="n">account_id</span> <span class="o">==</span> <span class="n">account_id</span><span class="p">)</span>   <span class="c1"># never all invoices</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>            <span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>        <span class="p">)</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">scalars</span><span class="p">(</span><span class="n">stmt</span><span class="p">))</span>
+</code></pre></div>
+<p><strong>نقطة الوصول — المستويان معًا، تباين IDOR (<code>router.py</code>).</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">APIRouter</span><span class="p">,</span> <span class="n">Depends</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">status</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.core.auth</span><span class="w"> </span><span class="kn">import</span> <span class="n">CurrentPrincipalDep</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">app.core.authz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">require_permission</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">router</span> <span class="o">=</span> <span class="n">APIRouter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;/invoices&quot;</span><span class="p">,</span> <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoices&quot;</span><span class="p">])</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># VULNERABLE (do NOT ship): authenticates, then fetches by id with NO ownership check.</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1"># A member of account A reads account B&#39;s invoice by guessing the id. This is IDOR.</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{invoice_id}</span><span class="s2">/BAD&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_invoice_bad</span><span class="p">(</span><span class="n">invoice_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">repo</span><span class="p">:</span> <span class="n">InvoiceRepositoryDep</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InvoiceRead</span><span class="p">:</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="n">invoice</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get_by_id_only</span><span class="p">(</span><span class="n">invoice_id</span><span class="p">)</span>        <span class="c1"># &lt;-- no account scoping</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="k">if</span> <span class="n">invoice</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">)</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    <span class="k">return</span> <span class="n">InvoiceRead</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">invoice</span><span class="p">)</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="c1"># CORRECT: Level 1 permission check + Level 2 tenant-scoped query.</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>    <span class="s2">&quot;/</span><span class="si">{invoice_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">InvoiceRead</span><span class="p">,</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">require_permission</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">INVOICE_VIEW</span><span class="p">))],</span>   <span class="c1"># Level 1</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="p">)</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_invoice</span><span class="p">(</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>    <span class="n">invoice_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">repo</span><span class="p">:</span> <span class="n">InvoiceRepositoryDep</span><span class="p">,</span> <span class="n">principal</span><span class="p">:</span> <span class="n">CurrentPrincipalDep</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InvoiceRead</span><span class="p">:</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>    <span class="c1"># Level 2: account_id comes from the PRINCIPAL, never from the client.</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>    <span class="n">invoice</span> <span class="o">=</span> <span class="k">await</span> <span class="n">repo</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">invoice_id</span><span class="p">,</span> <span class="n">account_id</span><span class="o">=</span><span class="n">principal</span><span class="o">.</span><span class="n">account_id</span><span class="p">)</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>    <span class="k">if</span> <span class="n">invoice</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>        <span class="c1"># Not found AND not-yours are indistinguishable — don&#39;t leak existence.</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">,</span> <span class="s2">&quot;Invoice not found&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>    <span class="k">return</span> <span class="n">InvoiceRead</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">invoice</span><span class="p">)</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="nd">@router</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>    <span class="s2">&quot;/</span><span class="si">{invoice_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_204_NO_CONTENT</span><span class="p">,</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>    <span class="n">dependencies</span><span class="o">=</span><span class="p">[</span><span class="n">Depends</span><span class="p">(</span><span class="n">require_permission</span><span class="p">(</span><span class="n">Permission</span><span class="o">.</span><span class="n">INVOICE_DELETE</span><span class="p">))],</span>  <span class="c1"># members can&#39;t delete</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="p">)</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_invoice</span><span class="p">(</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>    <span class="n">invoice_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">service</span><span class="p">:</span> <span class="n">InvoiceServiceDep</span><span class="p">,</span> <span class="n">principal</span><span class="p">:</span> <span class="n">CurrentPrincipalDep</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">SessionDep</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a>    <span class="k">await</span> <span class="n">service</span><span class="o">.</span><span class="n">delete_invoice</span><span class="p">(</span><span class="n">principal</span><span class="o">.</span><span class="n">account_id</span><span class="p">,</span> <span class="n">invoice_id</span><span class="p">)</span>  <span class="c1"># scoped inside too</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a>    <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>الدفاع في العمق — أمان مستوى الصف في PostgreSQL (شبكة أمان اختيارية).</strong> تقييد النطاق على مستوى التطبيق هو الضبط الأساسي؛ RLS شبكة أمان بحيث حتى الاستعلام الذي <em>ينسى</em> فلتر <code>account_id</code> لا يستطيع تجاوز المستأجرين.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">-- Set per request: SET app.current_account = &#39;&lt;caller account id&gt;&#39;;</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">invoices</span><span class="w"> </span><span class="n">ENABLE</span><span class="w"> </span><span class="k">ROW</span><span class="w"> </span><span class="k">LEVEL</span><span class="w"> </span><span class="k">SECURITY</span><span class="p">;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">tenant_isolation</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">invoices</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">account_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.current_account&#39;</span><span class="p">)::</span><span class="nb">int</span><span class="p">);</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1">-- Now even an unscoped SELECT returns only the current tenant&#39;s rows.</span>
+</code></pre></div>
+<p>الخيط الرابط هو المستويان يعملان معًا: اعتمادية <code>require_permission</code> تمنع عضوًا من حذف أي شيء (المستوى 1)، وفلتر <code>account_id</code> في كل استعلام يمنع أي شخص من لمس بيانات مستأجر آخر (المستوى 2) — مع أخذ معرّف الحساب دائمًا من المُتصِل الرئيسي المُصادَق، لا من الطلب. نقطة الوصول الضعيفة تختلف عن الصحيحة بفلتر واحد مفقود، وهذا الفلتر الواحد هو الفارق كله بين SaaS متعدد المستأجرين آمن وخرق. تجلس RLS تحته كشبكة أمان للاستعلام الذي ينسى شخص ما حتمًا تقييد نطاقه.</p>
+<h2 id="_7">قرارات هندسية<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>خمسة قرارات تُعرّف تنفيذ التفويض.</p>
+<h3 id="_8">أي نموذج تفويض؟<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) الملكية/تقييد نطاق المستأجر فقط؛ (2) قائم على الدور (RBAC)؛ (3) قائم على السمات/السياسة (ABAC)؛ (4) قائم على العلاقات (ReBAC).</p>
+<p><strong>المقايضات:</strong> الملكية وحدها هي الحد الأدنى الذي يحتاجه كل تطبيق متعدد المستأجرين وتكون غير كافية بمجرد أن يمتلك المستخدمون قدرات مختلفة. RBAC (الأدوار → الصلاحيات) يغطي الغالبية العظمى من احتياجات SaaS ببساطة ووُضوح. ABAC (سياسات فوق السمات والسياق) أكثر تعبيرًا بكثير — قواعد لكل حقل، شروط زمنية/سياقية — بقفزة كبيرة في التعقيد. ReBAC (على غرار Google Zanzibar) يتعامل مع رسوم بيانية مشاركة عميقة ويمثل إفراطًا في الهندسة لمعظم الحالات.</p>
+<p><strong>التوصية:</strong> الملكية/تقييد نطاق المستأجر (دائمًا، غير قابل للتفاوض) إضافة إلى RBAC للقدرات — يغطي هذا معظم SaaS، بما في ذلك Invoicely. أضف ABAC فقط عندما تتجاوز المتطلبات الحقيقية الأدوار (قواعد دقيقة، شرطية، لكل سمة)، واعتبر ReBAC أداة متخصصة لمنتجات رسوم المشاركة الحقيقية. ابدأ بسيطًا؛ من السهل جعل النموذج أكثر تعبيرًا لاحقًا ومن المؤلم الإفراط في بنائه مبكرًا (المرحلة 1، الفصل 07).</p>
+<h3 id="_9">أين يُفرض التفويض؟<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) نقطة الوصول فقط (فحص الدور)؛ (2) الاستعلام فقط (تقييد نطاق الملكية)؛ (3) الاثنان.</p>
+<p><strong>المقاييضات:</strong> فحوص نقطة الوصول فقط تفحص الدور لكن ليس المورد المحدد — فهي تتيح لمدير صالح للحساب A التصرف في بيانات الحساب B (لا يزال IDOR). الاستعلام فقط يفرض عزل المستأجرين لكن ليس القدرة — يمكن لعضو الوصول إلى نقطة نهاية حذف لا تُقيّد نطاقها إلا بالمستأجر. المستويان معًا يفحصان <em>كلًا</em> من "هل بوسع هذا الدور فعل هذا الإجراء" و"هل هذا المورد المحدد ينتمي إلى هذا المُتصِل".</p>
+<p><strong>التوصية:</strong> الاثنان، دائمًا. المستوى 1 (نقطة الوصول/الدور) والمستوى 2 (الاستعلام/الملكية) يحرسان أشياء مختلفة ولا يُعوّض أحدهما عن الآخر. أخطر خطأ فردي هو امتلاك المستوى 1 وتخطي المستوى 2 — يبدو مُخوّلًا (يوجد فحص صلاحية!) بينما هو مفتوح على مصراعيه أمام IDOR.</p>
+<h3 id="rls">كيف يُفرض عزل المستأجرين — تقييد نطاق على مستوى التطبيق أو RLS في قاعدة البيانات؟<a class="headerlink" href="#rls" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) تقييد نطاق الاستعلام على مستوى التطبيق؛ (2) أمان مستوى الصف في قاعدة البيانات؛ (3) الاثنان.</p>
+<p><strong>المقاييضات:</strong> تقييد النطاق على مستوى التطبيق (كل استعلام مُصفّى بـ <code>account_id</code>) صريح، ومحمول، وقابل للاختبار، لكنه يعتمد على كتابة كل استعلام بشكل صحيح — فلتر واحد منسي هو خرق. RLS في قاعدة البيانات يفرض العزل في قاعدة البيانات نفسها، ويلتقط الفلاتر المنسية، بتكلفة تعقيد الإعداد وسياق المستأجر لكل طلب. الاثنان يعطيان ضبطًا أساسيًا إضافة إلى شبكة أمان.</p>
+<p><strong>التوصية:</strong> تقييد النطاق على مستوى التطبيق كأساسي، مفروض هيكليًا (طرق مستودع <em>تشترط</em> <code>account_id</code>، بحيث لا يمكن كتابة استعلام غير مُقيَّد النطاق بسهولة)؛ أضف RLS كدفاع في العمق لبيانات المستأجرين عالية المخاطر، بحيث لا يستطيع خطأ في طبقة التطبيق تجاوز المستأجرين. التحرك الهندسي الأكثر أهمية هو جعل الاستعلام المُقيَّد النطاق هو <em>الاستعلام السهل الوحيد</em> للكتابة.</p>
+<h3 id="_10">الرفض افتراضيًا أم السماح افتراضيًا؟<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) الرفض افتراضيًا (الفشل مُغلق)؛ (2) السماح افتراضيًا (الفشل مفتوح).</p>
+<p><strong>المقاييضات:</strong> الرفض افتراضيًا يعني أن كل وصول يجب منحه صراحة، لذا فإن فحصًا منسيًا يحجب الوصول (خطأ مرئي يُلتقط في الاختبار) بدلًا من كشف البيانات (خرق غير مرئي). السماح افتراضيًا أكثر ملاءمة أثناء التطوير ويحول كل إغفال إلى ثغرة.</p>
+<p><strong>التوصية:</strong> الرفض افتراضيًا، دون استثناء. الأدوار غير المعروفة تُربط بصلاحيات معدومة، ونقاط الوصول الجديدة غير مُخوَّلة حتى يُضاف فحص، وأي غموض يُحل إلى الرفض. نمط فشل الرفض الافتراضي هو تذكرة دعم؛ نمط فشل السماح الافتراضي هو إشعار إفصاح.</p>
+<h3 id="_11">سياسة مُركَّزة أم فحوص مُضمَّنة؟<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) طبقة سياسة مُركَّزة / اعتماديات مشتركة؛ (2) شروط <code>if</code> مخصّصة في كل نقطة وصول.</p>
+<p><strong>المقاييضات:</strong> السياسة المُركَّزة تحافظ على تناسق القواعد، وقابلية تدقيقها، وتطبيقها بشكل موحّد، بتكلفة تصميم تجريد. الفحوص المُضمَّنة سريعة لكل نقطة access وتنزلق خارج التزام، وتُنسخ بشكل غير متسق، والخطر الحقيقي — تُنسى تمامًا عند نقطة الوصول التالية التي يُضيفها شخص ما.</p>
+<p><strong>التوصية:</strong> ركّز السياسة (خريطة دور/صلاحية، اعتماديات <code>require_permission</code> قابلة لإعادة الاستخدام، طرق مستودع تفرض تقييد النطاق) بحيث يُطبَّق التفويض بنفس الطريقة في كل مكان ويجب على نقطة الوصول الجديدة <em>الخروج</em> من الحماية بدلًا من <em>الدخول</em> فيها طواعية. الفحوص المُشتتة هي كيف تنتهي نقطة الوصول الوحيدة غير المحمية في الإنتاج.</p>
+<h2 id="_12">المقايضات<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>خيارات التفويض تُقايض بين الأمن، والمرونة، والتعقيد.</p>
+<p><strong>تعبيرية النموذج تُقايض بالبساطة.</strong> RBAC بسيط ومفهوم ولا يستطيع التعبير عن "بوسع المستخدم تعديل الفواتير التي أنشأها لكن فقط قبل إرسالها." ABAC يستطيع التعبير عن ذلك وأكثر بكثير، بتكلفة حادة في التعقيد، وإدارة السياسات، وصعوبة الاستدلال على مَن الذي يستطيع فعل ماذا فعلًا. اللجوء إلى ABAC قبل أن تفشل الأدوار حقًا هو إفراط في الهندسة؛ التشبث بـ RBAC عندما تكون القواعد معتمدة حقًا على السمات هو تكلّف. طابِق النموذج مع القواعد الحقيقية.</p>
+<p><strong>RLS في قاعدة البيانات تُقايض تكلفة الإعداد بشبكة أمان.</strong> RLS تُقلل بشكل ملموس نصف قطر الانفجار لفلتر منسي على مستوى التطبيق، وهو ما يمثل شبكة أمان مقنعة لبيانات المستأجرين — لكنها تضيف تعقيد إعداد، وسياق مستأجر لكل طلب لإدارته، ومكانًا ثانيًا يعيش فيه التفويض (ما قد يُربك التصحيح). لبيانات المستأجرين عالية المخاطر تستحق شبكة الأمان العناء؛ لأداة داخلية منخفضة المخاطر قد تكفي طبقة التطبيق وحدها.</p>
+<p><strong>الصلاحيات الدقيقة تُقايض السلامة بعبء الإدارة.</strong> صلاحيات ضيقة كثيرة تمنح تحكمًا دقيقًا وسطحًا كبيرًا لإدارته والاستدلال عليه؛ أدوار واسعة قليلة سهلة الإدارة وفجة. ترغب معظم المنتجات في مجموعة صغيرة من الأدوار المختارة جيدًا وتُضيف الدقة فقط حيث تظهر حاجة حقيقية، مُقاومةً دور god-admin واحد ومصفوفة صلاحيات مترامية لا يفهمها أحد.</p>
+<p><strong>فرض الخادم غير قابل للتفاوض، لكن فحوص العميل لا تزال مهمة.</strong> يجب أن تفرض الـ API كل شيء؛ الفحوص من جانب العميل (إخفاء زر حذف لا يستطيع المستخدم استخدامه) تجربة مستخدم بحتة ولا توفر أي أمان. المقايضة هي فقط حول صقل تجربة المستخدم — لا تعامل أبدًا فحص العميل كضابط أمن، ولا تتخطَّ الفحص من جانب الخادم لأن واجهة المستخدم تُخفي الإجراء فعلًا.</p>
+<h2 id="_13">الأخطاء الشائعة<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<p><strong>IDOR — جلب مورد دون فحص ملكية.</strong> <code>GET /invoices/{id}</code> يبحث بالمعرّف وحده، فبإمكان أي مستخدم مُصادَق قراءة بيانات أي مستأجر بتغيير الرقم. أكثر ثغرات الويب شيوعًا والأكثر تدميرًا. الإصلاح: قيّد نطاق كل استعلام مورد بـ <code>account_id</code> الخاص بالمُتصِل الرئيسي المُصادَق؛ "ليس ملكك" و"غير موجود" كلاهما يُعيد 404.</p>
+<p><strong>الثقة في الهوية أو الدور المُقدَّم من العميل.</strong> قراءة <code>account_id</code>، أو <code>user_id</code>، أو <code>role</code> من جسم الطلب، أو سلسلة الاستعلام، أو ترويسة يُعيّنها العميل، فيُدّعي العميل أنه أي شخص. الإصلاح: استمد الهوية والصلاحيات حصريًا من المُتصِل الرئيسي المُصادَق (الفصل 03)؛ لا تأخذها أبدًا من مدخلات العميل.</p>
+<p><strong>الفرض على مستوى واحد فقط.</strong> فحص الدور عند نقطة الوصول لكن دون تقييد نطاق الاستعلام (مدير A يتصرف في بيانات B)، أو تقييد نطاق الاستعلام لكن دون فحص القدرة (عضو يصل إلى حذف). الإصلاح: فرض المستويين — الدور عند نقطة الوصول، والملكية في الاستعلام.</p>
+<p><strong>السماح افتراضيًا / الفشل مفتوحًا.</strong> أدوار غير معروفة أو فحوص ناقصة تمنح الوصول، ونقاط وصول جديدة تُشحن دون حماية. الإصلاح: ارفض افتراضيًا؛ الأدوار غير المعروفة تحصل على لا شيء؛ فحص ناقص يحجب، لا يفتح.</p>
+<p><strong>فحوص مُشتتة وغير متسقة.</strong> تفويض مخصّص منسوخ بشكل غير متسق عبر نقاط الوصول، فبعضها محمي والأحدث ليس كذلك. الإصلاح: ركّز السياسة في اعتماديات مشتركة وطرق مستودع مُقيَّدة النطاق تُطبَّق بشكل موحّد.</p>
+<p><strong>التفويض في واجهة المستخدم فقط.</strong> الاعتماد على زر مخفي أو فحص دور من جانب العميل للأمن، بينما الـ API لا يفرض شيئًا. الإصلاح: الخادم يفرض كل شيء؛ فحوص العميل تجربة مستخدم فقط.</p>
+<h2 id="_14">أخطاء الذكاء الاصطناعي<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p>التفويض غير مرئي في اختبار المستخدم الواحد — تختبر بصفك نفسك ولا تحاول معرّفات مستأجرين آخرين — لذلك يُنتج المساعد شيفرة تحكم بالوصول تجتاز كل اختبار قد يشغّله المطوّر وتكون مفتوحة على مصراعيه أمام أي شخص يستكشفها. راجع نقاط الوصول المُولَّدة تحديدًا بحثًا عن الفحوص التي لا تهم إلا عندما <em>شخص آخر</em> يستدعيها.</p>
+<h3 id="claude-code-idor">Claude Code: ثغرة IDOR — الجلب بالمعرّف دون فحص ملكية<a class="headerlink" href="#claude-code-idor" title="Permanent link">&para;</a></h3>
+<p>عند طلب بناء "جلب مورد بالمعرّف"، يكتب Claude Code بالضبط ذلك: يبحث عن المورد بمعرّفه ويُرجعه، دون فلتر مستأجر أو ملكية — لأن تلك هي أبسط شيفرة تبدو صحيحة وتعمل بشكل مثالي عندما يختبرها المطوّر على بياناته الخاصة. إنها IDOR من كتاب النص، وتُشحن باستمرار.</p>
+<p><strong>الاكتشاف:</strong> مورد يُجلب بالمعرّف وحده (<code>repo.get(id)</code>، <code>session.get(Model, id)</code>) دون فلتر <code>account_id</code>/مالك؛ نقطة وصول تُصادق المستخدم لكنها لا تربط المورد به أبدًا.</p>
+<p><strong>الإصلاح:</strong> اشترط تقييد نطاق الملكية على كل وصول مورد:</p>
+<blockquote>
+<p>كل استعلام لمورد محدد يجب أن يُقيَّد نطاقه بمستأجر المُتصِل الرئيسي المُصادَق: صفِّ بـ <code>account_id</code> (من المُتصِل الرئيسي، لا من الطلب) في الاستعلام نفسه، بحيث يُعيد المعرّف الذي ينتمي إلى مستأجر آخر لا شيء. لا تجلب موردًا بالمعرّف وحده أبدًا. غير موجود وغير مُخوّل كلاهما يُعيد 404.</p>
+</blockquote>
+<h3 id="gpt">GPT: الثقة في الهوية أو الدور المُقدَّم من العميل<a class="headerlink" href="#gpt" title="Permanent link">&para;</a></h3>
+<p>نماذج عائلة GPT تأخذ غالبًا <code>account_id</code>، أو <code>user_id</code>، أو <code>role</code> من الطلب — حقل في الجسم، أو معامل استعلام، أو ترويسة — وتُصرّح بناءً عليه، لأن توقيع نقطة الوصول يقرأ بشكل طبيعي ويعمل عندما يُرسل العميل معرّفه الخاص. يعني ذلك أن أي عميل يستطيع التصرف كأي حساب بتغيير حقل.</p>
+<p><strong>الاكتشاف:</strong> ظهور <code>account_id</code>/<code>user_id</code>/<code>role</code> كمعامل طلب أو حقل جسم يُستخدم للتفويض؛ قرارات صلاحية مبنية على أي شيء أرسله العميل بدلًا من المُتصِل الرئيسي المُتحقَّق منه.</p>
+<p><strong>الإصلاح:</strong> الهوية تأتي من المُتصِل الرئيسي فقط:</p>
+<blockquote>
+<p>لا تقرأ أبدًا الهوية أو الدور من مدخلات العميل (الجسم، الاستعلام، أو الترويسات) للتفويض. الحساب، والمستخدم، والدور تأتي حصريًا من المُتصِل الرئيسي المُصادَق المستمد من الـ token/الجلسة (الفصل 03). حقول <code>account_id</code> أو <code>role</code> المُقدَّمة من العميل يجب ألا تؤثر أبدًا في قرار وصول.</p>
+</blockquote>
+<h3 id="cursor">Cursor: فحوص مُشتتة وافتراضيات الفشل المفتوح<a class="headerlink" href="#cursor" title="Permanent link">&para;</a></h3>
+<p>عند إضافة نقاط الوصول بشكل مُضمَّن، يميل Cursor إلى حماية بعضها ونسيان البعض الآخر، وكتابة منطق صلاحية يفترض افتراضيًا <em>السماح</em> عندما يكون الدور غير معروف أو الفحص غير حاسم — لأن كل تعديل محلي والسياسة العامة ليست في الصورة. النتيجة هي تغطية غير متسقة وفجوات فشل مفتوح.</p>
+<p><strong>الاكتشاف:</strong> نقاط وصول جديدة دون اعتمادية صلاحية؛ فحوص دور تُرجع <code>True</code> / تسمح على دور غير معروف أو تعيين مفقود؛ منطق تفويض يختلف من نقطة وصول إلى أخرى.</p>
+<p><strong>الإصلاح:</strong> ركّز وافشل مُغلقًا:</p>
+<blockquote>
+<p>طبّق اعتمادية <code>require_permission</code> المشتركة وطرق المستودع المُقيَّدة بنطاق المستأجر على كل نقطة وصول — لا تكتب فحوصًا مُضمَّنة مخصّصة. التفويض رفض افتراضيًا: دور غير معروف أو تعيين مفقود لا يمنح شيئًا. يجب حماية كل نقطة وصول جديدة بنفس طريقة الأخريات.</p>
+</blockquote>
+<h2 id="_15">أفضل الممارسات<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p><strong>ارفض افتراضيًا واستمد الهوية من المُتصِل الرئيسي.</strong> الوصول ممنوع ما لم يُمنح صراحة؛ الأدوار غير المعروفة تحصل على لا شيء؛ والحساب، والمستخدم، والدور تأتي فقط من المُتصِل الرئيسي المُصادَق، لا من مدخلات العميل.</p>
+<p><strong>فرض على المستويين.</strong> الدور/الصلاحية للإجراء عند نقطة الوصول (المستوى 1)، والمستأجر/الملكية للمورد المحدد في الاستعلام (المستوى 2). لا يُعوّض أحدهما عن الآخر؛ إغفال المستوى 2 هو IDOR.</p>
+<p><strong>اجعل الاستعلام المُقيَّد النطاق هو الاستعلام السهل الوحيد.</strong> طرق مستودع <em>تشترط</em> <code>account_id</code>، بحيث يكون عزل المستأجرين هيكليًا ولا يمكن كتابة استعلام غير مُقيَّد النطاق بسهولة. لبيانات عالية المخاطر، أضف أمان مستوى الصف في قاعدة البيانات كشبكة أمان.</p>
+<p><strong>ركّز السياسة.</strong> خريطة دور→صلاحية واحدة، اعتماديات صلاحية قابلة لإعادة الاستخدام، ومستودعات مُقيَّدة النطاق تُطبَّق بشكل موحّد — بحيث <em>يخرج</em> endpoint جديد عن الحماية بدلًا من شحنه دون حماية بالخطأ. لا تُشتت فحوصًا مخصّصة أبدًا.</p>
+<p><strong>فرض من جانب الخادم واختبر بعدة مستأجرين.</strong> فحوص العميل تجربة مستخدم فقط؛ الـ API يفرض كل شيء. اكتب اختبارات تحاول الوصول العابر للمستأجرين (المستخدم A يجلب مورد B) وتتوقع 404 — الاختبار الذي لا يشغّله مطوّر المستخدم الواحد أبدًا. وثّق نموذج التفويض في <code>CLAUDE.md</code>؛ تصلّب الجانب الهجومي في المرحلة 9.</p>
+<h2 id="anti-patterns">الأنماط السيئة (Anti-Patterns)<a class="headerlink" href="#anti-patterns" title="Permanent link">&para;</a></h2>
+<p><strong>IDOR (فحص الملكية المفقود).</strong> موارد تُجلب بالمعرّف دون تقييد نطاق المستأجر/المالك، فيستطيع أي مستخدم قراءة أي بيانات بتغيير المعرّف — الخطر رقم واحد في OWASP. العلامة: <code>get(id)</code> دون فلتر حساب، واختبارات لا تتصرف أبدًا إلا بصفتك مالك المورد.</p>
+<p><strong>العميل الموثوق.</strong> الهوية أو الدور مأخوذ من مدخلات الطلب ومُصدَّق عليه، فيُصرّح العميل لنفسه. العلامة: <code>account_id</code>/<code>role</code> كمعامل طلب يُستخدم في قرار وصول.</p>
+<p><strong>الفرض على مستوى واحد.</strong> الدور يُفحص عند نقطة الوصول لكن الموارد لا تُقيَّد نطاقها (أو العكس)، فيُترك باب مفتوح. العلامة: اعتمادية صلاحية دون فلتر <code>account_id</code> في الاستعلام خلفها.</p>
+<p><strong>تفويض الفشل المفتوح.</strong> افتراضيات وحالات غير معروفة تمنح الوصول، ونقاط وصول جديدة دون حماية. العلامة: منطق تفويض يسمح على دور غير معروف، أو نقطة وصول دون أي فحص صلاحية.</p>
+<p><strong>فحوص مُشتتة.</strong> تفويض مخصّص منسوخ بشكل غير متسق عبر نقاط الوصول حتى يُنسى أحدها. العلامة: ثلاث طرق مختلفة لفحص الصلاحيات في ثلاث routers، ورابع دون أي شيء.</p>
+<p><strong>تفويض واجهة المستخدم فقط.</strong> الأمن مرتكز على زر مخفي بينما الـ API لا يفرض شيئًا. العلامة: نقطة وصول تعمل بشكل جيد عند استدعائها مباشرة بـ token منخفض الصلاحية، لأن الواجهة الأمامية فقط كانت تُخفيه.</p>
+<h2 id="_16">شجرة القرار<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<p>"طلب ما يريد التصرف في مورد — هل هو مُخوّل؟"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>الهوية والحساب والدور ──► خذها من المُتصِل الرئيسي المُصادَق فقط.
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    (أبدًا من جسم الطلب، أو الاستعلام، أو ترويسة العميل.)
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>        │
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>المستوى 1 — نقطة الوصول: هل لهذا الدور صلاحية لهذا الإجراء؟
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    ├─ لا  ──► 403 ممنوع. (الرفض افتراضيًا؛ الدور غير المعروف → لا صلاحيات.)
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    └─ نعم ──►
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>        │
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>المستوى 2 — الاستعلام: هل هذا المورد المحدد ينتمي إلى مستأجر المُتصِل؟
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>    قيّد نطاق الاستعلام: WHERE id = ? AND account_id = &lt;principal.account_id&gt;
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>    ├─ لم يُرجع المورد (مستأجر خاطئ أو غائب) ──► 404 (لا تكشف الوجود)
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>    └─ أُرجع ──► تابع.
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        │
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>الدفاع في العمق: هل هذه بيانات مستأجرين عالية المخاطر؟
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>    └─ نعم ──► فعّل أيضًا أمان مستوى الصف في قاعدة البيانات كشبكة أمان.
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>موقع الفرض: جانب الخادم دائمًا. فحوص العميل تجربة مستخدم، لا أمن أبدًا.
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>موقع السياسة: مُركَّزة (اعتمادية مشتركة + مستودعات مُقيَّدة النطاق)، لا مخصّصة لكل نقطة access.
+</code></pre></div>
+<h2 id="_17">قائمة المراجعة<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<h3 id="_18">قائمة مراجعة التنفيذ<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] كل استعلام مورد مُقيَّد النطاق بـ <code>account_id</code> الخاص بالمُتصِل الرئيسي المُصادَق؛ لا جلب بالمعرّف وحده (لا IDOR).</li>
+<li>[ ] الهوية، والحساب، والدور مُستمدة من المُتصِل الرئيسي — لا تُقرأ أبدًا من مدخلات الطلب.</li>
+<li>[ ] المستويان كلاهما مُفروض: الدور/الصلاحية عند نقطة الوصول والمستأجر/الملكية في الاستعلام.</li>
+<li>[ ] التفويض رفض افتراضيًا؛ الأدوار غير المعروفة والتعيينات الناقصة لا تمنح شيئًا.</li>
+<li>[ ] السياسة مُركَّزة (خريطة دور→صلاحية + اعتماديات مشتركة + مستودعات مُقيَّدة النطاق)، لا مُضمَّنة.</li>
+<li>[ ] غير موجود وغير مُخوّل كلاهما يُعيد 404 (لا يُكشف الوجود).</li>
+</ul>
+<h3 id="_19">قائمة مراجعة البنية<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] نموذج التفويض (الملكية + RBAC، أو ما وراء ذلك) يلائم القواعد الحقيقية وليس مبنيًا بشكل مفرط.</li>
+<li>[ ] عزل المستأجرين هيكلي — طرق المستودع تشترط <code>account_id</code>، بحيث لا يكون من السهل كتابة استعلامات غير مُقيَّدة النطاق.</li>
+<li>[ ] بيانات المستأجرين عالية المخاطر لديها أمان مستوى الصف في قاعدة البيانات كشبكة أمان.</li>
+<li>[ ] نقاط الوصول الجديدة محمية افتراضيًا (الخروج لا الدخول في الحماية).</li>
+<li>[ ] نموذج التفويض مُوثَّق في <code>CLAUDE.md</code>؛ التصلب من جانب الهجوم مُتابع للمرحلة 9.</li>
+</ul>
+<h3 id="_20">قائمة مراجعة مراجعة الشيفرة<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] لا مورد يُجلب بالمعرّف دون فلتر مستأجر/ملكية (راقب فروقات الذكاء الاصطناعي — هذا أهم شيء يجب الإمساك به).</li>
+<li>[ ] لا <code>account_id</code>/<code>user_id</code>/<code>role</code> يُقرأ من الطلب ويُستخدم للتفويض.</li>
+<li>[ ] كل نقطة وصول جديدة لديها فحص صلاحية على مستوى نقطة الوصول واستعلام مُقيَّد النطاق.</li>
+<li>[ ] لا منطق فشل مفتوح؛ الأدوار/الصلاحيات غير المعروفة ترفض.</li>
+<li>[ ] اختبار وصول عابر للمستأجرين موجود (المستخدم A لا يستطيع الوصول إلى مورد B) وينجح.</li>
+</ul>
+<h3 id="_21">قائمة مراجعة النشر<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] عند استخدام أمان مستوى الصف في قاعدة البيانات، يتم تعيين سياق المستأجر لكل طلب بشكل موثوق على كل اتصال (انظر <a href="../../../checklists/production-readiness/"><code>checklists/production-readiness.md</code></a>).</li>
+<li>[ ] حالات فشل التفويض مُسجَّلة (مع المُتصِل الرئيسي والمورد) للتدقيق والاستجابة للحوادث.</li>
+<li>[ ] تغييرات الدور/الصلاحية تدخل حيز التنفيذ فورًا (راعِ تفاعلات TTL / تجديد الـ token من الفصل 03).</li>
+</ul>
+<h2 id="_22">التمارين<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h2>
+<p><strong>1. استغلال وإصلاح IDOR.</strong> خذ نقطة وصول تجلب موردًا بالمعرّف دون فحص ملكية (اكتبها، أو اطلب من مساعد توليد "جلب فاتورة بالمعرّف"). بصفتك مستخدم مستأجر ثانٍ، اجلب مورد المستأجر الأول لإثبات الخرق، ثم أصلحه بتقييد نطاق الاستعلام على حساب المُتصِل الرئيسي. الناتج هو طلب الاستغلال، والإصلاح، واختبار عابر للمستأجرين يُعيد الآن 404.</p>
+<p><strong>2. بناء الفحص على مستويين.</strong> نفّذ <code>DELETE /invoices/{id}</code> لـ Invoicely بحيث يُرفض العضو (403) بصرف النظر عن المستأجر، ويحصل مستأجر غير المالك على 404، وينجح <code>admin</code> لمستأجر المالك (204). الناتج هو نقطة الوصول إضافة إلى ثلاثة اختبارات — واحد لكل حالة — تُثبت فرض المستويين.</p>
+<p><strong>3. تصميم استراتيجية العزل.</strong> لـ Invoicely، قرّر كيف يُفرض عزل المستأجرين: تقييد النطاق على مستوى التطبيق، أو RLS في قاعدة البيانات، أو كليهما، وبرّر ذلك لبيانات الفواتير/المدفوعات. الناتج هو القرار مع تبريره، إضافة إلى الآلية الملموسة (كيف يصل <code>account_id</code> إلى كل استعلام، أو كيف يُعيَّن سياق مستأجر RLS لكل طلب).</p>
+<h2 id="_23">قراءات إضافية<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>OWASP Top 10 — A01: Broken Access Control</strong> و <strong>Authorization Cheat Sheet</strong> (owasp.org، cheatsheetseries.owasp.org) — المعالجة المرجعية للخطر الذي يدافع عنه هذا الفصل، بما في ذلك IDOR، وقائمة مراجعة للفرض الصحيح. المرجع الذي تتم مراجعة أي تنفيذ بموجبه. (كتالوج الهجوم الكامل في المرحلة 9.)</li>
+<li><strong>PostgreSQL documentation — Row Security Policies</strong> (postgresql.org/docs) — كيفية تنفيذ أمان مستوى الصف كشبكة أمان لعزل المستأجرين، بما في ذلك سياق المستأجر لكل جلسة الذي تقرأه السياسة.</li>
+<li><strong>Google Zanzibar: Google's Consistent, Global Authorization System</strong> (الورقة البحثية، وأحفادها مفتوحة المصدر مثل OpenFGA/SpiceDB) — خلفية عن التفويض القائم على العلاقات للمنتجات ذات رسوم المشاركة الحقيقية؛ اقرأها لتعرف المشكلة التي يحلها ReBAC ومتى تكون RBAC/ABAC كافية دونه.</li>
+<li><strong>API Design Patterns</strong> (JJ Geewax، Manning)، الفصول الخاصة بالتحكم بالوصول — كيف يتفاعل التفويض مع تصميم الـ API، وتسلسلات الموارد، وتعدد المستأجرين؛ يُكمل تركيز هذا الفصل على الفرض باعتبارات تصميم العقد.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  عد إلى الأعلى
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="هامش سفلي" >
+        
+          
+          <a href="../03-authentication/" class="md-footer__link md-footer__link--prev" aria-label="السابقة: المصادقة">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                السابقة
+              </span>
+              <div class="md-ellipsis">
+                المصادقة
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../05-error-handling-and-api-versioning/" class="md-footer__link md-footer__link--next" aria-label="التالية: معالجة الأخطاء وإصدارات API">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                التالية
+              </span>
+              <div class="md-ellipsis">
+                معالجة الأخطاء وإصدارات API
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tracking", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "clipboard.copy": "\u0646\u0633\u062e \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "search.result.more.one": "\u0623\u0643\u062b\u0631 \u0645\u0646 1 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.more.other": "\u0623\u0643\u062b\u0631 \u0645\u0646 # \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.none": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c", "search.result.one": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b \u0645\u0633\u062a\u0646\u062f \u0648\u0627\u062d\u062f", "search.result.other": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b # \u0645\u0633\u062a\u0646\u062f\u0627\u062a", "search.result.placeholder": "\u0627\u0643\u062a\u0628 \u0644\u0628\u062f\u0621 \u0627\u0644\u0628\u062d\u062b", "search.result.term.missing": "\u0645\u0641\u0642\u0648\u062f", "select.version": "\u0625\u062e\u062a\u0631 \u0627\u0644\u0625\u0635\u062f\u0627\u0631"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

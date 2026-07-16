@@ -1,0 +1,5742 @@
+
+<!doctype html>
+<html lang="ar" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A production-grade handbook for engineering software with AI as a disciplined teammate.">
+      
+      
+      
+      
+        <link rel="prev" href="../03-docker-compose-and-multi-service-environments/">
+      
+      
+        <link rel="next" href="../05-ci-cd-with-github-actions/">
+      
+      
+        
+          <link rel="alternate" href="../../../../handbook/stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ar">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Nginx والوكيل العكسي والنطاقات و TLS - هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="rtl" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#nginx-reverse-proxy-tls" class="md-skip">
+          انتقل إلى المحتوى
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="عنوان العارضة">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-header__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Nginx والوكيل العكسي والنطاقات و TLS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="إختر اللغة">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../handbook/stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ar" class="md-select__link">
+              العربية
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="بحث" placeholder="بحث" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="إبحث">
+        
+        <button type="reset" class="md-search__icon md-icon" title="مسح كلي" aria-label="مسح كلي" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            بدء البحث
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="تصفح" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-nav__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الرئيسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../START-HERE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ابدأ من هنا
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/01-what-is-software-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ما هي هندسة البرمجيات؟
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/02-product-thinking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفكير بعقلية المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/03-ai-first-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطوير بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/04-engineering-trade-offs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المفاضلات الهندسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/05-technical-debt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الدَّين التقني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/06-build-vs-buy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء مقابل الشراء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/07-simplicity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البساطة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/08-maintainability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية الصيانة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/01-layered-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية الطبقية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/02-feature-based-and-vertical-slice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية القائمة على الميزات والشرائح الرأسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/03-clean-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية النظيفة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/04-monolith-modular-monolith-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المتراصّ والمتراصّ المعياري والخدمات المصغّرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/05-service-layer-and-repository-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    طبقة الخدمات ونمط المستودع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/06-dependency-injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن التبعيات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/07-event-driven-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية المدفوعة بالأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/01-building-apis-with-fastapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء واجهات API باستخدام FastAPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/02-data-persistence-sqlalchemy-alembic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حفظ البيانات: SQLAlchemy و Alembic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/03-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/04-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/05-error-handling-and-api-versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معالجة الأخطاء وإصدارات API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/06-background-jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المهام الخلفية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/07-caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التخزين المؤقت
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/08-logging-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسجيل وقابلية المراقبة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/09-file-storage-and-email/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/01-building-uis-with-react-and-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء الواجهات باستخدام React و TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/02-nextjs-and-the-app-router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next.js وموجّه التطبيق App Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/03-server-and-client-components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مكوّنات الخادم والعميل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/04-data-fetching-and-server-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    جلب البيانات وحالة الخادم
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/05-state-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الحالة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/06-forms-and-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النماذج والتحقق من الإدخال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/07-frontend-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/08-frontend-architecture-and-folder-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معمارية الواجهة الأمامية وهيكل المجلدات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/01-react-native-and-expo-foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أساسيات React Native و Expo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/02-navigation-and-deep-linking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التنقّل والروابط العميقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/03-authentication-on-mobile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة على الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/04-offline-support-and-data-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دعم العمل دون اتصال ومزامنة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/05-push-notifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الإشعارات الفورية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/06-mobile-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/07-building-shipping-and-ota-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء والنشر وتحديثات OTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/01-relational-databases-and-data-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قواعد البيانات العلائقية ونمذجة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/02-schema-design-and-normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصميم المخطط والتطبيع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/03-indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الفهرسة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/04-transactions-and-concurrency-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعاملات والتحكم في التزامن
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/05-query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحسين الاستعلامات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/06-migrations-and-schema-evolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الترحيلات وتطوّر المخطط
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 7 · DevOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 7 · DevOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-linux-for-production-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux لخوادم الإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-docker-and-containerization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker والحاويات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-docker-compose-and-multi-service-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose والبيئات متعددة الخدمات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        هيكل المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قرارات هندسية
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-proxy_pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: proxy_pass عارٍ بدون رؤوس أو مهلات أو حدود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-tls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: TLS موقّع ذاتيًا أو بدون تجديد تلقائي
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor-acme-https" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: كسر تحدي ACME أو إعادة توجيه HTTPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة المراجعة">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة الكود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        تمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-ci-cd-with-github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD باستخدام GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-deploying-to-a-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النشر على خادم VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-monitoring-and-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المراقبة والتسجيل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 8 · الاختبارات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 8 · الاختبارات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/01-test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    استراتيجية الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/02-unit-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات الوحدة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/03-mocking-and-test-doubles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المحاكاة وبدائل الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/04-integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/05-end-to-end-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الاختبارات الشاملة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 9 · الأمان
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 9 · الأمان
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/01-security-mindset-and-owasp-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عقلية الأمان وقائمة OWASP العشرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/02-jwt-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أمان JWT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/03-oauth2-and-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/04-secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الأسرار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/05-sql-injection-and-input-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن SQL ومعالجة المدخلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/06-xss-and-content-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/07-csrf-cors-and-browser-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSRF و CORS وأمان المتصفح
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/08-rate-limiting-and-abuse-prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحديد المعدل ومنع إساءة الاستخدام
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/01-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/02-openai-codex-and-cursor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Codex و Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/03-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/04-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة الموجّهات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/05-multi-agent-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الأنظمة متعددة الوكلاء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/06-ai-code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/07-ai-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصحيح الأخطاء بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/08-ai-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    سير عمل الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/01-scalability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية التوسّع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/02-load-balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    موازنة الحمل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/03-horizontal-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التوسّع الأفقي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/04-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/05-queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الطوابير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/06-cdn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CDN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/07-event-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بثّ الأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/01-mvp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنتج الأولي (MVP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/02-pricing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسعير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/03-payments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المدفوعات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/04-analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التحليلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/05-user-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ملاحظات المستخدمين
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/06-product-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مقاييس المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/07-growth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النمو
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوائم التحقق
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    قوائم التحقق
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة مراجعة الكود
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة الجاهزية للإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أدلة العمل
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    أدلة العمل
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/starting-an-ai-first-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دليل عمل: بدء مشروع بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    القوالب
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    القوالب
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب سجل القرار المعماري (ADR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-conceptual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-technical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/claude-md-starter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/project-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب موجز المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/pull-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب طلب الدمج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عن المشروع
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    عن المشروع
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/00-CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دستور المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/01-project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    رؤية المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/02-curriculum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنهج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطبيق المرجعي (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../starter-kits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوالب البدء (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        هيكل المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قرارات هندسية
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-proxy_pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: proxy_pass عارٍ بدون رؤوس أو مهلات أو حدود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-tls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: TLS موقّع ذاتيًا أو بدون تجديد تلقائي
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor-acme-https" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: كسر تحدي ACME أو إعادة توجيه HTTPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة المراجعة">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة الكود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        تمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="nginx-reverse-proxy-tls">Nginx، الـ Reverse Proxy، النطاقات و TLS<a class="headerlink" href="#nginx-reverse-proxy-tls" title="Permanent link">&para;</a></h1>
+<h2 id="_1">مقدمة<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>بين تطبيقك والإنترنت توجد مهمة واحدة: استقبال سيل غير موثوق به من الطلبات العامة على
+نطاق حقيقي عبر اتصالات مشفّرة، وتسليمها بأمان إلى خدمات لا ينبغي أن تواجه الإنترنت
+مباشرةً أبدًا. تلك المهمة هي الـ reverse proxy، و Nginx هو حصان العمل الذي يقوم بها
+لنسبة ضخمة من الويب. يُنهي Nginx TLS (بحيث يتحدث تطبيقك عبر HTTP عادي داخليًا بينما
+يحصل المستخدمون على HTTPS)، ويُوجّه الطلبات إلى الـ backend المناسب، ويخدم الأصول
+الثابتة بكفاءة، ويُعيّن مهلات وحدود حجم تحمي تطبيقك من إساءة الاستخدام، ويقدّم بابًا
+أماميًا واحدًا مُحَصَّنًا على المنافذ 80 و 443. يربط هذا الفصل ثلاثة مواضيع في
+المنهج هي في الحقيقة فكرة واحدة — <strong>كشف التطبيق للإنترنت بشكل آمن</strong> — وهو الـ proxy،
+والعنوان (النطاقات/DNS)، والتشفير (TLS/SSL عبر Let's Encrypt).</p>
+<p>الفكرة الأهم على الإطلاق: <strong>الـ reverse proxy هو نقطة الدخول العامة الوحيدة التي
+تفصل بين "كيف يصل العالم إليك" (نطاق واحد، HTTPS، المنفذ 443) و"كيفية هيكلة خدماتك"
+(عدة خدمات داخلية على منافذ خاصة) — وهو المكان الذي تنتمي إليه TLS والتوجيه والمهلات
+والحدود ورؤوس الأمان، وليس في التطبيق.</strong> لا ينبغي أن يُنهي تطبيق FastAPI الخاص بك
+TLS، أو يحلل <code>X-Forwarded-For</code>، أو يفرض حدًا لحجم الطلب، أو يخدم الملفات الثابتة —
+هذه مخاوف تتعلق بالحافة، والحافة هي Nginx. إذا أصبت في هذا الحد، يبقى تطبيقك بسيطًا
+وداخليًا بينما يتعامل الـ proxy مع السطح العام المعادي؛ وإذا أخطأت، فإما أنك تكشف
+التطبيق مباشرة (لا TLS، لا حماية) أو تدفع منطق الحافة إلى التطبيق حيث لا ينتمي.</p>
+<p>الحكم الذي يعلّمه هذا الفصل هو <strong>الـ proxy هو حد أمني وموثوقية، وإعداداته الافتراضية
+ليست إعدادات الإنتاج.</strong> قد يظل الـ reverse proxy الذي "يعمل" — أي تصل الطلبات عبره —
+يفتقر إلى إعادة توجيه HTTPS، أو يوجّه عنوان IP العميل الخاطئ، أو يستخدم مهلات
+عدوانية جدًا (أو أبدًا)، أو يسمح بأحجام رفع غير محدودة، ويُسرّب تفاصيل الخادم في
+الرؤوس. جعله جاهزًا للإنتاج هو مجموعة محددة من القرارات: TLS حقيقي من Let's Encrypt
+مع تجديد تلقائي، رؤوس proxy صحيحة ليرى التطبيق العميل الحقيقي، مهلات وحدود حجم جسم
+معقولة، إعادة توجيه HTTP→HTTPS، رؤوس الأمان (HSTS وما شابه)، و gzip. يضع هذا الفصل
+Nginx مُحَصَّنًا أمام حاوية Invoicely في Compose (الفصل 03)، على نطاق حقيقي، مع HTTPS
+تلقائي — الباب الأمامي الذي يكشفه نشر الـ VPS (الفصل 06).</p>
+<h2 id="_2">لماذا هذا مهم<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>الحافة هي المكان الذي يُقرَّر فيه الأمان والموثوقية والعقد العام لتطبيقك:</p>
+<ul>
+<li><strong>TLS غير قابل للتفاوض، ولا ينبغي للتطبيق التعامل معه.</strong> المستخدمون والمتصفحات
+  و SEO وكل API حديث تتطلب HTTPS؛ HTTP العادي يُسرّب بيانات الاعتماد ويُصنَّف
+  بأنه "غير آمن". إنهاء TLS في الـ proxy يعني أن مكانًا واحدًا يدير الشهادات
+  والتجديد، وأن تطبيقك يتحدث HTTP بسيطًا داخليًا. افعل ذلك في التطبيق وستعيد كل
+  خدمة تنفيذ معالجة الشهادات بشكل سيئ.</li>
+<li><strong>يحمي الـ proxy التطبيق من السطح العام المعادي.</strong> المهلات توقف عميل slow-loris
+  من حجز الـ workers؛ وحد حجم الجسم يوقف رفعًا بحجم 2 جيجابايت من استنفاد الذاكرة؛
+  تحديد المعدل (وعمق المرحلة 9) يكبح إساءة الاستخدام. بدون هذه، عميل واحد سيئ
+  السلوك يُضعف الخدمة بأكملها — وإعدادات التطبيق الافتراضية عادةً ما تكون خاطئة
+  لنقطة نهاية عامة.</li>
+<li><strong>رؤوس Proxy الخاطئة تكسر الأمان والتسجيل بصمت.</strong> خلف الـ proxy، يرى التطبيق
+  عنوان IP الـ proxy ما لم توجّه العنوان الحقيقي (<code>X-Forwarded-For</code>) ويثق التطبيق
+  به بشكل صحيح. أخطأت في هذا وتعمل حدود المعدل وسجلات التدقيق ومنطق الموقع
+  الجغرافي جميعها على أساس العنوان الخاطئ، ويفشل اكتشاف <code>https</code> (<code>X-Forwarded-Proto</code>)
+  — فيظن التطبيق أنه على HTTP ويبني عناوين إعادة توجيه معطوبة أو يرفض ملفات تعريف
+  الارتباط الآمنة.</li>
+<li><strong>النطاق هو الهوية العامة، و DNS/TLS لهما حواف حادة.</strong> سجل A يشير إلى الخادم،
+  وشهادة تطابق اسم المضيف، و <code>www</code> مقابل apex، وتأخيرات الانتشار، و<em>التجديد
+  التلقائي</em> (تنتهي صلاحية الشهادات كل 90 يومًا مع Let's Encrypt — التجديد المنسي
+  هو انقطاع للخدمة على مستوى الموقع) هي جميعها نقاط فشل تُسقط الموقع بطرق لا
+  يمكن للتطبيق إصلاحها.</li>
+<li><strong>تفصل الحافة البنية عن الكشف.</strong> نطاق واحد ومنفذ HTTPS واحد يمكن أن يقدّما
+  backend و frontend وأصولًا ثابتة على منافذ داخلية مختلفة — ويمكنك إعادة هيكلة
+  الخدمات دون تغيير العقد العام. هذا التوسط هو ما يجعل النظام قابلًا للتطور.</li>
+</ul>
+<p>أصبت — Nginx مُحَصَّن واحد يُنهي TLS حقيقيًا متجددًا تلقائيًا، ويوجّه الرؤوس
+الصحيحة، ويفرض المهلات والحدود، ويعيد توجيه HTTP إلى HTTPS، ويُعيّن رؤوس الأمان —
+ويكون تطبيقك آمنًا على الإنترنت مع معالجة السطح المعادي عند الحافة. أخطأت وكشفت
+التطبيق مباشرة، وقدمت HTTP عادي، وكسرت منطق IP العميل، أو استيقظت على شهادة منتهية
+الصلاحية وموقع معطل.</p>
+<p>البُعد المتعلق بالذكاء الاصطناعي: إعدادات Nginx هي المنطقة الكلاسيكية لـ "يبدو
+صحيحًا، لكنه ليس إنتاجيًا" للمساعدين. يُولّدون <code>proxy_pass</code> يوجّه الحركة ويُغفل
+تقريبًا كل ما يجعله آمنًا — لا <code>proxy_set_header</code> لـ IP/proto العميل الحقيقي، ولا
+مهلات، ولا <code>client_max_body_size</code>، ولا إعادة توجيه HTTPS، ولا رؤوس أمان، وغالبًا
+إعداد TLS مُهمَل أو موقّع ذاتيًا بدلاً من Let's Encrypt حقيقي مع تجديد تلقائي.
+يعمل في العرض التوضيحي (الطلب يمر) ويكون خاطئًا للإنتاج في نصف دزينة من الطرق
+الهادئة.</p>
+<h2 id="_3">النموذج الذهني<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>الـ reverse proxy هو الباب العام الوحيد؛ تعيش فيه TLS والتوجيه والحماية، وليس في
+التطبيق:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>   REVERSE PROXY = the single public entry point (the ONLY thing on 80/443)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                    the internet
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                        │  https:// invoicely.com  (443)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                        ▼
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                          ┌───────────────────────────┐
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                          │            NGINX           │  ← terminates TLS, routes, protects
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                          │  · TLS termination (443)   │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                          │  · HTTP→HTTPS redirect (80)│
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                          │  · routing by path/host    │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                          │  · timeouts, body limits   │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                          │  · security headers, gzip  │
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                          │  · correct proxy headers   │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                          └─────────────┬─────────────┘
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>             plain HTTP over the private network (Compose), by SERVICE NAME:
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>              /api  →  backend:8000        /  →  frontend:3000       (never public)
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        → the app speaks simple HTTP internally; the world only ever touches Nginx.
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>   FORWARD vs REVERSE PROXY
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>     forward proxy = in front of CLIENTS (outbound; a VPN/corporate proxy)
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>     reverse proxy = in front of SERVERS (inbound; this) — clients think Nginx IS the app
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>   TLS / HTTPS (terminate once, at the edge)
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>     Let&#39;s Encrypt (certbot) issues a FREE cert for your domain, AUTO-RENEWED every ~90 days.
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        cert proves you control the domain (ACME challenge) → browser trusts the padlock.
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        FORGET renewal → cert expires → whole site down. automation is mandatory, not optional.
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>   DOMAIN / DNS (the address that points at the box)
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>     A record   invoicely.com     → &lt;server IP&gt;          (apex)
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>     A/CNAME    www.invoicely.com  → &lt;server IP&gt;/apex     (pick canonical, redirect the other)
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>        DNS propagation takes minutes–hours; the cert is issued for the NAME, not the IP.
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>   THE PROXY HEADERS THAT MUST BE RIGHT (or security/logging breaks silently)
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>     proxy_set_header Host              $host;               ← app sees the real hostname
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>     proxy_set_header X-Real-IP         $remote_addr;        ← the true client IP (logs, limits)
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>     proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>     proxy_set_header X-Forwarded-Proto $scheme;             ← app knows it&#39;s HTTPS (cookies, redirects)
+</code></pre></div>
+<p>أربعة مبادئ يحملها الفصل:</p>
+<p><strong>نقطة دخول عامة واحدة، كل شيء آخر داخلي.</strong> Nginx هو الخدمة الوحيدة على 80/443؛
+يعيش الـ backend و frontend والأصول الثابتة على منافذ خاصة لا يمكن الوصول إليها إلا
+من خلاله. هذا هو درس Compose (الفصل 03) مطبَّقًا عند الحافة — لا يُكشف التطبيق
+أبدًا بشكل مباشر.</p>
+<p><strong>أنهِ TLS مرة واحدة، عند الـ proxy، وأتمتة التجديد.</strong> يحمل الـ proxy الشهادة،
+ويتحدث HTTPS مع العالم، ويوجّه HTTP عادي داخليًا. تجعل Let's Encrypt الشهادات
+الحقيقية مجانية؛ الجزء غير القابل للتفاوض هو <em>التجديد التلقائي</em>، لأن شهادة 90 يومًا
+منسية هي انقطاع مضمون.</p>
+<p><strong>يجب أن يرى التطبيق العميل والبروتوكول الحقيقيين.</strong> خلف الـ proxy، لا يعرف
+التطبيق إلا ما يقوله له الـ proxy. وجّه <code>Host</code> و <code>X-Real-IP</code>/<code>X-Forwarded-For</code> و
+<code>X-Forwarded-Proto</code> بشكل صحيح — واعدل التطبيق ليثق بها — أو ينكسر IP العميل
+واكتشاف HTTPS وملفات تعريف الارتباط الآمنة وعناوين إعادة التوجيه بطرق خفية.</p>
+<p><strong>الإعدادات الافتراضية ليست إنتاجية؛ الحافة هي حيث تُحَصِّن.</strong> المهلات، و
+<code>client_max_body_size</code>، وإعادة توجيه HTTP→HTTPS، ورؤوس الأمان (HSTS)، و gzip لا
+تظهر بالسحر — كل منها سطر متعمد. الـ proxy هو حيث تتم إدارة السطح العام المعادي،
+لذا يعيش هذا التحصين هنا، وليس في التطبيق.</p>
+<h2 id="_4">مثال إنتاجي<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>تُخدم <strong>Invoicely</strong> على <code>https://app.invoicely.com</code> عبر حاوية Nginx واحدة في حزمة
+Compose (الفصل 03)، وهي الخدمة الوحيدة التي تنشر المنافذ 80 و 443. كل شيء آخر —
+FastAPI backend، و Next.js frontend — داخلي، يمكن لـ Nginx الوصول إليه عبر الشبكة
+الخاصة بواسطة اسم الخدمة. المتطلب الذي يحرك الإعداد: <strong>نطاق واحد، HTTPS دائمًا،
+التطبيق لا يُكشف مباشرةً أبدًا، وشهادة تُجدّد نفسها حتى لا ينقطع الموقع بسبب
+شهادة منسية</strong>.</p>
+<p>الإعداد: لدى DNS سجل A لـ <code>app.invoicely.com</code> يشير إلى الـ VPS، و <code>invoicely.com</code>
+/ <code>www</code> تُعاد توجيهها إليه (مضيف أساسي canonical واحد). يستمع Nginx على 80
+(معيدًا توجيه كل شيء إلى HTTPS) وعلى 443 (TLS مُنهي بشهادة Let's Encrypt تم
+الحصول عليها وتجديدها تلقائيًا بواسطة Certbot). تُوجّه طلبات <code>/api/...</code> إلى
+<code>backend:8000</code>؛ وكل شيء آخر يُوجّه إلى Next.js <code>frontend:3000</code>. يُوجّه كل
+<code>proxy_pass</code> الـ <code>Host</code> الحقيقي و IP العميل و <code>X-Forwarded-Proto</code>، ويُعدَّل تطبيق
+FastAPI ليثق بهذا الـ proxy (بحيث يرى عناوين IP العميل الحقيقية ويعرف أنه على
+HTTPS). يفرض Nginx حد حجم جسم 20 ميجابايت (فواتير بمرفقات، وليست رفعًا بحجم 2
+جيجابايت)، ومهلات قراءة/اتصال معقولة، و gzip، ورؤوس أمان تتضمن HSTS. يعمل تجديد
+Certbot على مؤقت ويُعيد تحميل Nginx — لا تنتهي صلاحية الشهادة دون مراقبة. هذا
+هو الباب الأمامي الذي يضع خلفه فصل VPS (الفصل 06) الخادم.</p>
+<h2 id="_5">هيكل المجلدات<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>يضيف الـ proxy مجموعة مركزة من الملفات — إعداد Nginx، ومادة ACME/TLS، وتخزين
+الشهادات — محفوظة في الـ repo حيث تكون config-as-code (الفصل 01):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>invoicely/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── nginx/
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│   ├── nginx.conf              main config: worker/gzip/log defaults + include of the site
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│   ├── conf.d/
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   │   └── invoicely.conf      THE site: server blocks (80 redirect, 443 TLS), proxy routes
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│   └── snippets/
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│       ├── proxy-headers.conf  the proxy_set_header block, included by every location (DRY)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│       └── security-headers.conf  HSTS + security headers, included once
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>├── docker-compose.yml          nginx is a service here; publishes 80/443 (Chapter 03)
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>├── certbot/
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│   ├── conf/                   Let&#39;s Encrypt certs + renewal config (a VOLUME — persists!)
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│   └── www/                    ACME http-01 challenge webroot (Nginx serves it on port 80)
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>└── ...
+</code></pre></div>
+<p>لماذا هذا التخطيط:</p>
+<ul>
+<li><strong><code>nginx.conf</code> يُضمّن <code>conf.d/*.conf</code>، وليس ملفًا عملاقًا واحدًا.</strong> تعيش
+  الإعدادات الافتراضية العامة (عمليات الـ worker، gzip، تنسيق السجل) في الملف
+  الرئيسي؛ كل موقع/نطاق هو ملفه الخاص في <code>conf.d/</code>. هذا هو أسلوب Nginx ويحافظ
+  على إعداد متعدد المواقع أو متنامٍ قابلًا للقراءة والمراجعة.</li>
+<li><strong>تحافظ <code>snippets/</code> المشتركة على DRY لرؤوس الـ proxy والأمان.</strong> كتلة
+  <code>proxy_set_header</code> وكتلة رأس الأمان متطابقتان عبر المواقع؛ تجميعهما في snippets
+  مُضمّنة يعني أن إصلاح الرأس يحدث مرة واحدة، وليس في خمسة أماكن — المصدر الشائع
+  لإعداد غير متسق ومُحَصَّن جزئيًا.</li>
+<li><strong><code>certbot/conf</code> هي حالة دائمة ويجب أن تكون volume مُسمًّى.</strong> تعيش الشهادات
+  الصادرة وإعداد التجديد هنا؛ إذا لم تكن هذه مُستمرة (درس الـ volume في الفصل 03)،
+  فإن كل إعادة بناء للحاوية تفقد الشهادة وتعيد الطلب من Let's Encrypt — مباشرة
+  إلى حدود معدّلهم. عاملها كـ volume قاعدة البيانات.</li>
+<li><strong><code>certbot/www</code> هو الـ webroot للتحدي.</strong> تثبت Let's Encrypt أنك تتحكم في النطاق
+  بجلب token عبر HTTP؛ يخدم Nginx هذا المسار على المنفذ 80 (الشيء الوحيد الذي
+  يفعله المنفذ 80 إلى جانب إعادة التوجيه). إبقاؤها صريحة يجعل آلية التجديد مرئية
+  بدلاً من أن تكون سحرًا.</li>
+</ul>
+<h2 id="_6">التنفيذ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>إعداد <code>invoicely.conf</code> إنتاجي مع كتلتي server — المنفذ 80 (إعادة التوجيه + ACME)
+والمنفذ 443 (TLS + التوجيه) — ومع كل سطر تحصين مشروح. هذا يفترض أن Nginx يعمل في
+حزمة Compose ويصل إلى الخدمات بالاسم.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># nginx/conf.d/invoicely.conf</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># ---- Port 80: redirect everything to HTTPS, except the ACME challenge ----</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">server</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">app.invoicely.com</span><span class="p">;</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="c1"># Let&#39;s Encrypt fetches its verification token over plain HTTP — must NOT be redirected.</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/.well-known/acme-challenge/</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="kn">root</span><span class="w"> </span><span class="s">/var/www/certbot</span><span class="p">;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">    </span><span class="c1"># Everything else → HTTPS. (No app is ever served over plain HTTP.)</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">        </span><span class="kn">return</span><span class="w"> </span><span class="mi">301</span><span class="w"> </span><span class="s">https://</span><span class="nv">$host$request_uri</span><span class="p">;</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="p">}</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="c1"># ---- Port 443: terminate TLS, harden, and route to internal services ----</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="k">server</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="kn">listen</span><span class="w"> </span><span class="mi">443</span><span class="w"> </span><span class="s">ssl</span><span class="p">;</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="kn">http2</span><span class="w"> </span><span class="no">on</span><span class="p">;</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">    </span><span class="kn">server_name</span><span class="w"> </span><span class="s">app.invoicely.com</span><span class="p">;</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">    </span><span class="c1"># --- TLS: the Let&#39;s Encrypt certificate (auto-renewed by Certbot) ---</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">    </span><span class="kn">ssl_certificate</span><span class="w">     </span><span class="s">/etc/letsencrypt/live/app.invoicely.com/fullchain.pem</span><span class="p">;</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">    </span><span class="kn">ssl_certificate_key</span><span class="w"> </span><span class="s">/etc/letsencrypt/live/app.invoicely.com/privkey.pem</span><span class="p">;</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">    </span><span class="kn">ssl_protocols</span><span class="w"> </span><span class="s">TLSv1.2</span><span class="w"> </span><span class="s">TLSv1.3</span><span class="p">;</span><span class="w">               </span><span class="c1"># no legacy SSL/TLS 1.0/1.1</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="kn">ssl_ciphers</span><span class="w"> </span><span class="s">HIGH:!aNULL:!MD5</span><span class="p">;</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">    </span><span class="c1"># --- Protection: don&#39;t accept unbounded bodies or hang forever ---</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">    </span><span class="kn">client_max_body_size</span><span class="w"> </span><span class="mi">20m</span><span class="p">;</span><span class="w">                    </span><span class="c1"># invoices with attachments, not 2GB uploads</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">    </span><span class="kn">proxy_connect_timeout</span><span class="w"> </span><span class="s">5s</span><span class="p">;</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">    </span><span class="kn">proxy_read_timeout</span><span class="w">    </span><span class="s">30s</span><span class="p">;</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">    </span><span class="kn">proxy_send_timeout</span><span class="w">    </span><span class="s">30s</span><span class="p">;</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">    </span><span class="c1"># --- Security headers (HSTS tells browsers &quot;always HTTPS for this domain&quot;) ---</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">    </span><span class="kn">include</span><span class="w"> </span><span class="s">snippets/security-headers.conf</span><span class="p">;</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">    </span><span class="kn">gzip</span><span class="w"> </span><span class="no">on</span><span class="p">;</span>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="w">    </span><span class="kn">gzip_types</span><span class="w"> </span><span class="s">text/plain</span><span class="w"> </span><span class="s">application/json</span><span class="w"> </span><span class="s">application/javascript</span><span class="w"> </span><span class="s">text/css</span><span class="p">;</span>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="w">    </span><span class="c1"># --- Route: /api → FastAPI backend (internal, by service name) ---</span>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/api/</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a><span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://backend:8000</span><span class="p">;</span>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="w">        </span><span class="kn">include</span><span class="w"> </span><span class="s">snippets/proxy-headers.conf</span><span class="p">;</span><span class="w">     </span><span class="c1"># the headers the app depends on</span>
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a>
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a><span class="w">    </span><span class="c1"># --- Route: everything else → Next.js frontend ---</span>
+<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a><span class="w">    </span><span class="kn">location</span><span class="w"> </span><span class="s">/</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a><span class="w">        </span><span class="kn">proxy_pass</span><span class="w"> </span><span class="s">http://frontend:3000</span><span class="p">;</span>
+<a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a><span class="w">        </span><span class="kn">include</span><span class="w"> </span><span class="s">snippets/proxy-headers.conf</span><span class="p">;</span>
+<a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a><span class="p">}</span>
+</code></pre></div>
+<p>الـ snippet-ان اللذان يجب تضمينهما في كل location مُوجَّه / مرة واحدة لكل server:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># nginx/snippets/proxy-headers.conf — the app is BLIND to the real client without these</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">proxy_set_header</span><span class="w"> </span><span class="s">Host</span><span class="w">              </span><span class="nv">$host</span><span class="p">;</span><span class="w">                        </span><span class="c1"># real hostname (redirects, routing)</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">proxy_set_header</span><span class="w"> </span><span class="s">X-Real-IP</span><span class="w">         </span><span class="nv">$remote_addr</span><span class="p">;</span><span class="w">                 </span><span class="c1"># true client IP (logs, rate limits)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-For</span><span class="w">   </span><span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span><span class="w">   </span><span class="c1"># client IP chain</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Proto</span><span class="w"> </span><span class="nv">$scheme</span><span class="p">;</span><span class="w">                      </span><span class="c1"># app knows it&#39;s HTTPS (cookies!)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># nginx/snippets/security-headers.conf</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">add_header</span><span class="w"> </span><span class="s">Strict-Transport-Security</span><span class="w"> </span><span class="s">&quot;max-age=31536000</span><span class="p">;</span><span class="w"> </span><span class="k">includeSubDomains&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span><span class="w">  </span><span class="c1"># HSTS</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">add_header</span><span class="w"> </span><span class="s">X-Content-Type-Options</span><span class="w"> </span><span class="s">&quot;nosniff&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">add_header</span><span class="w"> </span><span class="s">X-Frame-Options</span><span class="w"> </span><span class="s">&quot;DENY&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">add_header</span><span class="w"> </span><span class="s">Referrer-Policy</span><span class="w"> </span><span class="s">&quot;strict-origin-when-cross-origin&quot;</span><span class="w"> </span><span class="s">always</span><span class="p">;</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1"># (Content-Security-Policy is app-specific; full header hardening is Stage 9.)</span>
+</code></pre></div>
+<p>الحصول على الشهادة وتجديدها تلقائيًا باستخدام Certbot (التجديد هو الجزء المهم):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># One-time issuance: prove domain control via the http-01 challenge (Nginx serves the token on :80).</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>certbot<span class="w"> </span>certonly<span class="w"> </span>--webroot<span class="w"> </span>-w<span class="w"> </span>/var/www/certbot<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>-d<span class="w"> </span>app.invoicely.com<span class="w"> </span>--email<span class="w"> </span>ops@invoicely.com<span class="w"> </span>--agree-tos<span class="w"> </span>--no-eff-email
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1"># Renewal is AUTOMATIC and mandatory: a timer runs `certbot renew` twice daily; it renews</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># only when &lt;30 days remain, then reloads Nginx to pick up the new cert.</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1">#   certbot renew --deploy-hook &quot;docker compose exec nginx nginx -s reload&quot;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># Verify it works WITHOUT waiting 90 days:</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>docker<span class="w"> </span>compose<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>certbot<span class="w"> </span>renew<span class="w"> </span>--dry-run
+</code></pre></div>
+<p>الأشياء الثلاثة التي غالبًا ما تفصل هذا عن إعداد لا يوجّه الحركة فحسب:</p>
+<ul>
+<li><strong><code>X-Forwarded-Proto</code> (وأن يثق التطبيق به) هو ما يجعل التطبيق يعرف أنه على
+  HTTPS.</strong> بدونه، يظن FastAPI خلف الـ proxy أن كل طلب HTTP: يبني عناوين إعادة توجيه
+  بـ <code>http://</code>، وقد يرفض تعيين ملفات تعريف الارتباط <code>Secure</code>، وتنكسر عمليات رد
+  نداء OAuth. يجب إخبار التطبيق ليثق بالـ proxy (مثلاً <code>--proxy-headers</code> /
+  <code>--forwarded-allow-ips</code> لـ Uvicorn، أو <code>ProxyHeadersMiddleware</code> لـ Starlette) —
+  الرأس وحده لا يكفي إذا تجاهله التطبيق.</li>
+<li><strong><code>client_max_body_size</code> والمهلات هي حماية، وإعداداتها الافتراضية خاطئة.</strong> حد
+  الجسم الافتراضي في Nginx هو 1 ميجابايت (صغير جدًا للرفع الحقيقي — ستحصل على
+  أخطاء 413 غامضة) ومهلاته الافتراضية قد تُعلِّق الـ workers على عملاء بطيئين.
+  عيّنها لاحتياجاتك الحقيقية صراحةً؛ لا تكتشفها في الإنتاج.</li>
+<li><strong>يجب أن يبقى موقع تحدي ACME على HTTP عادي.</strong> الاستثناء الوحيد لـ "أعِد توجيه
+  كل شيء إلى HTTPS" هو <code>/.well-known/acme-challenge/</code> — تجلب Let's Encrypt الـ
+  token عبر HTTP على المنفذ 80. أعد توجيهه أيضًا (خطأ شائع في النسخ واللصق) ويفشل
+  التجديد وتنتهي صلاحية الشهادة في النهاية.</li>
+</ul>
+<h2 id="_7">قرارات هندسية<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p><strong>اجعل الـ proxy نقطة الدخول العامة الوحيدة.</strong> Nginx فقط يربط 80/443؛ كل خدمة
+تطبيق داخلية، يُصل إليها بالاسم عبر الشبكة الخاصة. <em>المبرر:</em> لا ينبغي أن يواجه
+التطبيق الإنترنت مباشرة (الفصل 01/03) — الـ proxy هو السطح المُحَصَّن الوحيد،
+ومركزية الحد العام هي ما تتيح لك إضافة TLS والحدود والرؤوس في مكان واحد وإعادة
+هيكلة الخدمات دون تغيير العقد العام.</p>
+<p><strong>أنهِ TLS في الـ proxy مع Let's Encrypt، وأتمتة التجديد.</strong> شهادات مجانية عبر
+ACME، مُنهيّة في Nginx، مع تجديد Certbot على مؤقت وإعادة تحميل Nginx. <em>المبرر:</em>
+HTTPS إلزامي وينبغي أن تكون الشهادات مجانية وذاتية الصيانة؛ مدة 90 يومًا تجعل
+الأتمتة غير اختيارية — <em>سيُنسى</em> التجديد اليدوي في النهاية ويُسقط الموقع. استمر
+volume الشهادة بحيث لا تؤدي إعادة البناء إلى إعادة الطلب ضمن حدود المعدل.</p>
+<p><strong>وجّه العميل والبروتوكول الحقيقيين، واجعل التطبيق يثق بالـ proxy.</strong> عيّن
+<code>Host</code> و <code>X-Real-IP</code>/<code>X-Forwarded-For</code> و <code>X-Forwarded-Proto</code>، واعدل التطبيق
+ليحترمها. <em>المبرر:</em> خلف الـ proxy يكون التطبيق أعمى عن العميل الحقيقي؛ الرؤوس
+الصحيحة (وثقة التطبيق) هي ما يحافظ على صحة التسجيل وتحديد المعدل واكتشاف HTTPS
+وملفات تعريف الارتباط الآمنة وعناوين إعادة التوجيه. هذا إعداد ذو صلة بالأمان،
+وليس رفاهية.</p>
+<p><strong>عيّن المهلات وحد حجم الجسم بشكل متعمد.</strong> <code>client_max_body_size</code> صريح مطابق
+للرفع الحقيقي، ومهلات connect/read/send. <em>المبرر:</em> يحمي الـ proxy التطبيق من
+السطح العام المعادي — الأجسام غير المحدودة تستنفد الذاكرة، والمهلات المفقودة
+تسمح للعملاء البطيئين بحجز الـ workers — وإعدادات Nginx الافتراضية (جسم 1 ميجابايت،
+مهلات سخية) خاطئة لنقطة نهاية عامة. قرّرها؛ لا ترثها.</p>
+<p><strong>أعِد توجيه HTTP→HTTPS وعيّن رؤوس الأمان (HSTS).</strong> المنفذ 80 يعيد توجيه كل
+شيء (باستثناء مسار ACME) إلى 443؛ يرسل 443 HSTS ورؤوس الأمان القياسية. <em>المبرر:</em>
+لا ينبغي أن تنتقل أي بايتة من التطبيق بنص عادي، و HSTS يجعل المتصفحات ترفض حتى
+محاولة HTTP لنطاقك — مُغلقًا نافذة التخفيض. (تحصين الرؤوس/CSP الكامل في المرحلة
+9؛ هذا هو الأساس.)</p>
+<p><strong>اختر اسم مضيف أساسي canonical واحدًا وأعِد توجيه الباقي.</strong> اختر apex أو
+<code>www</code>، واجعل DNS يشير إلى الخادم، وأعِد توجيه 301 للآخر إلى الأساسي؛ أصدر الشهادة
+للأسماء التي تخدمها. <em>المبرر:</em> تقديم نفس التطبيق على اسمي مضيف يقسم ملفات تعريف
+الارتباط و SEO والتخزين المؤقت، ويُضاعف سطح TLS؛ مضيف أساسي واحد مع إعادات
+التوجيه يحافظ على نظافة الهوية والجلسات والشهادات.</p>
+<h2 id="_8">المقايضات<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p><strong>Nginx مقابل Caddy مقابل Traefik مقابل load balancer سحابي.</strong> Nginx مختبَر
+ميدانيًا، منتشر في كل مكان، وقابل للتحكم إلى أقصى حد، لكنك تُعدّ TLS/التجديد بنفسك.
+يقدم Caddy HTTPS <em>تلقائيًا</em> بتكوين شبه معدوم (رائع للإعدادات البسيطة). يكتشف
+Traefik الحاويات تلقائيًا (جميل مع Docker/Kubernetes الديناميكي). يُحمّل الـ load
+balancer السحابي (ALB، Cloud LB) TLS والتوسع إلى المزود. <em>متى يفوز Nginx:</em> تريد
+التحكم وقابلية النقل والمهارة الأكثر قابلية للتحويل — وهو الخيار الصحيح الافتراضي
+لـ VPS واحد. <em>متى يفوز Caddy:</em> تريد أن يعمل HTTPS "فقط" ولا تحتاج إلى قابلية ضبط
+Nginx. <em>متى يفوز الـ LB السحابي:</em> أنت بالفعل في تلك السحابة وتريد TLS/توسع مُدار.
+يُدرَّس Nginx هنا لأن المفاهيم تنتقل إلى كل منها.</p>
+<p><strong>إنهاء TLS في الـ proxy مقابل end-to-end (إعادة التشفير إلى الـ backend).</strong> إنهاء
+TLS في الـ proxy (التطبيق يتحدث HTTP عادي داخليًا) أبسط وهو المعيار لمضيف موثوق
+واحد/شبكة خاصة. إعادة التشفير من الـ proxy إلى الـ backend تضيف defense-in-depth
+للثقة الصفرية أو عندما لا تكون الشبكة الداخلية موثوقة، بتكلفة إدارة شهادات داخلية
+أيضًا. <em>أنهِ في الـ proxy لإعداد Compose لمضيف واحد؛</em> أعد التشفير عندما تقفز
+القفزة الداخلية عبر حد غير موثوق (مصدر قلق ينمو في عالم العقد المتعددة للمرحلة 11).</p>
+<p><strong>تحديد المعدل/WAF على مستوى الـ proxy مقابل على مستوى التطبيق مقابل خدمة
+CDN/حافة.</strong> الحماية الأساسية (المهلات، حدود الجسم، <code>limit_req</code>) في Nginx رخيصة
+وقريبة من المعدن؛ CDN/WAF (Cloudflare) يضيف امتصاص DDoS وقواعد حافة لكنه اعتماد
+وتكلفة آخران؛ التحديد على مستوى التطبيق يعرف سياق العمل (لكل مستخدم، لكل خطة).
+<em>افعل الحماية الرخيصة على مستوى الـ proxy دائمًا؛</em> أضف CDN عندما تواجه إساءة
+حقيقية أو تحتاج إلى تخزين مؤقت عالمي؛ احتفظ بحدود قواعد العمل في التطبيق. العمق
+في المرحلة 9/11.</p>
+<p><strong>Nginx واحد يفعل كل شيء مقابل فصل الاهتمامات.</strong> Nginx واحد يتعامل مع TLS
+والتوجيه والملفات الثابتة والتخزين المؤقت بسيط ومناسب لتطبيق واحد؛ الفصل (CDN
+للثابت/التخزين المؤقت، الـ proxy للتوجيه) يتوسع أفضل لكنه يضيف أجزاء متحركة.
+<em>ابدأ بـ Nginx واحد؛</em> يقدّم بشكل مريح أمام SaaS على خادم واحد، وتفصل فقط عندما
+يطلب قلق محدد (تقديم ثابت عالمي، تخزين مؤقت حافة).</p>
+<h2 id="_9">الأخطاء الشائعة<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h2>
+<p><strong>كشف التطبيق مباشرة بدلاً من توجيهه عبر proxy.</strong> نشر منفذ الـ backend وتوجيه
+المستخدمين إليه — لا TLS، لا حدود، لا رؤوس، التطبيق عارٍ على الإنترنت. <em>الإصلاح:</em>
+Nginx فقط يربط 80/443؛ التطبيق داخلي، يُصل إليه عبر الـ proxy.</p>
+<p><strong>نسيان <code>proxy_set_header</code>، فيرى التطبيق الـ proxy لا العميل.</strong> لا
+<code>X-Real-IP</code>/<code>X-Forwarded-*</code>، فتسجل السجلات وحدود المعدل ومنطق الموقع الجغرافي
+جميعها على أساس IP Nginx، وغياب <code>X-Forwarded-Proto</code> يجعل التطبيق يظن أنه على
+HTTP. <em>الإصلاح:</em> snippet proxy-headers في كل location مُوجَّه، واعدل التطبيق ليثق
+بالـ proxy.</p>
+<p><strong>نسيان التجديد التلقائي للشهادة.</strong> شهادة تم الحصول عليها مرة واحدة، يدويًا، ثم
+نُسيت — حتى انتهت صلاحيتها بعد 90 يومًا وألقى الموقع بأكمله أخطاء شهادة. <em>الإصلاح:</em>
+Certbot على مؤقت مع reload hook؛ تحقق بـ <code>renew --dry-run</code>.</p>
+<p><strong>إعادة توجيه تحدي ACME إلى HTTPS.</strong> إعادة توجيه شاملة لـ "أعِد توجيه كل المنفذ
+80 إلى HTTPS" تعيد توجيه <code>/.well-known/acme-challenge/</code> أيضًا، فلا تستطيع Let's
+Encrypt التحقق ويفشل التجديد بصمت. <em>الإصلاح:</em> قدّم مسار ACME عبر HTTP؛ أعد توجيه
+كل شيء آخر.</p>
+<p><strong>ترك حجم الجسم والمهلات الافتراضية لـ Nginx.</strong> حد الجسم الافتراضي 1 ميجابايت
+يسبب أخطاء 413 غامضة على الرفع الحقيقي؛ المهلات الافتراضية تسمح للعملاء البطيئين
+بتعليق الـ workers. <em>الإصلاح:</em> عيّن <code>client_max_body_size</code> والمهلات لمتطلباتك
+الحقيقية صراحةً.</p>
+<p><strong>لا إعادة توجيه HTTP→HTTPS (تقديم كليهما).</strong> يجيب التطبيق على HTTP عادي وكذلك
+HTTPS، فبعض الحركة غير مشفرة وتظهر مشكلات mixed-content/downgrade. <em>الإصلاح:</em>
+المنفذ 80 يعيد التوجيه إلى 443؛ أضف HSTS ليكف المتصفحون عن محاولة HTTP.</p>
+<p><strong>عدم استمرار volume الشهادة.</strong> دليل شهادات Certbot ليس volume مُسمًّى، فإعادة
+بناء الحاوية تفقد الشهادة وتعيد الطلب من Let's Encrypt — لتصل سريعًا إلى حدود
+معدّلهم وتجد نفسك بدون شهادة. <em>الإصلاح:</em> دليل الشهادات volume دائم مُسمًّى
+(الفصل 03).</p>
+<h2 id="_10">أخطاء الذكاء الاصطناعي<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<p>إعدادات Nginx هي منطقة "يُوجّه الحركة، ليس إنتاجيًا" المميزة للمساعدين — يعمل
+<code>proxy_pass</code>، وتقريبًا كل الحماية مفقودة. راجع الإعدادات المولّدة ضد قائمة التحصين
+كاملة، وليس "هل يمر الطلب".</p>
+<h3 id="claude-code-proxy_pass">Claude Code: <code>proxy_pass</code> عارٍ بدون رؤوس أو مهلات أو حدود<a class="headerlink" href="#claude-code-proxy_pass" title="Permanent link">&para;</a></h3>
+<p>عند طلب "ضع Nginx أمام التطبيق"، ينتج Claude Code عادةً كتلة server واحدة بـ
+<code>proxy_pass</code> وقليلاً آخر — لا <code>proxy_set_header</code>، ولا <code>client_max_body_size</code>، ولا
+مهلات، ولا رؤوس أمان — لأن هذا الحد الأدنى الذي يوجّه طلبًا، وتوجيه الطلب هو ما
+يتحقق منه.</p>
+<p><strong>الاكتشاف:</strong> <code>location</code> بـ <code>proxy_pass</code> وبدون أسطر <code>proxy_set_header</code>؛ لا
+<code>client_max_body_size</code>؛ لا <code>proxy_*_timeout</code>؛ لا رؤوس أمان؛ التطبيق يرى IP Nginx
+في سجلاته؛ أخطاء 413 عند الرفع.</p>
+<p><strong>الإصلاح:</strong> اشترط تحصين الـ proxy الكامل:</p>
+<blockquote>
+<p>يحتاج إعداد الـ proxy هذا إلى أساسيات الإنتاج: <code>proxy_set_header</code> لـ <code>Host</code> و
+<code>X-Real-IP</code> و <code>X-Forwarded-For</code> و <code>X-Forwarded-Proto</code> في كل location مُوجَّه؛
+<code>client_max_body_size</code> صريح ومهلات connect/read/send؛ ورؤوس أمان (HSTS وما شابه).
+  تأكد من أن سجلات التطبيق تعرض عناوين IP العميل الحقيقية وتعرف أنه على HTTPS.</p>
+</blockquote>
+<h3 id="gpt-tls">GPT: TLS موقّع ذاتيًا أو بدون تجديد تلقائي<a class="headerlink" href="#gpt-tls" title="Permanent link">&para;</a></h3>
+<p>عند المطالبة بـ HTTPS، غالبًا ما تُوصل نماذج عائلة GPT TLS بشهادة موقّعة ذاتيًا
+(تحذيرات المتصفح) أو إصدار Let's Encrypt يدوي بدون أتمتة تجديد — HTTPS "يعمل" في
+الإعداد لكنه إما غير موثوق أو قنبلة موقوتة بمدى 90 يومًا.</p>
+<p><strong>الاكتشاف:</strong> <code>openssl req -x509 ... self-signed</code> مقدّم كإعداد TLS؛ <code>certbot
+certonly</code> لمرة واحدة بدون timer/cron/<code>--deploy-hook</code>؛ لا volume شهادة دائم؛ لا
+تحقق <code>renew --dry-run</code>؛ شهادات ستنتهي صلاحيتها دون مراقبة.</p>
+<p><strong>الإصلاح:</strong> اشترط شهادات حقيقية ذات تجديد تلقائي:</p>
+<blockquote>
+<p>استخدم Let's Encrypt لشهادة موثوقة حقيقية، لا موقّعة ذاتيًا، وأعدّ التجديد
+التلقائي (مؤقت يشغّل <code>certbot renew</code> مع hook يعيد تحميل Nginx). استمر دليل
+الشهادات كـ volume مُسمًّى بحيث لا تؤدي إعادة البناء إلى إعادة الطلب. تحقق من
+التجديد بـ <code>certbot renew --dry-run</code>.</p>
+</blockquote>
+<h3 id="cursor-acme-https">Cursor: كسر تحدي ACME أو إعادة توجيه HTTPS<a class="headerlink" href="#cursor-acme-https" title="Permanent link">&para;</a></h3>
+<p>عند تعديل إعداد Nginx بشكل inline، يميل Cursor إلى إضافة "أعِد توجيه كل HTTP إلى
+HTTPS" نظيف يلتقط مسار تحدي ACME أيضًا، أو يوجّه الرؤوس بشكل غير متسق عبر
+المواقع (مُحَصَّن على مسار واحد، عارٍ على آخر) — لأن التعديل محلي ولا يرى ثوابت
+الإعداد بأكمله.</p>
+<p><strong>الاكتشاف:</strong> منفذ 80 بـ <code>return 301 https://...</code> بدون استثناء لـ
+<code>/.well-known/acme-challenge/</code>؛ رؤوس proxy موجودة في بعض <code>location</code> ومفقودة في
+أخرى؛ snippet أمان مُضمَّن في كتلة server واحدة وليس أخرى؛ التجديد يفشل بعد
+تعديل الإعداد.</p>
+<p><strong>الإصلاح:</strong> اشترط ثوابت الإعداد بأكمله:</p>
+<blockquote>
+<p>أبق مسار تحدي ACME (<code>/.well-known/acme-challenge/</code>) مخدومًا عبر HTTP عادي؛ أعد
+توجيه كل شيء <em>آخر</em> فقط إلى HTTPS. طبّق نفس snippets proxy-headers و
+security-headers باستمرار على كل location مُوجَّه — اجمعها في includes بحيث لا
+تنزلق. أعد تشغيل <code>renew --dry-run</code> بعد أي تغيير في المنفذ 80.</p>
+</blockquote>
+<h2 id="_11">أفضل الممارسات<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<p><strong>نقطة دخول عامة واحدة مُحَصَّنة.</strong> Nginx فقط على 80/443؛ جميع خدمات التطبيق
+داخلية. أضف TLS والحدود والرؤوس مرة واحدة، عند الحافة — لا تكشف التطبيق مباشرةً
+أبدًا.</p>
+<p><strong>TLS حقيقي ذاتي التجديد.</strong> Let's Encrypt عبر Certbot، مُنهي في الـ proxy،
+مجدد على مؤقت مع reload hook، دليل شهادة مُستمر. تحقق بـ <code>renew --dry-run</code>. HTTPS
+إلزامي؛ الانتهاء قابل للوقاية.</p>
+<p><strong>رؤوس Proxy صحيحة، وتطبيق يثق بالـ proxy.</strong> <code>Host</code> و <code>X-Real-IP</code> و
+<code>X-Forwarded-For</code> و <code>X-Forwarded-Proto</code> في كل مسار، بالإضافة إلى تعديل التطبيق
+ليحترم الرؤوس المُوجَّهة. تأكد من عناوين IP العميل الحقيقية في السجلات واكتشاف
+HTTPS الصحيح.</p>
+<p><strong>حماية متعمدة: المهلات، حدود الجسم، إعادة التوجيه، رؤوس الأمان.</strong> عيّن
+<code>client_max_body_size</code> والمهلات للاحتياجات الحقيقية؛ أعِد توجيه HTTP→HTTPS (باستثناء
+ACME)؛ أرسل HSTS ورؤوس الأمان القياسية. لا ترث إعدادات Nginx الافتراضية لنقطة
+نهاية عامة.</p>
+<p><strong>حافظ على الإعداد DRY وفي version control.</strong> الإعدادات الافتراضية العامة في
+<code>nginx.conf</code>، ملف واحد لكل موقع في <code>conf.d/</code>، كتل رؤوس مشتركة في includes
+<code>snippets/</code> — بحيث يكون التحصين متسقًا ويحدث الإصلاح مرة واحدة. الإعداد هو كود
+(الفصل 01).</p>
+<p><strong>اسم مضيف أساسي canonical واحد.</strong> اختر apex أو <code>www</code>، وأعِد توجيه الآخر، وأصدر
+الشهادة لما تخدمه. هوية واحدة لملفات تعريف الارتباط و SEO و TLS.</p>
+<h2 id="_12">الأنماط المضادة<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p><strong>التطبيق العاري.</strong> التطبيق منشور مباشرة على الإنترنت بدون proxy — لا TLS، لا
+حدود، لا رؤوس. العلامة: المستخدمون يضربون منفذ التطبيق؛ <code>http://</code> بمنفذ خام في
+العنوان URL؛ التطبيق يُنهي TLS الخاص به.</p>
+<p><strong>الـ Backend الأعمى.</strong> <code>proxy_pass</code> بدون رؤوس مُوجَّهة، فيرى التطبيق IP الـ proxy
+ويظن أنه على HTTP. العلامة: كل طلب مسجل من IP داخلي واحد؛ ملفات تعريف الارتباط
+<code>Secure</code> وعناوين إعادة التوجيه <code>http://</code> معطوبة خلف HTTPS.</p>
+<p><strong>الشهادة المنتهية الصلاحية.</strong> TLS معد مرة واحدة يدويًا بدون أتمتة تجديد،
+سينتهي صلاحيته حتمًا. العلامة: لا مؤقت/hook لـ Certbot، لا volume شهادة دائم،
+"الموقع سقط وهو خطأ شهادة" كل ~90 يومًا.</p>
+<p><strong>القفل الموقّع ذاتيًا.</strong> شهادة موقّعة ذاتيًا مستخدمة في الإنتاج، تطلق تحذيرات
+المتصفح وتدرّب المستخدمين على النقر عبر أخطاء الأمان. العلامة: <code>openssl ... -x509</code>
+في الإعداد؛ <code>NET::ERR_CERT_AUTHORITY_INVALID</code>.</p>
+<p><strong>التجديد المحظور لـ ACME.</strong> إعادة توجيه HTTP→HTTPS شاملة تعيد توجيه تحدي ACME
+أيضًا، فيفشل التجديد بصمت. العلامة: أخطاء تجديد حول مسار التحدي؛ فشل <code>--dry-run</code>
+بعد تعديل المنفذ 80.</p>
+<p><strong>Proxy بحدود افتراضية.</strong> إعدادات Nginx الافتراضية متروكة في مكانها — حد جسم 1
+ميجابايت يسبب أخطاء 413، مهلات سخية تسمح للعملاء البطيئين بتعليق الـ workers.
+العلامة: إخفاقات رفع غامضة عند ~1 ميجابايت؛ workers محجوزة بسبب اتصالات بطيئة.</p>
+<h2 id="_13">شجرة القرار<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<p>"أنا أضع proxy أمام التطبيق (أو أراجع إعداد Nginx) — ما الذي يجب أن يكون صحيحًا؟"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>ENTRY POINT
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  Is Nginx the ONLY thing on 80/443, with all app services internal?
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>     no → stop exposing the app directly. one public door; everything else behind it.
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>TLS
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  Is there a REAL (Let&#39;s Encrypt, not self-signed) certificate?          no → issue one via ACME.
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  Is renewal AUTOMATED (timer + reload hook) and the cert dir PERSISTED? no → automate + persist.
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>        verify: certbot renew --dry-run passes.
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>  Is the ACME challenge path served over HTTP (not redirected)?          no → carve it out.
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>REDIRECT &amp; HEADERS
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>  Does port 80 redirect everything (except ACME) to HTTPS?               no → add the 301.
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>  Are HSTS + security headers set on 443?                                no → add the snippet.
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>PROXY HEADERS (per proxied location)
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>  Host, X-Real-IP, X-Forwarded-For, X-Forwarded-Proto all forwarded?     no → add proxy-headers snippet.
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>  Is the APP configured to trust the proxy (forwarded-allow-ips)?        no → configure it.
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>        verify: app logs show real client IPs; app knows it&#39;s HTTPS.
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>PROTECTION
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>  client_max_body_size set to real upload needs (not the 1MB default)?   no → set it.
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>  connect/read/send timeouts set?                                        no → set them.
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>DOMAIN
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>  DNS A record points at the server; one canonical host, others 301&#39;d; cert covers the names served?
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>     any no → fix DNS / redirects / cert SANs.
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a>
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a>CONSISTENCY
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a>  Same proxy-headers + security snippets on EVERY location/server (via includes)?
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a>     no → factor into snippets so hardening can&#39;t drift.
+<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a>  all yes → it&#39;s a secure front door, not just a router.
+</code></pre></div>
+<h2 id="_14">قائمة المراجعة<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<h3 id="_15">قائمة مراجعة التنفيذ<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] Nginx فقط يربط 80/443؛ جميع خدمات التطبيق داخلية (يُصل إليها باسم الخدمة).</li>
+<li>[ ] شهادة <strong>Let's Encrypt</strong> حقيقية تُنهي TLS في الـ proxy (<code>TLSv1.2</code>/<code>1.3</code> فقط).</li>
+<li>[ ] <strong>التجديد التلقائي</strong> للشهادة مُعد (مؤقت + Nginx reload hook) ومُتحقق منه بـ
+      <code>renew --dry-run</code>؛ دليل الشهادة volume دائم.</li>
+<li>[ ] المنفذ 80 <strong>يعيد التوجيه إلى HTTPS</strong> — باستثناء
+      <code>/.well-known/acme-challenge/</code>، المخدوم عبر HTTP.</li>
+<li>[ ] كل location مُوجَّه يوجّه <code>Host</code> و <code>X-Real-IP</code> و <code>X-Forwarded-For</code> و
+      <code>X-Forwarded-Proto</code>، والتطبيق مُعد ليثق بالـ proxy.</li>
+<li>[ ] <code>client_max_body_size</code> ومهلات connect/read/send <strong>مُعيَّنة</strong> للاحتياجات
+      الحقيقية (وليست الافتراضية).</li>
+<li>[ ] <strong>HSTS</strong> ورؤوس الأمان مُعيَّنة على server HTTPS.</li>
+</ul>
+<h3 id="_16">قائمة مراجعة البنية<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] إعداد Nginx هو config-as-code مُتحكم في إصداره؛ مواقع في <code>conf.d/</code>، كتل
+      مشتركة في includes <code>snippets/</code> (DRY، لا انزلاق).</li>
+<li>[ ] اسم مضيف أساسي canonical واحد؛ أسماء مضيف أخرى معاد توجيهها بـ 301 إليه؛
+      الشهادة تغطي ما يتم تقديمه.</li>
+<li>[ ] TLS مُنهي في الـ proxy (التطبيق يتحدث HTTP داخليًا)، خيار ملائم لـ topology
+      المضيف الواحد.</li>
+<li>[ ] حماية الحافة الأساسية (المهلات، حد الجسم، و <code>limit_req</code> حيث يلزم) موجودة؛
+      عمق WAF/تحديد المعدل الأعمق مؤجل إلى المرحلة 9.</li>
+</ul>
+<h3 id="_17">قائمة مراجعة الكود<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] لا خدمة تطبيق مكشوفة مباشرة على الإنترنت؛ الـ proxy فقط عام.</li>
+<li>[ ] لا <code>proxy_pass</code> يفتقد الرؤوس المُوجَّهة (راقب الإعدادات المولّدة بالذكاء
+      الاصطناعي)؛ لا شهادة موقّعة ذاتيًا في الإنتاج؛ لا أتمتة تجديد مفقودة.</li>
+<li>[ ] مسار تحدي ACME غير ملتقط بواسطة إعادة توجيه HTTPS.</li>
+<li>[ ] حجم الجسم والمهلات مُعيَّنة صراحةً؛ رؤوس HSTS/الأمان موجودة.</li>
+<li>[ ] snippets الـ proxy والأمان مطبقة باستمرار على كل location (عبر includes).</li>
+</ul>
+<h3 id="_18">قائمة مراجعة النشر<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] سجلات DNS A/AAAA تشير إلى الخادم وقد انتشرت قبل إصدار الشهادة.</li>
+<li>[ ] الشهادة صادرة و <code>renew --dry-run</code> ينجح على الخادم الفعلي.</li>
+<li>[ ] volume الشهادة دائم ومُنسوخ احتياطيًا؛ إعادة البناء لا تعيد طلب الشهادات.</li>
+<li>[ ] HTTPS مؤكد end-to-end (القفل، اسم المضيف الصحيح، إعادة توجيه HTTP→HTTPS
+      تعمل) قبل الإطلاق.</li>
+</ul>
+<h2 id="_19">تمارين<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h2>
+<p><strong>1. قدّم التطبيق ووجّه العميل بشكل صحيح.</strong> ضع Nginx أمام Invoicely's backend
+بحيث يوجّه <code>/api</code> إليه، وأثبت — من سجلات الطلبات الخاصة بالتطبيق نفسه — أنه
+بدون رؤوس الـ proxy يرى التطبيق IP Nginx ويظن أنه على HTTP، و<em>معها</em> (وإعداد ثقة
+على جانب التطبيق) يرى IP العميل الحقيقي ويعرف أنه HTTPS. الناتج هما عينتا
+السجلات والـ diff الذي أصلحها.</p>
+<p><strong>2. أصدر شهادة حقيقية وجددها تلقائيًا.</strong> على نطاق تتحكم فيه مُوجَّه إلى خادم
+اختبار، احصل على شهادة Let's Encrypt عبر تحدي http-01، وأعدّ التجديد التلقائي
+مع reload hook، وأثبت أن التجديد يعمل بـ <code>certbot renew --dry-run</code> — ثم اكسر
+عمدًا مسار ACME بإعادة توجيه HTTPS شاملة ولاحظ فشل dry-run، مُظهرًا ضرورة
+الاستثناء. الناتج هو التجديد العامل وإعادة التوجيه المكسورة/المُصلحة.</p>
+<p><strong>3. تحصّن ضد السطح المعادي.</strong> بدءًا من <code>proxy_pass</code> عارٍ، أضف
+<code>client_max_body_size</code> والمهلات وإعادة توجيه HTTP→HTTPS و HSTS/رؤوس الأمان؛ ثم
+أظهر عمل كل حماية — 413 على رفع متجاوز الحد، مهلة عميل بطيء، طلب HTTP معاد
+توجيهه، و HSTS في رؤوس الاستجابة. الناتج هو diff الإعداد والتقاط قصير لكل سلوك.</p>
+<h2 id="_20">قراءات إضافية<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Nginx documentation — "Reverse Proxy" و <code>ngx_http_proxy_module</code></strong> (nginx.org/en/docs) —
+  المرجع الموثوق لـ <code>proxy_pass</code> و <code>proxy_set_header</code> والمهلات والتخزين المؤقت
+  وراء إعداد هذا الفصل.</li>
+<li><strong>Let's Encrypt &amp; Certbot documentation</strong> (letsencrypt.org, certbot.eff.org) — كيف
+  تعمل تحديات ACME وكيف تأتمت الإصدار والتجديد بشكل صحيح، بما في ذلك تدفق
+  http-01 webroot المستخدم هنا.</li>
+<li><strong>Mozilla SSL Configuration Generator</strong> (ssl-config.mozilla.org) — يولّد كتلة
+  <code>ssl_protocols</code>/<code>ssl_ciphers</code> حديثة وآمنة لـ Nginx؛ المصدر العملي لإعدادات TLS
+  هنا.</li>
+<li><strong>MDN — HTTP headers: <code>Strict-Transport-Security</code> و <code>X-Forwarded-*</code> و <code>Forwarded</code></strong>
+  (developer.mozilla.org) — دلالات دقيقة لـ HSTS ورؤوس التوجيه التي يعتمد عليها
+  التطبيق.</li>
+<li><strong>المرحلة 7، الفصل 05 — CI/CD مع GitHub Actions</strong> — الخطوة التالية: أتمتة
+  البناء والاختبار والنشر للتطبيق وهذا الـ proxy بحيث يكون الشحن خط أنابيب، لا
+  جلسة SSH يدوية.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  عد إلى الأعلى
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="هامش سفلي" >
+        
+          
+          <a href="../03-docker-compose-and-multi-service-environments/" class="md-footer__link md-footer__link--prev" aria-label="السابقة: Docker Compose والبيئات متعددة الخدمات">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                السابقة
+              </span>
+              <div class="md-ellipsis">
+                Docker Compose والبيئات متعددة الخدمات
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../05-ci-cd-with-github-actions/" class="md-footer__link md-footer__link--next" aria-label="التالية: CI/CD باستخدام GitHub Actions">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                التالية
+              </span>
+              <div class="md-ellipsis">
+                CI/CD باستخدام GitHub Actions
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tracking", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "clipboard.copy": "\u0646\u0633\u062e \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "search.result.more.one": "\u0623\u0643\u062b\u0631 \u0645\u0646 1 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.more.other": "\u0623\u0643\u062b\u0631 \u0645\u0646 # \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.none": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c", "search.result.one": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b \u0645\u0633\u062a\u0646\u062f \u0648\u0627\u062d\u062f", "search.result.other": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b # \u0645\u0633\u062a\u0646\u062f\u0627\u062a", "search.result.placeholder": "\u0627\u0643\u062a\u0628 \u0644\u0628\u062f\u0621 \u0627\u0644\u0628\u062d\u062b", "search.result.term.missing": "\u0645\u0641\u0642\u0648\u062f", "select.version": "\u0625\u062e\u062a\u0631 \u0627\u0644\u0625\u0635\u062f\u0627\u0631"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

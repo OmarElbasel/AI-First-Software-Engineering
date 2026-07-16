@@ -1,0 +1,5719 @@
+
+<!doctype html>
+<html lang="ar" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A production-grade handbook for engineering software with AI as a disciplined teammate.">
+      
+      
+      
+      
+        <link rel="prev" href="../05-multi-agent-systems/">
+      
+      
+        <link rel="next" href="../07-ai-debugging/">
+      
+      
+        
+          <link rel="alternate" href="../../../../handbook/stage-10-ai-engineering/06-ai-code-review/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ar">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>مراجعة الكود بالذكاء الاصطناعي - هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="rtl" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          انتقل إلى المحتوى
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="عنوان العارضة">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-header__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              مراجعة الكود بالذكاء الاصطناعي
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="إختر اللغة">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../handbook/stage-10-ai-engineering/06-ai-code-review/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ar" class="md-select__link">
+              العربية
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="بحث" placeholder="بحث" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="إبحث">
+        
+        <button type="reset" class="md-search__icon md-icon" title="مسح كلي" aria-label="مسح كلي" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            بدء البحث
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="تصفح" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-nav__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الرئيسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../START-HERE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ابدأ من هنا
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/01-what-is-software-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ما هي هندسة البرمجيات؟
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/02-product-thinking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفكير بعقلية المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/03-ai-first-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطوير بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/04-engineering-trade-offs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المفاضلات الهندسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/05-technical-debt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الدَّين التقني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/06-build-vs-buy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء مقابل الشراء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/07-simplicity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البساطة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/08-maintainability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية الصيانة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/01-layered-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية الطبقية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/02-feature-based-and-vertical-slice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية القائمة على الميزات والشرائح الرأسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/03-clean-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية النظيفة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/04-monolith-modular-monolith-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المتراصّ والمتراصّ المعياري والخدمات المصغّرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/05-service-layer-and-repository-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    طبقة الخدمات ونمط المستودع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/06-dependency-injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن التبعيات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/07-event-driven-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية المدفوعة بالأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/01-building-apis-with-fastapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء واجهات API باستخدام FastAPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/02-data-persistence-sqlalchemy-alembic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حفظ البيانات: SQLAlchemy و Alembic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/03-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/04-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/05-error-handling-and-api-versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معالجة الأخطاء وإصدارات API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/06-background-jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المهام الخلفية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/07-caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التخزين المؤقت
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/08-logging-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسجيل وقابلية المراقبة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/09-file-storage-and-email/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/01-building-uis-with-react-and-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء الواجهات باستخدام React و TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/02-nextjs-and-the-app-router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next.js وموجّه التطبيق App Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/03-server-and-client-components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مكوّنات الخادم والعميل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/04-data-fetching-and-server-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    جلب البيانات وحالة الخادم
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/05-state-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الحالة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/06-forms-and-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النماذج والتحقق من الإدخال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/07-frontend-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/08-frontend-architecture-and-folder-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معمارية الواجهة الأمامية وهيكل المجلدات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/01-react-native-and-expo-foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أساسيات React Native و Expo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/02-navigation-and-deep-linking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التنقّل والروابط العميقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/03-authentication-on-mobile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة على الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/04-offline-support-and-data-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دعم العمل دون اتصال ومزامنة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/05-push-notifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الإشعارات الفورية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/06-mobile-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/07-building-shipping-and-ota-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء والنشر وتحديثات OTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/01-relational-databases-and-data-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قواعد البيانات العلائقية ونمذجة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/02-schema-design-and-normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصميم المخطط والتطبيع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/03-indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الفهرسة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/04-transactions-and-concurrency-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعاملات والتحكم في التزامن
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/05-query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحسين الاستعلامات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/06-migrations-and-schema-evolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الترحيلات وتطوّر المخطط
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 7 · DevOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 7 · DevOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/01-linux-for-production-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux لخوادم الإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/02-docker-and-containerization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker والحاويات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/03-docker-compose-and-multi-service-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose والبيئات متعددة الخدمات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/05-ci-cd-with-github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD باستخدام GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/06-deploying-to-a-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النشر على خادم VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/07-monitoring-and-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المراقبة والتسجيل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 8 · الاختبارات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 8 · الاختبارات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/01-test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    استراتيجية الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/02-unit-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات الوحدة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/03-mocking-and-test-doubles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المحاكاة وبدائل الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/04-integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/05-end-to-end-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الاختبارات الشاملة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 9 · الأمان
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 9 · الأمان
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/01-security-mindset-and-owasp-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عقلية الأمان وقائمة OWASP العشرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/02-jwt-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أمان JWT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/03-oauth2-and-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/04-secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الأسرار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/05-sql-injection-and-input-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن SQL ومعالجة المدخلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/06-xss-and-content-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/07-csrf-cors-and-browser-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSRF و CORS وأمان المتصفح
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/08-rate-limiting-and-abuse-prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحديد المعدل ومنع إساءة الاستخدام
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-openai-codex-and-cursor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Codex و Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة الموجّهات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-multi-agent-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الأنظمة متعددة الوكلاء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="التنفيذ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        موجِّه المراجعة — مهندس ضد الضوضاء
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        توصيل CI — استشاري بالصلاحيات، لا بالوعد
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمريرة البشرية — بروتوكول، لا انطباع
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القرارات الهندسية
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: المراجع الذي يبدأ إعادة التصميم
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: التمريرة المتملقَة التي تمدح طريقها متجاوزة العيب
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: المراجع المعتمد على الفرق والأعمى عن النظام
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القائمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءة إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-ai-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصحيح الأخطاء بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-ai-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    سير عمل الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/01-scalability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية التوسّع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/02-load-balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    موازنة الحمل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/03-horizontal-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التوسّع الأفقي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/04-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/05-queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الطوابير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/06-cdn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CDN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/07-event-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بثّ الأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/01-mvp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنتج الأولي (MVP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/02-pricing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسعير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/03-payments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المدفوعات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/04-analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التحليلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/05-user-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ملاحظات المستخدمين
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/06-product-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مقاييس المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/07-growth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النمو
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوائم التحقق
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    قوائم التحقق
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة مراجعة الكود
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة الجاهزية للإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أدلة العمل
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    أدلة العمل
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/starting-an-ai-first-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دليل عمل: بدء مشروع بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    القوالب
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    القوالب
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب سجل القرار المعماري (ADR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-conceptual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-technical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/claude-md-starter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/project-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب موجز المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/pull-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب طلب الدمج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عن المشروع
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    عن المشروع
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/00-CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دستور المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/01-project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    رؤية المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/02-curriculum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنهج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطبيق المرجعي (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../starter-kits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوالب البدء (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="التنفيذ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        موجِّه المراجعة — مهندس ضد الضوضاء
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        توصيل CI — استشاري بالصلاحيات، لا بالوعد
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمريرة البشرية — بروتوكول، لا انطباع
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القرارات الهندسية
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: المراجع الذي يبدأ إعادة التصميم
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: التمريرة المتملقَة التي تمدح طريقها متجاوزة العيب
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: المراجع المعتمد على الفرق والأعمى عن النظام
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القائمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءة إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">مراجعة الكود بالذكاء الاصطناعي<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">المقدمة<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>يتناول هذا الفصل مراجعة الكود في الاتجاهين معًا: <strong>مراجعة الكود الذي كتبه الذكاء الاصطناعي</strong>،
+و<strong>استخدام الذكاء الاصطناعي لمراجعة الكود</strong>. يصلان معًا لأن الحدث ذاته أنتج كليهما — عندما
+أصبح التوليد رخيصًا، أصبحت المراجعة هي عنق الزجاجة، وعُنق الزجاجة هو حيث يعيش الآن
+اهتمام الهندسة.</p>
+<p>الاتجاه الأول هو انضباط بشري مع لمسة مختلفة. الكود المولَّد بالذكاء الاصطناعي يهزم
+الغرائز التي تلتقط أخطاء البشر: فهو مقنع بحكم بنائه — تسمية متسقة، هيكل واثق، أسلوب
+مطابق للأعراف — لذا فإن رد الفعل "ثمة شيء غير سليم" الذي يميّز خطأ الزميل المتعب يبقى
+صامتًا. مراجعته جيدًا تعني استبدال القراءة المعتمدة على الطلاقة بفحص هيكلي معادٍ: مقابل
+المواصفة، مقابل الثوابت، مقابل أنماط الفشل المعروفة التي تضغطها
+<a href="../../../checklists/code-review/">قائمة مراجعة الكود</a> الخاصة بهذا الكتاب في قسمها
+المخصص للكود المولَّد بالذكاء الاصطناعي.</p>
+<p>الاتجاه الثاني هو مشروع هندسي: المراجع بالذكاء الاصطناعي لا يكل ولا يتعب وسريع ويقرأ
+كل سطر في كل فرق — خصائص لا تتوافر في أي مراجع بشري — بينما يفتقر إلى ما لا يملكه إلا
+البشر: معرفة القصد، وسياق المنتج، والمساءلة. حين يُبنى جيدًا، يرفع المرور الآلي التلقائي
+من قاع الجودة (لا شيء يُدمج مع الأخطاء السخيفة) ويحرر الانتباه البشري للقمة (التصميم،
+والمنتج، والمخاطرة). وحين يُبنى بشكل سيئ، يصبح مدفعًا من الملاحظات السخيفة يتجاهله الجميع،
+أو الأسوأ، ختم مطاطي يُهرّب كودًا غير مُراجَع إلى الإنتاج. يبني هذا الفصل النسخة المحكَمة
+على Invoicely ويرسم الخط الذي لا يتغير أبدًا: مراجعة الذكاء الاصطناعي تُعلِم قرار الدمج؛
+هي لا تملكه قط.</p>
+<h2 id="_3">لماذا هذا مهم<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>عدم تماثل الحجم هو القيد المحدد للهندسة المعتمدة على الذكاء الاصطناعي أولًا.</strong> ينتج
+  الوكيل ما يكفي ليوم كامل من الفروق في ساعة؛ سعة مراجعتك لم تتغير. كل ممارسة في المرحلة
+  10 حتى الآن (المواصفات، وحدود النطاق، وطلبات السحب الصغيرة) تدير هذا عدم التماثل من
+  جانب التوليد؛ والمراجعة هي حيث تديره من جانب الاستهلاك — أو حيث يهزمك بصمت عبر الختم
+  المطاطي.</li>
+<li><strong>الاقناع يقلب ملف المخاطرة رأسًا على عقب.</strong> أخطاء البشر تتجمع حيث يبدو الكود مستعجلًا
+  أو مشوشًا؛ أخطاء الذكاء الاصطناعي تختبئ داخل كود <em>أفضل</em> من طلب السحب المتوسط لديك.
+  فرق الخمسة أسطر الذي يعيد التسمية بواثق، ملف الاختبار الذي يختبر المسار الناجح فقط،
+  معالج الخطأ الذي يسجل ويستمر إلى حالة فاسدة — كل واحد منها يجتاز اختبار القراءة السريعة.
+  المراجعة التي تعتمد على "هل يقرأ جيدًا؟" الآن تنتقي <em>لصالح</em> نمط الفشل.</li>
+<li><strong>المساءلة لا تنضغط.</strong> حين يكون حساب الخصم خاطئًا في الإنتاج، فإن "الوكيل كتبه والبوت
+  وافق عليه" ليس إجابة يقبلها أحد — قاعدة المرحلة 1 بأن الذكاء الاصطناعي لا يتخذ قرارات
+  هندسية غير مُراجَعة تحط هنا في أشد نقطة فيها. هناك من يدمج؛ وذاك من يجيب.</li>
+<li><strong>المراجعة هي حيث يتعلم النظام.</strong> حلقة التكرار في الفصل 04 توجّه نتائج المراجعة إلى
+  الأعلى — إلى الموجهات، وملفات التعليمات، والخطافات. الفريق الذي يراجع جيدًا يحصل على
+  إعدادات وكيل تتحسن أسبوعيًا؛ الفريق الذي يختم مطاطيًا يجمد معدل فشله عند الأسبوع الأول.
+  تعليق المراجعة هو المادة الخام لكامل اقتصاد التغذية الراجعة.</li>
+<li><strong>التمريرة الأولى بالذكاء الاصطناعي تغير اقتصاد كل شيء آخر.</strong> سقف التشعب في الفصل 05
+  كان مراجعة بشرية في نفس اليوم؛ مرور آلي جدير بالثقة يلتقط الـ 60% الميكانيكية يرفع ذلك
+  السقف مباشرة. هذا هو المضاعف الذي يجعل مكاسب الإنتاجية لبقي المرحلة حقيقية — ولهذا
+  يستحق هندسته بشكل صحيح بدلًا من تثبيته كخانة اختيار.</li>
+</ul>
+<h2 id="_4">النموذج الذهني<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>المراجعة هي رصة من المرشحات. كل طبقة تلتقط ما هي أفضل هيكليًا فيه، ويصرف الانتباه البشري
+— أندر مدخل — فقط حيث لا تصل الطبقات التي تحتها.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>        THE REVIEW FILTER STACK (cheapest first, judgment last)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  ┌────────────────────────────────────────────────────────────┐
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  │ L0  MECHANICAL GATES (CI: tests, lint, types, hooks)       │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  │     catches: the objectively wrong. Free, deterministic.   │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  │     If a review comment could be a lint rule, it must be.  │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  ├────────────────────────────────────────────────────────────┤
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  │ L1  AI FIRST PASS (breadth, tireless, every line)          │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  │     catches: known failure patterns, spec drift, missing   │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  │     tests, security smells, cross-file inconsistency —     │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  │     ADVISORY: posts findings w/ severity + evidence        │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  ├────────────────────────────────────────────────────────────┤
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  │ L2  HUMAN JUDGMENT PASS (depth, risk-weighted)             │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  │     catches: wrong design, wrong product behavior, wrong   │
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  │     trade-off, &quot;should this exist?&quot; — and adjudicates L1   │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>  │     OWNS: the merge decision. Always.                      │
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  └────────────────────────────────────────────────────────────┘
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   Attention flows DOWN by risk: schema/auth/money get deep L2;
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>   mechanical diffs may get L0+L1 and an L2 skim. But L2 never
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>   disappears — it shrinks to fit the risk, not the schedule.
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>         REVIEWING AI CODE: WHERE THE BUGS ACTUALLY ARE
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>   fluency signals (naming, style, confidence)  → USELESS (all AI
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>                                                   code has them)
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>   the spec&#39;s acceptance criteria               → check ABSENCES
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>   the tests (read first, before the code)      → what do they
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>                                                   actually assert?
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>   the decision level                           → what choices does
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>                                                   this diff embody,
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>                                                   and who made them?
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>   the known failure patterns (the checklist)   → hallucinated APIs,
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>                                                   happy-path tests,
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>                                                   scope creep, stale
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>                                                   idioms, permissive
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>                                                   defaults...
+</code></pre></div>
+<p><strong>راجِع مقابل المواصفة، لا مقابل الفرق.</strong> يُري الفرق ما حدث؛ المواصفة وحدها تعرف ما كان
+ينبغي أن يحدث. بنى الفصل 04 معايير القبول تحديدًا كي تبدأ المراجعة منها — الغيابات أولًا
+(حالة 404 المفقودة، المعيار المتخطى)، ثم صحة ما هو حاضر. المراجعة المعتمدة على الفرق أولًا
+للخرج الناتج عن الذكاء الاصطناعي توافق باستمرار على عمل جميل وغير مكتمل.</p>
+<p><strong>اقرأ الاختبارات أولًا.</strong> في الخرج الناتج عن الذكاء الاصطناعي، الاختبارات هي الاعتراف:
+ترمّز ما آمن الوكيل بأن المتطلبات هي. التأكيدات الضعيفة، وتغطية المسار الناجح فقط، أو
+اختبار يعكس التنفيذ بدلًا من السلوك، يخبرك أكثر في تسعين ثانية من ساعة في ملفات التنفيذ.</p>
+<p><strong>المراجع بالذكاء الاصطناعي والمراجع البشري آلتان مختلفتان.</strong> للتمريرة بالذكاء الاصطناعي
+السعة (كل سطر، في كل مرة، بلا تعب، بلا أنانية) ولا تعرف ما قصدتَه فعلًا؛ للتمريرة البشرية
+القصد، وحس المنتج، والمساءلة، ولا تستطيع الحفاظ على الانتباه على مستوى السطر عبر عشرة
+طلبات سحب للوكيل يوميًا. الرصة تعمل حين تلعب كل آلة دورها — وتفشل حين يُطلب من أي
+منهما أن تحل محل الأخرى.</p>
+<p>تعريف عملي:</p>
+<blockquote>
+<p><strong>مراجعة الكود بالذكاء الاصطناعي انضباط ذو وجهين: بشر يراجعون كودًا مولَّدًا مقنعًا بحكم
+بنائه مراجعة هيكلية — المواصفة أولًا، الاختبارات أولًا، مستوى القرار، مقابل أنماط الفشل
+المعروفة — وتمريرة أولى آلية بالذكاء الاصطناعي محكَّمة تطبّق السعة (كل سطر، كل طلب سحب)
+كمرشح استشاري تحت التمريرة البشرية. ثابت الرصة: الفحوصات الميكانيكية تلتقط الخطأ،
+والذكاء الاصطناعي يلتقط المنمّط، والبشر يحكمون على المقصود — ولا يدمج إلا البشر.</strong></p>
+</blockquote>
+<h2 id="_5">مثال إنتاجي<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>تغيّر شكل عبء المراجعة في <strong>Invoicely</strong> في ربع واحد. قبل الوكلاء: أربعة أو خمسة طلبات
+سحب بشرية في الأسبوع، تُراجَع بعمق بالعادة. بعد الفصول 01–05: من خمسة عشر إلى عشرين
+طلب سحب في الأسبوع، معظمها كُتب بواسطة وكيل، كل واحد منها مقنع بذاته. كان أول رد فعل
+للفريق هو الرد الصادق — أصبحت المراجعة أضحل، وتلا ذلك حادثتان: معالج webhook فيه
+<code>except Exception: log and continue</code> أفسد حالة إعادة المحاولة (دُمج لأنه "بدا دفاعيًا")،
+ونقطة نهاية للتصدير سرّبت فواتير محذوفة بشكل soft لأن أحدًا لم يفحص غياب المرشح الذي
+تطلبه المواصفة.</p>
+<p>الخط المعاد بناؤه هو رصة المرشحات. كانت <strong>L0</strong> موجودة في معظمها (اختبارات المرحلة 8، والـ
+lint، والأنواع، وخطافات الفصل 01) — أضاف الفريق فحصًا لميزانية الفرق يُعلِّم طلبات السحب
+التي تتجاوز النطاق المُعلَن في الموجز. <strong>L1</strong> هي تمريرة مراجعة مقطوعة الرأس (سير العمل
+أدناه) تعمل على كل طلب سحب: تستقبل الفرق، وموجز طلب السحب، وموجه المراجعة في المستودع؛
+تنشر النتائج كتعليقات مع الشدة، ومراسي file:line، والأدلة؛ تُهيّأ لتبقى صامتة حيال أي
+شيء يملكه الـ lint بالفعل. <strong>L2</strong> هي التمريرة البشرية، أُعيد تحديد نطاقها: ابدأ من معايير
+القبول في الموجز، اقرأ الاختبارات أولًا، امشِ وفق
+<a href="../../../checklists/code-review/">قائمة المراجعة للكود المولَّد بالذكاء الاصطناعي</a> لطلبات
+سحب الوكلاء، صرف العمق على المخاطرة (أي شيء يمس المال أو المصادقة أو الاستئجار أو
+الترحيلات يحصل على انتباه كامل بصرف النظر عن الحجم)، وانظر في نتائج L1 — كل واحدة إما
+مؤكَّدة أو مرفوضة بسبب أو مُوجَّهة إلى أعلى في موجِّه أو قاعدة.</p>
+<p>رقمان يتابعهما الفريق يجعلان النظام صادقًا: <strong>معدل الإيجابيات الكاذبة</strong> في L1 (النتائج
+المرفوضة ÷ الإجمالي؛ حين يرتفع، يُضبط موجِّه المراجعة، لأن البوت الصاخب يعلّم البشر
+تجاهله) و<strong>العيوب الهاربة</strong> (الأخطاء التي تُكتشف بعد الدمج، موسومة بأي طبقة كان ينبغي
+أن تلتقطها). حادثة الـ webhook، إذا أُعيدت عبر الرصة الجديدة، تموت عند L1 — "معالج الخطأ
+يستمر بعد الفشل دون إعادة تعيين الحالة" هو تمامًا النتيجة المنمَّطة التي تلتقطها تمريرة
+الذكاء الاصطناعي في كل مرة.</p>
+<h2 id="_6">بنية المجلدات<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>invoicely/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── prompts/
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│   └── review/
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│       ├── pr-review-pass.md      # THE review prompt: scope, severity rubric,
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│       │                          #   output contract, noise suppression — versioned
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│       │                          #   and tuned like any production artifact
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│       └── security-pass.md       # deeper pass for risk-tier PRs (Stage 9&#39;s
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│                                  #   judgment, operationalized)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>├── .github/
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   └── workflows/
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│       └── ai-review.yml          # L1 wiring: headless agent on every PR, posts
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│                                  #   advisory comments; NO approve/merge rights —
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>│                                  #   the permission model encodes &quot;advisory&quot;
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>├── checklists/
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│   └── code-review.md             # the human L2 instrument (this handbook ships
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│                                  #   one; teams keep theirs in-repo, versioned)
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>└── docs/
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    └── review-metrics.md          # false-positive rate, escaped defects by layer,
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>                                   #   findings routed upstream — the numbers that
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>                                   #   keep the stack honest
+</code></pre></div>
+<p>لماذا هذا الشكل: موجِّه المراجعة <strong>قطعة إنتاج مُنسَّخة بإصدار</strong> (سيُضبط أسبوعيًا في
+البداية — ذلك التاريخ ينتمي إلى git، يُراجَع كالكود، وفق قواعد مكتبة الفصل 04)؛
+<em>صلاحيات</em> سير العمل — لا نثره — هي ما يجعل L1 استشاريًا (بوت لا يستطيع الموافقة لا يمكن
+ترقيته إلى حارس بوابة بانحراف ثقافي)؛ وملف المقاييس موجود لأن نظام مراجعة لا تقيسه يتدهور
+بصمت إلى ضوضاء أو مسرحية.</p>
+<h2 id="_7">التنفيذ<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h3 id="_8">موجِّه المراجعة — مهندس ضد الضوضاء<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p><code>prompts/review/pr-review-pass.md</code> (مكثف):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>You are reviewing a pull request for Invoicely. You have read access
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>to the full repository — use it: verify claims against the actual
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>code, don&#39;t review the diff in a vacuum.
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>INPUTS: the diff; the task brief (acceptance criteria included);
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>docs/architecture.md.
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>REVIEW FOR, in order:
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="k">1.</span> Spec adherence — walk the brief&#39;s acceptance criteria one by one;
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>   flag every criterion not demonstrably met. Check ABSENCES: what
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>   the spec requires that the diff does not contain.
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="k">2.</span> Correctness — failure paths, edge boundaries (zero/one/many/max),
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>   concurrency on shared state, idempotency of external calls.
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="k">3.</span> Invariants — tenant scoping on every new query (ADR-0012), money
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>   as integer cents (ADR-0007), migrations additive (docs map).
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="k">4.</span> Tests — read them: do assertions encode the required behavior?
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>   Would they fail if the behavior broke? Flag weakened/skipped tests.
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="k">5.</span> Scope — anything in the diff the brief doesn&#39;t explain.
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>DO NOT COMMENT ON: formatting, naming, import order, or anything
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>lint/typecheck enforces. If it would pass CI, style is settled.
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>OUTPUT CONTRACT — findings only, no code rewrites, no praise:
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="k">-</span><span class="w"> </span>[BLOCKER|WARN|NOTE] file:line — one-sentence finding.
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>  Evidence: what you checked (file you read, criterion it violates).
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="k">-</span><span class="w"> </span>BLOCKER = wrong or violates an invariant. WARN = probable defect
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>  or unproven criterion. NOTE = worth a human glance.
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="k">-</span><span class="w"> </span>If you are unsure, say unsure — a wrong BLOCKER costs trust.
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="k">-</span><span class="w"> </span>End with: criteria checked ✓/✗ table, and &quot;areas I could not
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>  verify&quot; (be explicit; silence reads as approval).
+</code></pre></div>
+<p>كل خيار تصميمي هنا هو ضد الضوضاء: استبعاد الـ lint يقتل فيضان الملاحظات السخيفة، شرط
+الدليل يقتل النتائج المعتمدة على الانطباع، سلّم الشدة يجعل الفرز رخيصًا، بند عدم التأكد
+وقسم "ما لم أتمكن من التحقق منه" يحلان محل الثقة الزائفة بأمانة مفيدة، وعقد النتائج فقط
+(بدون إعادة كتابة) يُبقي المراجع مراجعًا.</p>
+<h3 id="ci">توصيل CI — استشاري بالصلاحيات، لا بالوعد<a class="headerlink" href="#ci" title="Permanent link">&para;</a></h3>
+<p><code>.github/workflows/ai-review.yml</code> (الشكل، لا الوصفة الكاملة — كيَّفه مع وثائق الإجراء/CLI الحالية):</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">AI review (advisory)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nt">on</span><span class="p">:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">pull_request</span><span class="p">:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nt">types</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">opened</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">synchronize</span><span class="p p-Indicator">]</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nt">permissions</span><span class="p">:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">  </span><span class="nt">pull-requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span><span class="w">        </span><span class="c1"># comment — deliberately NOT approve</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="nt">jobs</span><span class="p">:</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="nt">review</span><span class="p">:</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> fetch-depth</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Run review pass</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">          </span><span class="no">gh pr diff ${{ github.event.number }} &gt; pr.diff</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">          </span><span class="no">claude -p &quot;$(cat prompts/review/pr-review-pass.md)</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">          </span><span class="no">BRIEF: $(gh pr view ${{ github.event.number }} --json body -q .body)</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">          </span><span class="no">DIFF:  $(cat pr.diff)&quot; \</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">            </span><span class="no">--allowedTools &quot;Read,Grep,Glob&quot; \</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">            </span><span class="no">&gt; findings.md</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">          </span><span class="no">gh pr comment ${{ github.event.number }} --body-file findings.md</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">        </span><span class="nt">env</span><span class="p">:</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">          </span><span class="nt">GH_TOKEN</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.token }}</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">          </span><span class="nt">ANTHROPIC_API_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.ANTHROPIC_API_KEY }}</span>
+</code></pre></div>
+<p>التفاصيل الحاملة للحِمل: <strong>أدوات للقراءة فقط</strong> (مراجع يستطيع التعديل "يُصلح" نتائجه دون
+مراجعة — غرفة صدى الفصل 05)، <strong>صلاحيات تعليق لا موافقة</strong> (خط استشاري تفرضه المنصة، محصَّن
+من انحراف الموجِّه)، و<strong>الموجز يسافر مع الفرق</strong> (المراجعة مقابل المواصفة تتطلب المواصفة —
+مراجع يُعطى الفرق فقط يمكنه فقط مراجعة ما هو موجود، لا ما هو مفقود). قواعد حماية الفرع
+تبقى بشرية: الموافقات المطلوبة تأتي من البشر.</p>
+<h3 id="_9">التمريرة البشرية — بروتوكول، لا انطباع<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>لطلبات السحب المكتوبة بواسطة وكيل، تعمل L2 بهذا الترتيب:</p>
+<ol>
+<li><strong>الموجز أولًا.</strong> اقرأ معايير القبول قبل أي كود. امشِ وفق جدول الفحص الذاتي للمؤلف
+   (الفصل 04) وتحقق عشوائيًا من بند واحد ادعاه المؤلف بنفسك.</li>
+<li><strong>الاختبارات ثانيًا.</strong> اقرأ كل اختبار جديد/مُعدَّل. اسأل عن كل واحد: هل سيفشل لو
+   انكسر السلوك؟ تغطية المسار الناجح فقط هي نتيجة، لا تفضيل أسلوبي.</li>
+<li><strong>القرارات ثالثًا.</strong> افحص الفرق عن خيارات لم يتخذها الموجز — الافتراضات، الحدود،
+   دلالات الخطأ (فشل القرار الصامت في الفصل 04). كل واحد إما مُعلَّم في طلب السحب
+   كافتراض، أو هو نتيجة.</li>
+<li><strong>القائمة رابعًا.</strong> <a href="../../../checklists/code-review/">قسم الكود المولَّد بالذكاء الاصطناعي</a>
+   — APIs مُهلوسة، أعراف قديمة، مساعدات مكررة، إعدادات أمنية متساهلة — تُمشى صراحة في
+   أي طلب سحب يمس المخاطرة.</li>
+<li><strong>الفصل في L1.</strong> كل نتيجة من البوت إما مُؤكَّدة (إصلاح)، أو مرفوضة (رد بسبب — هذه
+   بيانات الضبط)، أو مُرقَّاة إلى أعلى (موجِّه/قاعدة/خطاف، وفق توجيه الفصل 04).</li>
+</ol>
+<p>اضبط الوقت حسب فئة المخاطرة، لا حسب حجم الفرق: ترحيل بـ 40 سطرًا يتفوق على ملء
+اختبارات بـ 400 سطر.</p>
+<h2 id="_10">القرارات الهندسية<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<p><strong>القرار 1: هل تمريرة الذكاء الاصطناعي استشارية أم حاجبة؟</strong> استشارية افتراضيًا، وتُفرض
+بالصلاحيات لا بالوعود. الحجب يُكتسب، وعلى نطاق ضيق: بعد شهور من بيانات الإيجابيات
+الكاذبة، قد يرقّي الفريق <em>فئات نتائج محددة عالية الدقة</em> (قل، "استعلام جديد يفتقد نطاق
+المستأجر") إلى الحجب في CI — أي تخرجها فعليًا من L1 إلى L0، وهي الاتجاه الصحي. الحجب
+الشامل على "البوت يعترض" يستورد معدل الإيجابيات الكاذبة الكامل للبوت إلى مسار الدمج
+لدى الجميع، ويلتف الفريق حوله في غضون شهر.</p>
+<p><strong>القرار 2: نفس الصرامة للكود البشري والاصطناعي؟</strong> نفس المعيار، خلفيات مختلفة. القائمة
+واحدة؛ <em>التوكيد</em> يتغير — طلبات السحب البشرية تستحق الانتباه حيث بدا المؤلف غير متأكد؛
+طلبات السحب بالذكاء الاصطناعي تستحقه حيث تقول القائمة إن أنماط الفشل تعيش (الغيابات،
+الاختبارات، القرارات، الإعدادات الأمنية)، لأن إشارات عدم اليقين لا توجد في الكود المولَّد.
+ما لا يجب أن يتغير: عتبة الدمج ذاتها. عتبة أدنى لطلبات سحب الوكلاء بحجة "البوت نظر
+بالفعل" هي الرصة تأكل نفسها.</p>
+<p><strong>القرار 3: من يراجع ماذا — وهل يجوز لوكيل المؤلف مراجعة طلب السحب الخاص به؟</strong> لا — قاعدة
+الاستقلالية في الفصل 05. تمريرة L1 تعمل في CI من سياق نظيف، أبدًا في جلسة المؤلف؛ إنسان
+غير المهندس المفوِّض يراجع أي شيء على فئة المخاطرة (المهندس الذي كتب الموجز يتشارك
+النقاط العمياء للمؤلف — هو <em>هو</em> المؤلف، على مستوى القرار). الفرق الصغيرة تثني هذا
+للفروق الميكانيكية؛ لا أحد يثنيه للمال أو المصادقة أو الاستئجار أو المخطط.</p>
+<p><strong>القرار 4: عمَّ يصمت البوت؟</strong> كل ما تملكه طبقة أرخص. الأسلوب/التنسيق/الاستيراد → lint (L0).
+تنفيذ الاختبارات → CI (L0). التفضيلات بلا عاقبة عيب → لا شيء (احذفها من الموجِّه). قائمة
+استبعاد موجِّه المراجعة حاملة للحِمل بقدر قائمته: كل فئة ضوضاء تفشل في استبعادها تفرض
+ضريبة على فرز كل طلب سحب مستقبلي، والفائدة المركبة لتلك الضريبة هي فريق يتوقف عن قراءة
+البوت نهائيًا.</p>
+<p><strong>القرار 5: كيف تبقي النظام صادقًا مع الوقت؟</strong> مقياسان، طقس واحد. تتبَّع معدل الإيجابيات
+الكاذبة لكل فئة نتائج (اضبط أو احذف الفئات الصاخبة شهريًا) والعيوب الهاربة حسب الطبقة
+التي كان ينبغي أن تلتقطها (كل واحد يرمّم الطبقة التي أفلتته: قاعدة lint، سطر موجِّه، بند
+قائمة). الطقس: النتائج المرفوضة تحصل على سبب من سطر واحد في طلب السحب — ذلك الخيط <em>هو</em>
+مجموعة بيانات الضبط، ولا يكلف شيئًا في لحظة الرفض.</p>
+<h2 id="_11">المقايضات<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>الخيار</th>
+<th>الكسب</th>
+<th>التكلفة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>تمريرة أولى بالذكاء الاصطناعي على كل طلب سحب</td>
+<td>السعة، وعدم التعب؛ رفع القاع؛ رفع سقف التشعب</td>
+<td>تكلفة الـ tokens لكل طلب سحب؛ إيجابيات كاذبة للفرز؛ خطر رضا "البوت نظر"</td>
+</tr>
+<tr>
+<td>بدون تمريرة بالذكاء الاصطناعي</td>
+<td>لا ضوضاء، لا تكلفة</td>
+<td>انتباه بشري يُصرف على نتائج منمَّطة تلتقطها الآلة؛ القاع يتفاوت حسب تعب المراجع</td>
+</tr>
+<tr>
+<td>بوت استشاري</td>
+<td>الثقة محفوظة؛ البشر يبقون البوابة</td>
+<td>يمكن تجاهل النتائج بالجملة دون طقس الفرز</td>
+</tr>
+<tr>
+<td>بوت حاجب</td>
+<td>لا شيء يتجاوز الأنماط المعروفة</td>
+<td>معدل الإيجابيات الكاذبة الكامل يهبط في مسار الدمج؛ ثقافة الالتفاف في أسابيع</td>
+</tr>
+<tr>
+<td>مراجعة بشرية تبدأ من المواصفة</td>
+<td>تلتقط الغيابات؛ تراجع ما ينبغي وجوده</td>
+<td>تتطلب انضباط الفصل 04 في الأعلى — بلا موجز، لا مراجعة تبدأ من المواصفة</td>
+</tr>
+<tr>
+<td>مراجعة بشرية تبدأ من الفرق</td>
+<td>لا متطلبات سابقة</td>
+<td>عمياء هيكليًا عن المعايير المفقودة؛ توافق على الجمال الناقص</td>
+</tr>
+<tr>
+<td>مراجعة عميقة لكل شيء</td>
+<td>أقصى معدل التقاط</td>
+<td>لا تصمد أمام حجم عصر الذكاء الاصطناعي؛ تتدهور إلى ضحالة موحَّدة</td>
+</tr>
+<tr>
+<td>عمق متدرج حسب المخاطرة</td>
+<td>الانتباه يحط حيث الأخطاء مكلفة</td>
+<td>تتطلب خريطة مخاطرة صادقة (المرحلة 9)؛ الفروق الميكانيكية تحصل على مراجعة حقيقية لكن رقيقة</td>
+</tr>
+<tr>
+<td>تتبع مقاييس المراجعة</td>
+<td>النظام يضبط بدلًا من أن يتدهور</td>
+<td>شخص ما يملك الأرقام؛ المقاييس الخامية تدعو للتزوير (انظر الأنماط المضادة)</td>
+</tr>
+</tbody>
+</table>
+<p>المقايضة المركزية هي <strong>معايرة الثقة</strong>: كل إيجابية كاذبة تصرف من رصيد مصداقية البوت،
+وكل عيب هارب يصرف من رصيد الرصة، وكلا العملتين يُعاد ملؤهما ببطء. الانحياز التصميمي
+الذي يلي ذلك: ابدأ البوت ضيقًا وعالي الدقة (فئات نتائج قليلة، شروط أدلة قوية)، ووسِّعه
+مع تراكم بيانات الثقة — لا العكس.</p>
+<h2 id="_12">الأخطاء الشائعة<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>الختم المطاطي للعلامة الخضراء.</strong> نجح CI، علَّق البوت مرتين، الفرق طويل — وافق. هذا
+  هو عدم تماثل الحجم يفوز. البروتوكول موجود تحديدًا لطلبات السحب التي تميل إلى
+  تصفحها؛ فئة المخاطرة، لا تقويمك، تقرر العمق.</li>
+<li><strong>تطبيق كل اقتراح للبوت.</strong> الفشل المعاكس: معاملة نتائج L1 كتعليمات. المراجع — البشري
+  أو الاصطناعي — يمكن أن يكون مخطئًا، والنتائج المولَّدة تحمل نفس الثقة المقنعة التي
+  يحملها الكود المولَّد. تحقق من الكود والمواصفة قبل التصرف؛ رد بأدلة حين تكون النتيجة
+  خاطئة (أسباب الرفض بيانات ضبط، لا وقاحة).</li>
+<li><strong>مراجعة وصف طلب السحب بدلًا من الفرق.</strong> الأوصاف المكتوبة بواسطة الوكلاء ممتازة —
+  طلقة، منظمة، وأحيانًا تصف كودًا ليس بالضبط ما تم الالتزام به. السطر الأول في القائمة
+  موجود لهذا: تحقق من الادعاءات مقابل الفرق.</li>
+<li><strong>تخطي الاختبارات لأنها "مجرد اختبارات".</strong> في خرج الذكاء الاصطناعي الاختبارات هي
+  الأعلى إشارة في الفرق — هي فهم الوكيل للمتطلبات، مكتوبًا. مراجعة التنفيذ قبل الاختبارات
+  هي قراءة الجواب قبل السؤال.</li>
+<li><strong>السماح بزحف النطاق لأنه جيد.</strong> الفرق يتضمن إعادة هيكلة غير مطلوبة، وهي لطيفة حقًا —
+  ندمج؟ لا: التغييرات غير المطلوبة لم تحصل على مواصفة، ولا اختبارات موجَّهة، ولا قرار
+  بالوجود (الفصلان 02/04). احصدها في تذكرة؛ أبقِ الفرق ذا نطاق محدد.</li>
+<li><strong>البوت بلا مالك.</strong> تم تثبيت سير عمل المراجعة في بعد ظهيرة متحمسة ولم يُمَس بعدها.
+  بعد ستة أشهر يُعلِّق بصوت موجِّه قديم عن عرف هجره الفريق، ويتجاوزه الجميع بالتمرير.
+  مراجع بلا مالك ليس محايدًا — هو يعلّم الفريق بنشاط تجاهل تعليق المراجعة كصنف.</li>
+<li><strong>خلط المراجعة بضمان الجودة.</strong> الرصة تراجع <em>الكود</em>؛ هي لا تمارس المنتج. "لم تجد L1 شيئًا
+  ووافقت L2" لا يحل محل تشغيل الميزة (انضباط التحقق في المرحلة 8) — المراجعة تلتقط ما
+  تستطيع القراءة التقاطه.</li>
+</ul>
+<h2 id="_13">أخطاء الذكاء الاصطناعي<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<p>كرسي المراجع يغير أنماط الفشل — هذه هي المساعدون الثلاثة <em>كمراجعين</em>، وكل واحد منها
+يُفسد طبقة مختلفة من الرصة.</p>
+<h3 id="claude-code">Claude Code: المراجع الذي يبدأ إعادة التصميم<a class="headerlink" href="#claude-code" title="Permanent link">&para;</a></h3>
+<p>حين يُطلب منه المراجعة، ينجرف Claude Code من النتائج نحو التأليف: تطبيقات بديلة
+مرسومة بالكامل، إعادة هيكليات مقترحة خارج نطاق الفرق، نسخة معاد كتابتها من الدالة
+"للوضوح" — شامل، غالبًا سليم تقنيًا، ومُتآكل للرصة. يواجه المؤلف (البشري أو الوكيل)
+الآن رأي تصميمي ثانٍ بدلًا من قائمة عيوب؛ تنفجر تكلفة الفرز؛ والـ BLOCKER الفعلي — مدفونًا
+بين اقتراحين أنيقين — يضيع في المقالة. مراجع يُعيد التصميم قد ترك دور المراجع بصمت.</p>
+<p><strong>اكتشاف:</strong> خرج المراجعة يحتوي كتل كود أطول من بضعة أسطر؛ نتائج صيغت كـ "فكر في إعادة
+الهيكلة…" دون عيب ملحق؛ اقتراحات أكثر من الفحوصات؛ جدول معايير القبول مفقود لأن المراجع
+صرف جهده في مكان آخر.</p>
+<p><strong>الإصلاح:</strong> ثبّت الدور بعقد الخرج، وارفض المقالات في الفرز:</p>
+<blockquote>
+<p>أنت تراجع، لا تشارك في التأليف. أخرج النتائج فقط، في صيغة [SEVERITY] file:line،
+كل واحدة مُرساة على عيب أو معيار غير مُلبَّ — لا إعادة كتابة، لا تطبيقات بديلة، لا
+آراء أسلوبية. إن كنت تعتقد أن إعادة تصميم ضرورية، فتلك نتيجة واحدة: "[NOTE] موضع
+قلق تصميمي — &lt;جملة واحدة&gt;"، ولا شيء أكثر. أكمل جدول المعايير قبل أي ملاحظات اختيارية.</p>
+</blockquote>
+<h3 id="gpt">GPT: التمريرة المتملقَة التي تمدح طريقها متجاوزة العيب<a class="headerlink" href="#gpt" title="Permanent link">&para;</a></h3>
+<p>يُطابِق مراجعو عائلة GPT "المراجعة" نحو الملخص-المع-التشجيع: فقرة تعيد ما يفعله طلب
+السحب، ثلاث مجاملات عن النظافة، ملاحظتان تافهتان ("فكر في docstring")، وخاتمة موافقة
+— مع العيب الفعلي غير مذكور لأن شيئًا لم يُجبر على تمرير فحص بفحص. يقرأ كمراجعة،
+يرضي خانة العملية، ولا يصفّي شيئًا. هذا هو التوأم من جهة المراجعة لفشل الرسالة مقابل
+القصد في الفصل 04: <em>شكل</em> المراجعة دون وظيفتها.</p>
+<p><strong>اكتشاف:</strong> خرج المراجعة بلا توزيع BLOCKER/WARN عبر طلبات سحب كثيرة (الكود الحقيقي ليس
+نظيفًا لهذه الدرجة)؛ بلا مراسي file:line؛ جمل مدح على الإطلاق؛ نفس الملاحظات العامة عبر
+فروق غير مترابطة؛ جدول معايير مفقود أو كله ✓ على طلب سحب تعرف أن فيه فجوة.</p>
+<p><strong>الإصلاح:</strong> بنية تجعل الغموض مستحيلًا، وتدقيق بعيوب مزروعة:</p>
+<blockquote>
+<p>لكل معيار قبول ولكل فئة في القائمة (مسارات الفشل، الثوابت، الاختبارات، النطاق): اذكر
+ما فحصتَه — الملفات المقروءة، الشيء المحدد الذي تحققت منه — والنتيجة، حتى حين تكون
+النتيجة "لا مشكلة وُجدت". لا ملخصات لطلب السحب، لا مدح. مراجعة بلا نتائج سلبية يجب
+أن تُظهر فحوصاتها مع ذلك. (وعملانيًا: ازرع عيبًا معروفًا في طلب سحب اختباري كل ربع
+سنة — مراجع يجتازه يحصل على إصلاح موجِّه قبل أن تُوثق نتائجه.)</p>
+</blockquote>
+<h3 id="cursor">Cursor: المراجع المعتمد على الفرق والأعمى عن النظام<a class="headerlink" href="#cursor" title="Permanent link">&para;</a></h3>
+<p>تُرسَّم تدفقات المراجعة في المحرر على حزم الفرق — ومراجع لا يرى إلا الحزم لا يمكنه
+إيجاد مشاكل محلية للحزم. خطأ Cursor المميز: التغيير سليم داخليًا ويكسر شيئًا لا
+يراه — الاستعلام الجديد نظيف لكنه يتجاوز mixin تحديد نطاق المستأجر الذي يوفره الصنف
+الأساس؛ الحقل المُعاد تسميته متسق في الفرق وغير مُعاد تسميته في المستدعِين الثلاثة
+خارجه؛ الترحيل جيد بذاته ويصطدم بالتسلسل على main. النتيجة: موافقة. كل نتيجة صحيحة؛
+المراجعة ما زالت خاطئة، لأن وحدة الصحة هي النظام، لا الفرق.</p>
+<p><strong>اكتشاف:</strong> نتائج لا تشير أبدًا إلى ملف خارج الفرق؛ موافقات على تغييرات في أسطح مشتركة
+(أصناف أساس، سجلات، عقود) بلا دليل فحص للمستدعِين/المطبّقين؛ أعطال تكامل بعد الدمج في
+طلبات سحب تبدو مراجعاتها نظيفة.</p>
+<p><strong>الإصلاح:</strong> أرغم على جولة في السياق، وأعطِ المراجع المستودع:</p>
+<blockquote>
+<p>قبل أي حكم: لكل رمز يُعدِّل هذا الفرق أو يشير إليه جديدًا، اقرأ تعريفه ومستدعيه
+خارج الفرق؛ لكل استعلام جديد، اقرأ سلسلة الصنف الأساس/الـ mixin التي يرث منها؛
+تحقق من ثوابت docs/architecture.md مقابل التغيير. اذكر الملفات خارج الفرق التي قرأتها
+كدليل. مراجعة لا تستشهد بملف خارج الفرق ناقصة. (من جانب التوصيل: تحصل تمريرة L1 على
+صلاحية قراءة المستودع بأكمله — مراجع يعتمد الفرق فقط مدقق لغوي، لا مراجع.)</p>
+</blockquote>
+<h2 id="_14">أفضل الممارسات<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>صرف الانتباه البشري حسب فئة المخاطرة، آليًا.</strong> المال، المصادقة، الاستئجار، المخطط،
+  ضوابط الأمن → L2 بعمق كامل في كل مرة، أيًّا كان الحجم. الفروق الميكانيكية → L0+L1
+  زائد L2 وفق البروتوكول بشكل سريع. اكتب الفئات لتحديدها حتى لا يكون العمق مزاجًا.</li>
+<li><strong>الموجز ← الاختبارات ← القرارات ← القائمة ← الفصل.</strong> بروتوكول L2 بهذا الترتيب؛ الترتيب
+  هو المغزى (الغيابات قبل الحضور، الاعترافات قبل الادعاءات).</li>
+<li><strong>أبقِ البوت ضيقًا، مُدعَّمًا بالأدلة، وصامتًا حيال الـ lint.</strong> فئات نتائج قليلة، دليل
+  لكل نتيجة، سلّم شدة، استبعادات صريحة. الدقة تشتري الثقة التي ينفقها الاستدعاء.</li>
+<li><strong>افرض "الاستشاري" بالصلاحيات.</strong> أدوات للقراءة فقط، حقوق تعليق فقط، موافقات بشرية فقط
+  في حماية الفرع. الثقافة تنحرف؛ نماذج الصلاحيات لا تنحرف.</li>
+<li><strong>افصل في كل نتيجة L1 علنًا.</strong> أكِّد، ارفض بسبب، أو وجِّه إلى أعلى. أسباب الرفض هي
+  مجموعة بيانات الضبط؛ التوجيه هو إغلاق حلقة الفصل 04.</li>
+<li><strong>اقرأ الاختبارات أولًا، دائمًا، في طلبات السحب المولَّدة.</strong> تسعون ثانية في ملف الاختبار
+  تتفوق على ساعة من قراءة التنفيذ في اكتشاف ما ظن الوكيل أنك قصدته.</li>
+<li><strong>تابع رقمين، املكهما شهريًا.</strong> معدل الإيجابيات الكاذبة لكل فئة نتائج؛ العيوب الهاربة
+  لكل طبقة كان ينبغي أن تلتقطها. اضبط أو احذف ما يتهمه الرقمان.</li>
+<li><strong>ازرع عيوبًا دوريًا.</strong> طلب سحب اختباري ربعي بخطأ معروف يخبرك ما إذا كانت L1 لا تزال
+  تلتقط وما إذا كانت L2 لا تزال تقرأ. واثق، لكن تحقق من المتحققين.</li>
+<li><strong>أبقِ الدمج بشريًا، نهائيًا.</strong> ليس كطقس — كمرساة المساءلة التي تتدلى منها الرصة
+  بأكملها. في اللحظة التي لا يكون لـ "من وافق على هذا؟" إجابة بشرية، يكون النظام قد
+  فشل بصرف النظر عن مقاييسه.</li>
+</ul>
+<h2 id="_15">الأنماط المضادة<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p><strong>LGTM كخدمة.</strong> يُعلِّق البوت، CI أخضر، إنسان يكتب "LGTM" دون فتح الملفات — ثلاث طبقات
+من المسرح، صفر طبقات من المراجعة. يُميَّز عن الرصة العاملة بسؤال واحد لكل طلب سحب
+مُدمج: <em>سمِّ شيئًا واحدًا تحققت منه.</em> إن كانت الإجابة "الفحوصات نجحت"، فقد ذابت L2
+والرصة هي L0 يرتدي معطفًا.</p>
+<p><strong>المدفع من الملاحظات السخيفة.</strong> بوت مراجعة بلا قائمة استبعاد وبلا سلّم شدة، يطلق
+عشرين تعليقًا لكل طلب سحب — استيراد، تسمية، docstrings، "فكر في…". في غضون شهر تعلَّم
+الفريق درسًا واحدًا بإتقان: تعليقات البوت مادة يُتمرَّر فوقها. المدفع لم يُهدر نتائجه
+فحسب؛ بل حصَّن الفريق ضد الصنف، فمات الـ BLOCKER الحقيقي في نفس التمرير.</p>
+<p><strong>الختم المطابي المزدوج.</strong> الوكيل يكتب، البوت يوافق، الإنسان يلوّح — الفشل الذي يدفع
+إليه عدم تماثل الحجم دائمًا. كل شيء <em>يبدو</em> مُراجَعًا (التعليقات موجودة! الفحوصات
+نجحت!)، ولا حكم لمس التغيير. العلامة: زمن مراجعة قريب من الصفر في طلبات السحب التي تمس
+فئات المخاطرة. الإصلاح ليس "راجع بجدية" كعِظَة؛ بل البروتوكول، والفئات، والمقاييس التي
+تجعل عدم المراجعة مرئيًا.</p>
+<p><strong>لوحات صدارة سرعة المراجعة.</strong> قياس المراجعين بزمن-حتى-الموافقة أو طلبات-السحب-في-اليوم.
+تحصل على ما تقيسه: موافقات سريعة، أي ضحلة، أي الطبقة الأغلى في الرصة تُحسِّن نفسها إلى
+زينة. إن كان لا بد من قياس المراجعة، قس العيوب الهاربة وجودة الفصل — المُخرجات، لا
+الإنتاجية.</p>
+<p><strong>المراجع ذاتي الضبط.</strong> السماح لوكيل المراجعة بتحديث موجِّه الخاص ("توقف عن الإشارة إلى
+هذا") ردًا على ضغط المؤلف — بما في ذلك ضغط <em>الوكيل</em> المؤلف. معايير المراجع سياسة فريق
+(الفصل 01: تغييرات السياسة تُراجَع بشريًا)؛ مراجع يتفاوض على سلّمه مع المراجَع يتقارب
+نحو الموافقة على كل شيء، تنازلًا معقولًا تلو الآخر.</p>
+<h2 id="_16">شجرة القرار<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<p>"طلب سحب مفتوح — كم من المراجعة يحصل عليها، ومن؟"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Does the diff touch a risk tier (money, auth, tenancy, schema,
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>security controls, external contracts)?
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>├── YES ──► Full stack, full depth: L0 + L1 + deep human L2
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>│           (protocol order, checklist walked, out-of-diff
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>│           context checked). Reviewer ≠ brief author. Any
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>│           size — 40 risky lines outrank 400 safe ones.
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>└── NO ──► Is it agent-written?
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    ├── YES ──► Was there a five-clause brief (Ch 04)?
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    │   ├── NO ──► Stop. The PR isn&#39;t reviewable against intent —
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    │   │          write the criteria now (or reject and re-run
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    │   │          the task properly). Diff-only review of
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    │   │          spec-less agent work = approving guesses.
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    │   └── YES ──► L0 + L1 + protocol L2: criteria table
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    │              verified, tests read, decisions scanned,
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    │              L1 findings adjudicated. Depth ∝ diff&#39;s
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    │              blast radius, never ∝ its eloquence.
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    └── NO (human-written) ──► Standard checklist review; L1
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>               pass still runs (humans also miss patterned
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>               defects — the floor is for everyone).
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>After every review, one routing question (Ch 04&#39;s loop):
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    finding would recur? → prompt / AGENTS.md / lint / hook.
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>    bot finding rejected? → reason in thread (tuning data).
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>    defect escaped later? → patch the layer that should&#39;ve
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>    caught it — not just the code.
+</code></pre></div>
+<h2 id="_17">القائمة<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<p><strong>قائمة التنفيذ</strong> (بناء رصة المراجعة)</p>
+<ul>
+<li>[ ] موجِّه المراجعة مُنسَّخ في المستودع: نطاق مرتَّب، سلّم شدة، شرط دليل، عقد خرج،
+  استبعادات يملكها الـ lint، بنود عدم التأكد/ما لم يُتحقَّق منه</li>
+<li>[ ] توصيل CI: المراجع يحصل على الفرق + الموجز + صلاحية قراءة المستودع؛ أدوات قراءة
+  فقط؛ صلاحيات تعليق لا موافقة؛ الأسرار عبر مخزن CI (الفصل 04 من المرحلة 9)</li>
+<li>[ ] حماية الفرع: الموافقات المطلوبة بشرية؛ البوت لا يستطيع تلبيتها</li>
+<li>[ ] بروتوكول L2 مكتوب ومُدرَّج (الموجز ← الاختبارات ← القرارات ← القائمة ← الفصل)</li>
+<li>[ ] فئات المخاطرة موثَّقة — أي المسارات تحصل دائمًا على مراجعة بشرية عميقة</li>
+<li>[ ] المقاييس حيّة: معدل الإيجابيات الكاذبة لكل فئة نتائج؛ العيوب الهاربة لكل طبقة</li>
+<li>[ ] تدقيق العيب المزروع مُجدوَل</li>
+</ul>
+<p><strong>قائمة البنية</strong></p>
+<ul>
+<li>[ ] رصة المرشحات مرتَّبة من الرخيص إلى الحكم: أي شيء قابل للتعبير كـ lint/CI نُقل إلى
+  L0؛ L1 استشاري؛ L2 يملك الدمج — نهائيًا</li>
+<li>[ ] استقلالية المراجع: L1 تعمل بسياق نظيف في CI، أبدًا في جلسة المؤلف؛ كاتب الموجز
+  ليس المراجع الوحيد في فئات المخاطرة</li>
+<li>[ ] حلقة النتائج مغلقة: أحكام الفصل تُوجَّه إلى أعلى (موجِّه/قاعدة/خطاف)، حالات
+  الرفض تُلتقط كبيانات ضبط</li>
+<li>[ ] ثقة البوت تُدار كميزانية: بداية ضيقة عالية الدقة، لا تُوسَّع إلا ببيانات الإيجابيات
+  الكاذبة</li>
+<li>[ ] معايير المراجعة سياسة فريق: تغييرات الموجِّه تُراجَع في طلبات سحب، لا تُعدَّل
+  ذاتيًا</li>
+</ul>
+<p><strong>قائمة مراجعة الكود</strong></p>
+<ul>
+<li>للحصول على الأداة كاملة، استخدم <a href="../../../checklists/code-review/">checklists/code-review.md</a> —
+  بما في ذلك قسمها للكود المولَّد بالذكاء الاصطناعي. إضافات خاصة بالفصل:</li>
+<li>[ ] بدأت المراجعة من معايير قبول الموجز؛ الغيابات فُحصت قبل الحضور</li>
+<li>[ ] الاختبارات قُرئت أولًا؛ كل اختبار جديد سيفشل لو انكسر سلوكه</li>
+<li>[ ] كل قرار في الفرق يتتبع إلى المواصفة أو افتراض مُعلَّم</li>
+<li>[ ] كل نتيجة L1 فُصل فيها: مُؤكَّدة / مرفوضة بسبب / مُوجَّهة إلى أعلى</li>
+<li>[ ] نصف قطر الانفجار خارج الفرق فُحص على الأسطح المشتركة (المستدعون، أصناف الأساس،
+  السجلات)</li>
+<li>[ ] سمَّيتَ شيئًا واحدًا تحققت منه — إن لم تستطع، فالمراجعة لم تحدث</li>
+</ul>
+<h2 id="_18">التمارين<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>تدقيق آخر عشر عمليات دمج.</strong> لكل طلب سحب كتبه وكيل دمجه فريقك: هل كان هناك
+   موجز؟ هل قُرئت الاختبارات؟ هل يستطيع الموافق أن يسمِّ شيئًا واحدًا تحقَّق منه؟
+   سجِّل الرصة طبقة بطبقة — الخلايا الفارغة هي مسارات الهروب الحالية للعيوب.</li>
+<li><strong>ابنِ واضبط تمريرة L1.</strong> وصِّل سير العمل الاستشاري على مستودع حقيقي. شغِّلها على
+   آخر خمسة طلبات سحب مُدمجة (بأثر رجعي) وفرز كل نتيجة: مُؤكَّدة / خاطئة / ضوضاء.
+   أعد كتابة استبعادات وسلَّم الموجِّه من ذلك الفرز. تكراراتان من هذه الحلقة عادة
+   تشطر الضوضاء — قِسها.</li>
+<li><strong>ازرع ثلاثة عيوب.</strong> ازرع مجموعة اختبارات للمسار الناجح فقط، ومرشح مستأجر مفقود،
+   ومعالج خطأ يسجل ويستمر في طلب سحب اختباري. شغِّل رصتك الكاملة. أي طبقة التقطت
+   كلًّا — وأيها لم تلتقط شيئًا؟ رمِّم الطبقة، لا مجرد كبرياءك، وأعد التشغيل.</li>
+<li><strong>سابق البروتوكول ضد التصفح.</strong> مراجعان، طلب سحب واحد مكتوب بواسطة وكيل مع غياب
+   مواصفة خفي (أو استخدم تمرين 3). واحد يراجع الفرق أولًا بالعادة؛ واحد يشغِّل
+   الموجز → الاختبارات → القرارات. قارن النتائج والوقت المُنفق. البروتوكول يفوز عادة
+   في كليهما — اجمع أدلتك، لأن "راجع بشكل مختلف" لا يترسخ إلا بالإيصالات.</li>
+<li><strong>أغلق حلقة واحدة من البداية إلى النهاية.</strong> خذ نتيجة مراجعة حقيقية من هذا الأسبوع
+   ووجِّهها كل الطريق إلى أعلى: سطر الموجِّه أو قاعدة الـ lint أو الخطاف الذي يجعلها
+   غير قابلة للتكرار هيكليًا، في طلب سحب ومُدمج. ثم جد طلب السحب التالي حيث <em>كانت
+   ستتكرر</em> ولم تفعل. ذلك العيب الذي لم يحدث هو الفصل كاملًا في قطعة واحدة.</li>
+</ol>
+<h2 id="_19">قراءة إضافية<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../../checklists/code-review/">checklists/code-review.md</a> — أداة المراجعة في هذا
+  الكتاب؛ هذا الفصل هو الحكم خلف بنودها، لا سيما قسم الكود المولَّد بالذكاء الاصطناعي.</li>
+<li><a href="https://google.github.io/eng-practices/review/">Google Engineering Practices — Code Review Developer Guide</a>
+  — انضباط المراجعة البشرية الكلاسيكي الذي تمدده رصة هذا الفصل؛ توجيهاتها في
+  "السرعة مقابل الشمول" يسبق الذكاء الاصطناعي وينجو منه.</li>
+<li><a href="https://code.claude.com/docs/en/github-actions">Anthropic — Claude Code GitHub Actions documentation</a>
+  — التوصيل الحالي لتمريرات المراجعة المقطوعة الرأس في CI؛ وثق به على لقطة YAML في
+  هذا الفصل.</li>
+<li>الفصل 04 (<a href="../04-prompt-engineering/">هندسة الموجهات</a>) — الموجزات ومعايير القبول التي
+  تجعل المراجعة بدءًا من المواصفة ممكنة، وحلقة التوجيه إلى الأعلى التي يغلقها هذا
+  الفصل.</li>
+<li>الفصل 05 (<a href="../05-multi-agent-systems/">الأنظمة متعددة الوكلاء</a>) — استقلالية المراجع
+  كخاصية سياق؛ لماذا لا تراجع جلسة المؤلف عملها أبدًا.</li>
+<li>المرحلة 9 (<a href="../../stage-09-security/">الأمن</a>) — خريطة المخاطرة التي تقرر أين
+  تكون المراجعة البشرية الكاملة العميق غير قابلة للتفاوض.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  عد إلى الأعلى
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="هامش سفلي" >
+        
+          
+          <a href="../05-multi-agent-systems/" class="md-footer__link md-footer__link--prev" aria-label="السابقة: الأنظمة متعددة الوكلاء">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                السابقة
+              </span>
+              <div class="md-ellipsis">
+                الأنظمة متعددة الوكلاء
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../07-ai-debugging/" class="md-footer__link md-footer__link--next" aria-label="التالية: تصحيح الأخطاء بالذكاء الاصطناعي">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                التالية
+              </span>
+              <div class="md-ellipsis">
+                تصحيح الأخطاء بالذكاء الاصطناعي
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tracking", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "clipboard.copy": "\u0646\u0633\u062e \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "search.result.more.one": "\u0623\u0643\u062b\u0631 \u0645\u0646 1 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.more.other": "\u0623\u0643\u062b\u0631 \u0645\u0646 # \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.none": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c", "search.result.one": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b \u0645\u0633\u062a\u0646\u062f \u0648\u0627\u062d\u062f", "search.result.other": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b # \u0645\u0633\u062a\u0646\u062f\u0627\u062a", "search.result.placeholder": "\u0627\u0643\u062a\u0628 \u0644\u0628\u062f\u0621 \u0627\u0644\u0628\u062d\u062b", "search.result.term.missing": "\u0645\u0641\u0642\u0648\u062f", "select.version": "\u0625\u062e\u062a\u0631 \u0627\u0644\u0625\u0635\u062f\u0627\u0631"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

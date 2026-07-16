@@ -1,0 +1,5778 @@
+
+<!doctype html>
+<html lang="ar" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A production-grade handbook for engineering software with AI as a disciplined teammate.">
+      
+      
+      
+      
+        <link rel="prev" href="../03-mocking-and-test-doubles/">
+      
+      
+        <link rel="next" href="../05-end-to-end-testing/">
+      
+      
+        
+          <link rel="alternate" href="../../../../handbook/stage-08-testing/04-integration-testing/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ar">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>اختبارات التكامل - هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="rtl" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          انتقل إلى المحتوى
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="عنوان العارضة">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-header__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              اختبارات التكامل
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="إختر اللغة">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../handbook/stage-08-testing/04-integration-testing/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ar" class="md-select__link">
+              العربية
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="بحث" placeholder="بحث" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="إبحث">
+        
+        <button type="reset" class="md-search__icon md-icon" title="مسح كلي" aria-label="مسح كلي" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            بدء البحث
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="تصفح" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-nav__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الرئيسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../START-HERE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ابدأ من هنا
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/01-what-is-software-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ما هي هندسة البرمجيات؟
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/02-product-thinking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفكير بعقلية المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/03-ai-first-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطوير بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/04-engineering-trade-offs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المفاضلات الهندسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/05-technical-debt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الدَّين التقني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/06-build-vs-buy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء مقابل الشراء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/07-simplicity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البساطة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/08-maintainability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية الصيانة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/01-layered-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية الطبقية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/02-feature-based-and-vertical-slice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية القائمة على الميزات والشرائح الرأسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/03-clean-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية النظيفة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/04-monolith-modular-monolith-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المتراصّ والمتراصّ المعياري والخدمات المصغّرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/05-service-layer-and-repository-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    طبقة الخدمات ونمط المستودع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/06-dependency-injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن التبعيات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/07-event-driven-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية المدفوعة بالأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/01-building-apis-with-fastapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء واجهات API باستخدام FastAPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/02-data-persistence-sqlalchemy-alembic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حفظ البيانات: SQLAlchemy و Alembic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/03-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/04-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/05-error-handling-and-api-versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معالجة الأخطاء وإصدارات API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/06-background-jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المهام الخلفية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/07-caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التخزين المؤقت
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/08-logging-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسجيل وقابلية المراقبة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/09-file-storage-and-email/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/01-building-uis-with-react-and-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء الواجهات باستخدام React و TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/02-nextjs-and-the-app-router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next.js وموجّه التطبيق App Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/03-server-and-client-components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مكوّنات الخادم والعميل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/04-data-fetching-and-server-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    جلب البيانات وحالة الخادم
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/05-state-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الحالة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/06-forms-and-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النماذج والتحقق من الإدخال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/07-frontend-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/08-frontend-architecture-and-folder-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معمارية الواجهة الأمامية وهيكل المجلدات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/01-react-native-and-expo-foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أساسيات React Native و Expo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/02-navigation-and-deep-linking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التنقّل والروابط العميقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/03-authentication-on-mobile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة على الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/04-offline-support-and-data-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دعم العمل دون اتصال ومزامنة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/05-push-notifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الإشعارات الفورية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/06-mobile-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/07-building-shipping-and-ota-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء والنشر وتحديثات OTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/01-relational-databases-and-data-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قواعد البيانات العلائقية ونمذجة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/02-schema-design-and-normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصميم المخطط والتطبيع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/03-indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الفهرسة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/04-transactions-and-concurrency-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعاملات والتحكم في التزامن
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/05-query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحسين الاستعلامات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/06-migrations-and-schema-evolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الترحيلات وتطوّر المخطط
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 7 · DevOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 7 · DevOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/01-linux-for-production-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux لخوادم الإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/02-docker-and-containerization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker والحاويات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/03-docker-compose-and-multi-service-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose والبيئات متعددة الخدمات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/05-ci-cd-with-github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD باستخدام GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/06-deploying-to-a-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النشر على خادم VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/07-monitoring-and-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المراقبة والتسجيل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 8 · الاختبارات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 8 · الاختبارات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    استراتيجية الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-unit-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات الوحدة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-mocking-and-test-doubles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المحاكاة وبدائل الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هي مهمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        هيكل المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قرارات هندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قرارات هندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostgreSQL حقيقية أم بديل أخف؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف تبقى الاختبارات معزولة عن بعضها؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        من أين يأتي مخطط الاختبار؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف تُعالَج المصادقة في اختبارات الـ API؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ما الذي ينتمي إلى هذا المستوى — وعبر أي نقطة دخول؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: استبدال SQLite بقاعدة البيانات الحقيقية بهدوء
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-create_all-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: create_all ومخطط موازي — سلسلة الـ migration لا تعمل أبدًا
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: تسرّب الحالة عبر الـ harness — اختبارات مقترنة ببقايا قاعدة البيانات
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة المراجعة">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة الكود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءة إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-end-to-end-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الاختبارات الشاملة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 9 · الأمان
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 9 · الأمان
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/01-security-mindset-and-owasp-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عقلية الأمان وقائمة OWASP العشرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/02-jwt-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أمان JWT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/03-oauth2-and-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/04-secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الأسرار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/05-sql-injection-and-input-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن SQL ومعالجة المدخلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/06-xss-and-content-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/07-csrf-cors-and-browser-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSRF و CORS وأمان المتصفح
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/08-rate-limiting-and-abuse-prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحديد المعدل ومنع إساءة الاستخدام
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/01-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/02-openai-codex-and-cursor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Codex و Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/03-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/04-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة الموجّهات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/05-multi-agent-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الأنظمة متعددة الوكلاء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/06-ai-code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/07-ai-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصحيح الأخطاء بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/08-ai-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    سير عمل الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/01-scalability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية التوسّع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/02-load-balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    موازنة الحمل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/03-horizontal-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التوسّع الأفقي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/04-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/05-queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الطوابير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/06-cdn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CDN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/07-event-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بثّ الأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/01-mvp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنتج الأولي (MVP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/02-pricing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسعير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/03-payments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المدفوعات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/04-analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التحليلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/05-user-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ملاحظات المستخدمين
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/06-product-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مقاييس المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/07-growth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النمو
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوائم التحقق
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    قوائم التحقق
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة مراجعة الكود
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة الجاهزية للإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أدلة العمل
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    أدلة العمل
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/starting-an-ai-first-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دليل عمل: بدء مشروع بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    القوالب
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    القوالب
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب سجل القرار المعماري (ADR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-conceptual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-technical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/claude-md-starter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/project-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب موجز المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/pull-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب طلب الدمج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عن المشروع
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    عن المشروع
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/00-CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دستور المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/01-project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    رؤية المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/02-curriculum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنهج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطبيق المرجعي (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../starter-kits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوالب البدء (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هي مهمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        هيكل المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قرارات هندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قرارات هندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#postgresql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PostgreSQL حقيقية أم بديل أخف؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف تبقى الاختبارات معزولة عن بعضها؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        من أين يأتي مخطط الاختبار؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف تُعالَج المصادقة في اختبارات الـ API؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ما الذي ينتمي إلى هذا المستوى — وعبر أي نقطة دخول؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-sqlite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: استبدال SQLite بقاعدة البيانات الحقيقية بهدوء
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-create_all-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: create_all ومخطط موازي — سلسلة الـ migration لا تعمل أبدًا
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor-harness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: تسرّب الحالة عبر الـ harness — اختبارات مقترنة ببقايا قاعدة البيانات
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة المراجعة">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة الكود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءة إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">اختبارات التكامل<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">المقدمة<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>اختبارات التكامل تتحقق من الدرزات — الأماكن التي يلتقي فيها كودك ببنية تحتية حقيقية وحيث تلتقي
+الوحدات ببعضها: مسار الـ API عبر الـ middleware إلى الخدمة، الخدمة عبر الـ ORM إلى PostgreSQL
+حقيقية، الـ job الذي ينفذ استعلامًا حقيقيًا، الـ adapter الذي يستدعي وضع الاختبار للمزوّد. هي
+منتصف الهرم: أبطأ من اختبارات الوحدة (قاعدة بيانات حقيقية، توصيل التطبيق الحقيقي)، وأرخص بكثير
+من اختبارات E2E، وهي الاختبارات الوحيدة القادرة على كشف فئة كاملة من أخطاء الإنتاج التي اختبارات
+الوحدة عمياء بنيويًا عن كشفها.</p>
+<p>الفكرة الأهم على الإطلاق: <strong>الأخطاء التي وُجدت اختبارات التكامل لاصطيادها تعيش في الأجزاء التي
+تستبدلها اختبارات الوحدة — لذا فإن اختبار التكامل لا يُحسب إلا إذا كانت الأجزاء حقيقية.</strong> الحادثة
+في الفصل 01 كانت عبارة عن filter لـ SQL: لا اختبار وحدة كان يستطيع رؤيتها، لأن اختبارات الوحدة
+تُضاعف الـ repository. ينطبق الشيء نفسه على حدود المعاملات، انتهاكات القيود، استعلامات JSONB،
+أخطاء الـ migrations، توصيل الـ dependencies، أشكال الـ serialization، وـ auth middleware — كلها
+غير مرئية لمجموعة تحاكي قاعدة البيانات، لكنها مواطن من الدرجة الأولى هنا. ولهذا فإن الخطيئة
+الكارثية في اختبار التكامل هي استبدال بنية تحتية مزيفة بحقيقية: اختبار "تكامل" ضد SQLite في الذاكرة
+يختبر التكامل مع قاعدة بيانات لا تشغّلها. الحاويات جعلت PostgreSQL الحقيقية في الاختبارات رخيصة
+(المرحلة 7، الفصل 02)؛ لم تعد هناك أعذار مقبولة.</p>
+<p>الحرفة تكمن في الـ harness: تشغيل قاعدة بيانات حقيقية لكل مجموعة (حاويات)، تطبيق الـ migrations
+الحقيقية عليها (وليس مخططًا موازيًا)، عزل الاختبارات عن بعضها (معاملات أو اقتطاع) بحيث تتشارك
+ألف اختبار قاعدة بيانات واحدة دون مشاركة الحالة، وقيادة النظام كما يفعل عملاؤه — عبر HTTP API.
+بُني مرة واحدة في <code>conftest.py</code>، يجعل الـ harness كل اختبار فردي قصيرًا كاختبار وحدة؛ بُني بشكل
+خاطئ، ينتج أبطأ وأكثر تذبذبًا وأكثر اعتمادًا على الترتيب جزء في المجموعة.</p>
+<h2 id="_3">لماذا هي مهمة<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>الدرزات هي حيث تنكسر الأنظمة فعلًا — وحيث ينكسر الكود المُولّد بالذكاء الاصطناعي أكثر:</p>
+<ul>
+<li><strong>SQL غير قابل للدحض من اختبارات الوحدة.</strong> فلاتر الاستعلام، الـ joins، تفاعلات القيود، سلوك
+  <code>ON DELETE</code>، عزل المعاملات — صحة طبقة الـ repository لا توجد إلا ضد قاعدة بيانات حقيقية. حادثة
+  الفصل 01 (filter الحالة المسقوط) هي المثال النموذجي: اثنا عشر اختبار وحدة خضراء، الإنتاج يفوتر
+  فواتير مدفوعة.</li>
+<li><strong>التوصيل فئة أخطاء بحد ذاته.</strong> سوء تهيئة حقن الـ dependencies، ترتيب الـ middleware، الـ routers
+  غير المركّبة، الإعدادات غير المحمّلة — كل طبقة يمكن أن تكون مثالية في اختبارات الوحدة بينما يُرجع
+  التطبيق المُجمّع 500 عند كل طلب. اختبار يُحمّل التطبيق الحقيقي فقط هو الذي يكشف أخطاء التجميع.</li>
+<li><strong>عقد الـ API هو ما يستهلكه العملاء فعلًا.</strong> رموز الحالة، أشكال الاستجابة، أخطاء التحقق، ترويسات
+  الـ pagination — قرارات العقد في المرحلة 3 هي وعود للواجهة الأمامية وتطبيقات الموبايل. اختبارات
+  التكامل عبر HTTP هي تلك الوعود، قابلة للتنفيذ؛ اختبارات الوحدة على الـ handlers لا تُسلسل، ولا
+  تتحقق، ولا تُشغّل الـ middleware.</li>
+<li><strong>الـ migrations لا تثبت نفسها إلا بالتنفيذ.</strong> migration ينحرف عن الـ models، أو مخطط اختبار مبني
+  بواسطة <code>create_all</code> لا يختبر سلسلة الـ migration أبدًا، يعني أن الاختبار الحقيقي الأول لـ
+  migrations الخاصة بك هو ليلة نشر الإنتاج (المرحلة 6، كابوس الفصل 06). harness يهاجر قاعدة بيانات
+  الاختبار يتحقق من السلسلة في كل تشغيل CI.</li>
+<li><strong>اللهجات تختلف حيث يؤلم.</strong> SQLite يقبل ما ترفضه PostgreSQL ويفتقر لما يعتمد عليه كودك — عوامل
+  تشغيل JSONB، فرض القيود الحقيقي، دلالات المعاملات المتزامنة، <code>LIKE</code> الحساسة لحالة الأحرف.
+  اختبارات ضد قاعدة بيانات بديلة تشهد على سلوك لا تملكه قاعدة بيانات الإنتاج.</li>
+<li><strong>هذا هو المكان الذي تُسدّد فيه الحدود المُضاعفة.</strong> كل fake من الفصل 03 هو قرض؛ اختبارات الـ
+  adapter هنا (وضع اختبار Stripe، رمل SMTP حقيقي) هي السداد. تخطّها ويصبح نموذج المجموعة للعالم
+  الخارجي اعتقادًا غير مُتحقق منه.</li>
+</ul>
+<p>أتقنها — PostgreSQL حقيقية، migrations حقيقية، تطبيق حقيقي، اختبارات معزولة — والأخضر يعني أن
+الطبقات تعمل فعلًا معًا، وهو معظم ما يعنيه "النظام يعمل". أخطئها وتُشحَن الدرزات دون اختبار خلف
+مجموعة خضراء، لتظهر كحوادث إنتاج "لا يمكن أن تحدث — الاختبارات تنجح."</p>
+<h2 id="_4">النموذج الذهني<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>اختبارات التكامل تقود النظام المُجمّع عبر نقاط دخوله الحقيقية، ضد بنية تحتية حقيقية، مع عزل لكل
+اختبار:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>   WHAT&#39;S REAL vs DOUBLED — the integration contract
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>       test ──HTTP──► [ FastAPI app: middleware → routes → DI → services → ORM ]──► PostgreSQL
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                 REAL: everything you deploy                        REAL (container)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>       doubled: only what leaves your system — payment API, email, third parties
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                (their adapters get their own tests against vendor test mode)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>   THE HARNESS (built once, in conftest.py)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>       1. one real PostgreSQL per suite ─── testcontainers / compose service (Stage 7)
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>       2. real migrations applied ───────── alembic upgrade head  (never create_all)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>       3. isolation per test ────────────── each test in a transaction, rolled back
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                                           (or truncate between tests)  → any order, parallel
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>       4. app with test wiring ──────────── dependency_overrides: auth principal, fakes for
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                                           external ports · client = httpx.AsyncClient(app)
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>   WHAT TO TEST AT THIS LEVEL (the seams, not the matrix)
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>       per endpoint: the CONTRACT — happy path, authz (401/403/404), validation (422),
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                     the response SHAPE clients depend on
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>       per repository/job: the SQL that has behavior — filters, joins, constraints, transactions
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>       per adapter:  once, against the vendor&#39;s test mode (repays Ch 03&#39;s fakes)
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>       NOT here: logic case matrices — those stay unit tests (Ch 02). one seam test per seam
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>                 behavior, not one per input combination.
+</code></pre></div>
+<p>ثلاثة مبادئ يحملها الفصل:</p>
+<p><strong>بنية تحتية حقيقية وإلا فليس تكاملًا.</strong> قاعدة البيانات هي PostgreSQL — الإصدار الذي تُشغّله في
+الإنتاج — مع سلسلة الـ migration الحقيقية المطبّقة. التطبيق هو كائن التطبيق الحقيقي بتوصيله الحقيقي.
+الاستبدالات الوحيدة هي الحدود الخارجية التي لا تنشرها، وتُسدَّد تلك باختبارات الـ adapter.</p>
+<p><strong>العزل مهمة الـ harness، ليس مهمة الاختبار.</strong> كل اختبار يجب أن يكون قادرًا على العمل منفردًا، بأي
+ترتيب، بالتوازي — مما يعني أن لا اختبار يرى صفوف اختبار آخر. حلّها مرة واحدة (transaction-per-test
+مع rollback، أو اقتطاع) في الـ fixtures؛ الاختبارات بعد ذلك تنشئ بياناتها فقط وتتحقق.</p>
+<p><strong>اختبر سلوك الدرز، وليس مصفوفة المنطق.</strong> حالات حساب الرسوم الثلاثون غُطّيت في الفصل 02 في
+ميكروثوانٍ؛ هنا تحتاج إلى <em>القليل</em> من الاختبارات التي تثبت الدرز — نقطة النهاية تحترم عقدها، الاستعلام
+يفلتر بشكل صحيح، المعاملة تتراجع عند الفشل. تكرار مصفوفة الوحدة على هذا المستوى لا يشتري شيئًا
+ويكلّف دقائق لكل تشغيل.</p>
+<p>تعريف عملي:</p>
+<blockquote>
+<p><strong>اختبارات التكامل تتحقق من الدرزات — المسارات، التوصيل، SQL، المعاملات، العقود — بقيادة التطبيق
+الحقيقي المُجمّع ضد بنية تحتية حقيقية (PostgreSQL فعلية، migrations فعلية)، مع عزل لكل اختبار
+يوفره الـ harness. تُضاعف الحدود الخارجية فقط، تُسدّد تلك المضاعفات باختبارات adapter، وتترك
+مصفوفات المنطق لاختبارات الوحدة.</strong></p>
+</blockquote>
+<h2 id="_5">مثال إنتاجي<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>مجموعة اختبارات تكامل <strong>Invoicely</strong> مبنية حول الدرزين اللذين أحرقا الفريق بالفعل: عقد API
+الفواتير و job الرسوم المتأخرة. يُحمّل الـ harness حاوية PostgreSQL 16 واحدة للمجموعة (إصدار
+الإنتاج)، يطبق سلسلة Alembic الحقيقية — حتى إن migration مكسورًا يفشل CI قبل أن يفشل ليلة النشر
+— ويلف كل اختبار في معاملة مُتراجَع عنها، بحيث تتشارك خمسمائة اختبار قاعدة البيانات دون أن ترى
+أبدًا صفوف بعضها.</p>
+<p>اختبارات الـ API تقود التطبيق الحقيقي عبر <code>httpx.AsyncClient</code>: إنشاء فاتورة يُرجع <code>201</code> بالشكل
+الموثّق؛ طلب بدون token يحصل على <code>401</code>؛ فاتورة مستأجر آخر تُرجع <code>404</code> — وليس <code>403</code> — حسب قرار
+المرحلة 3، الفصل 04 بعدم تسريب الوجود؛ كمية سطر سالبة تحصل على <code>422</code> مع خطأ على مستوى الحقل يمكن
+للواجهة الأمامية عرضه. تتم معالجة المصادقة في الدرز الذي توجد فيه: <code>dependency_overrides</code> يبدّل
+dependency التحقق من الـ token بـ principal اختبار، لأن هذه الاختبارات تتحقق من عقد الفاتورة، وليس
+من محلل JWT — dependency المصادقة لديه اختبارات عقد خاصة به حيث الـ tokens الحقيقية مهمة.</p>
+<p>اختبار الـ job هو ما تطلبه حادثة الفصل 01: أنشئ فاتورة مدفوعة واحدة، مسودة واحدة، متنازع عليها
+واحدة، وفاتورتين متأخرتين — عبر مسار الإنشاء العام، وليس إدراجًا خامًا — شغّل الـ job الحقيقي
+للرسوم المتأخرة ضد قاعدة البيانات الحقيقية، وتحقق من أن الرسوم لم تتراكم إلا على الفاتورتين
+المتأخرتين. يفشل ذلك الاختبار على filter <code>status</code> المسقوط الذي فاتته جميع محاكاة الوحدة الاثني
+عشر. بجانبه، المجموعة تسدّد قروض الفصل 03: مُحوّل Stripe يُشغّل حفنة من الاختبارات ضد وضع اختبار
+Stripe (شحن، رفض، مفتاح idempotency مكرر)، متحققًا من الافتراضات التي يُرمّزها <code>FakePaymentGateway</code>.
+في هذا الفصل نبني الـ harness وهذه الاختبارات — ونقارنها مع النسخة الافتراضية للمساعد: SQLite
+في الذاكرة، <code>create_all</code>، حالة مشتركة، أخضر للأبد.</p>
+<h2 id="_6">هيكل المجلدات<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>api/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── alembic/                          # the real migration chain — tests run THIS (Stage 6 Ch 06)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>├── app/ ...                          # the application under test, unchanged
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>└── tests/
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    ├── integration/
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    │   ├── conftest.py               # the harness: pg container, migrations, session-per-test
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    │   │                             #   rollback, app client with dependency overrides
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    │   ├── api/
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    │   │   └── test_invoices_api.py  # the HTTP contract: status codes, authz, shapes, validation
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    │   ├── jobs/
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    │   │   └── test_overdue_fees_job.py   # the incident test: real query, real states
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    │   └── adapters/
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    │       └── test_stripe_adapter.py     # vendor test mode — repays the Ch 03 fake (marked/optional)
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    └── unit/ ...                     # Ch 02 — no infrastructure fixtures cross this line
+</code></pre></div>
+<p>لماذا هذا الشكل: <code>integration/</code> لديه <code>conftest.py</code> خاص به لأن الـ harness <em>هو</em> نتاج هذا الفصل
+— دورة حياة الحاوية، الـ migrations، والعزل تعيش في مكان واحد، ولا يمكن لأي اختبار وحدة أن يرث
+عن غير قصد fixture قاعدة بيانات. المجلدات الفرعية تتبع أنواع الدرز (عقد API، jobs، adapters) بدلًا
+من أن تعكس كل ميزة، لأن هذا المستوى يختبر الدرزات، لا الـ modules. اختبارات الـ adapter تجلس
+بمعزل ومُعلَمة (<code>@pytest.mark.external</code>) بحيث تعمل المجموعة الأساسية بدون بيانات اعتماد ولا شبكة،
+بينما تُشغّل CI حلقة الخارجية على جدول — فشل رمل مزوّد لا ينبغي أن يحجب كل merge.</p>
+<h2 id="_7">التنفيذ<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p><strong>الـ harness: حاوية واحدة، migrations حقيقية، تراجع لكل اختبار.</strong> بُني مرة واحدة؛ كل اختبار بعد
+هذا قصير.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># tests/integration/conftest.py</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">pg_url</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="k">with</span> <span class="n">PostgresContainer</span><span class="p">(</span><span class="s2">&quot;postgres:16&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">pg</span><span class="p">:</span>          <span class="c1"># the version production runs</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        <span class="k">yield</span> <span class="n">pg</span><span class="o">.</span><span class="n">get_connection_url</span><span class="p">()</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="k">def</span><span class="w"> </span><span class="nf">engine</span><span class="p">(</span><span class="n">pg_url</span><span class="p">):</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">run_alembic_upgrade</span><span class="p">(</span><span class="n">pg_url</span><span class="p">,</span> <span class="s2">&quot;head&quot;</span><span class="p">)</span>                   <span class="c1"># the REAL chain — never create_all</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="k">return</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">pg_url</span><span class="p">)</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="k">def</span><span class="w"> </span><span class="nf">db_session</span><span class="p">(</span><span class="n">engine</span><span class="p">):</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="k">with</span> <span class="n">engine</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>        <span class="n">outer</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>                              <span class="c1"># everything a test does...</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>        <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">conn</span><span class="p">,</span> <span class="n">join_transaction_mode</span><span class="o">=</span><span class="s2">&quot;create_savepoint&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>        <span class="k">yield</span> <span class="n">session</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>        <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>        <span class="n">outer</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>                                  <span class="c1"># ...vanishes here. isolation by structure.</span>
+</code></pre></div>
+<p><strong>الـ client: التطبيق الحقيقي، مع توصيل اختبار في الدرز الصحيح.</strong> تتم المصادقة عن طريق override؛
+المنافذ الخارجية تحصل على fakes الفصل 03؛ كل شيء آخر هو ما تنشره.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">client</span><span class="p">(</span><span class="n">db_session</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">]:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="p">[</span><span class="n">get_db_session</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">db_session</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="p">[</span><span class="n">get_current_user</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">TEST_PRINCIPAL</span>          <span class="c1"># seam: authn</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="p">[</span><span class="n">get_payment_gateway</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">FakePaymentGateway</span><span class="p">()</span> <span class="c1"># seam: external</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">c</span><span class="p">:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        <span class="k">yield</span> <span class="n">c</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">app</span><span class="o">.</span><span class="n">dependency_overrides</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</code></pre></div>
+<p><strong>اختبارات API: العقد، كما يراه العميل.</strong> رموز الحالة، الأشكال، وقرارات الـ authz التي اتخذتها
+المرحلة 3.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># tests/integration/api/test_invoices_api.py</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_creating_an_invoice_returns_the_documented_shape</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/api/v1/invoices&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">valid_invoice_payload</span><span class="p">())</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">body</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="k">assert</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;draft&quot;</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="k">assert</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;450.00&quot;</span>                       <span class="c1"># money as string — the contract, pinned</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Location&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="sa">f</span><span class="s2">&quot;/api/v1/invoices/</span><span class="si">{</span><span class="n">body</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_another_tenants_invoice_is_a_404_not_a_403</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">other_tenant_invoice</span><span class="p">):</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/api/v1/invoices/</span><span class="si">{</span><span class="n">other_tenant_invoice</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span>                         <span class="c1"># don&#39;t leak existence (Stage 3 Ch 04)</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_negative_quantity_is_rejected_with_a_field_error</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/api/v1/invoices&quot;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">invoice_payload</span><span class="p">(</span><span class="n">quantity</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">422</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;errors&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;field&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;lines.0.quantity&quot;</span>
+</code></pre></div>
+<p><strong>اختبار الـ job: ما تطلبه الحادثة.</strong> حالات حقيقية، استعلام حقيقي، قاعدة بيانات حقيقية — الاختبار
+الذي لا تستطيع أي mock تقديمه.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># tests/integration/jobs/test_overdue_fees_job.py</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_fees_accrue_only_on_overdue_invoices</span><span class="p">(</span><span class="n">db_session</span><span class="p">):</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">seeded</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>        <span class="n">status</span><span class="p">:</span> <span class="n">create_invoice</span><span class="p">(</span><span class="n">db_session</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">due</span><span class="o">=</span><span class="n">date</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>        <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;paid&quot;</span><span class="p">,</span> <span class="s2">&quot;draft&quot;</span><span class="p">,</span> <span class="s2">&quot;disputed&quot;</span><span class="p">,</span> <span class="s2">&quot;overdue&quot;</span><span class="p">,</span> <span class="s2">&quot;overdue2&quot;</span><span class="p">]</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="p">}</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    <span class="n">run_overdue_fees_job</span><span class="p">(</span><span class="n">db_session</span><span class="p">,</span> <span class="n">as_of</span><span class="o">=</span><span class="n">date</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="n">with_fees</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">inv</span> <span class="ow">in</span> <span class="n">seeded</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">refresh</span><span class="p">(</span><span class="n">db_session</span><span class="p">,</span> <span class="n">inv</span><span class="p">)</span><span class="o">.</span><span class="n">late_fee</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="k">assert</span> <span class="n">with_fees</span> <span class="o">==</span> <span class="p">{</span><span class="s2">&quot;overdue&quot;</span><span class="p">,</span> <span class="s2">&quot;overdue2&quot;</span><span class="p">}</span>            <span class="c1"># fails on the dropped-status-filter bug</span>
+</code></pre></div>
+<p><strong>اختبار الـ adapter: سداد الـ fake.</strong> مُعلَم كـ external؛ يُشغّل على جدول، وليس في كل merge.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># tests/integration/adapters/test_stripe_adapter.py</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">external</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_duplicate_idempotency_key_does_not_double_charge</span><span class="p">(</span><span class="n">stripe_test_gateway</span><span class="p">):</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">first</span> <span class="o">=</span> <span class="n">stripe_test_gateway</span><span class="o">.</span><span class="n">charge</span><span class="p">(</span><span class="n">customer_id</span><span class="o">=</span><span class="n">TEST_CUSTOMER</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">Money</span><span class="p">(</span><span class="s2">&quot;10.00&quot;</span><span class="p">,</span> <span class="s2">&quot;USD&quot;</span><span class="p">),</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>                                       <span class="n">idempotency_key</span><span class="o">=</span><span class="s2">&quot;itest-dup-1&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">second</span> <span class="o">=</span> <span class="n">stripe_test_gateway</span><span class="o">.</span><span class="n">charge</span><span class="p">(</span><span class="n">customer_id</span><span class="o">=</span><span class="n">TEST_CUSTOMER</span><span class="p">,</span> <span class="n">amount</span><span class="o">=</span><span class="n">Money</span><span class="p">(</span><span class="s2">&quot;10.00&quot;</span><span class="p">,</span> <span class="s2">&quot;USD&quot;</span><span class="p">),</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>                                        <span class="n">idempotency_key</span><span class="o">=</span><span class="s2">&quot;itest-dup-1&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="k">assert</span> <span class="n">second</span><span class="o">.</span><span class="n">charge_id</span> <span class="o">==</span> <span class="n">first</span><span class="o">.</span><span class="n">charge_id</span>             <span class="c1"># the behavior FakePaymentGateway claims</span>
+</code></pre></div>
+<p>المجموعة التي ينتجها هذا صغيرة وكثيفة: ملف عقد لكل مورد API، اختبار واحد لكل سلوك درز، اختبارات
+الـ job التي تلمس SQL حقيقي، وحلقة خارجية رفيعة تبقي الـ fakes صادقة — دقائق للتشغيل، وكل اختبار
+يثبت شيئًا لا يستطيع اختبار وحدة إثباته.</p>
+<h2 id="_8">قرارات هندسية<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>خمسة قرارات تُعرّف harness تكامل.</p>
+<h3 id="postgresql">PostgreSQL حقيقية أم بديل أخف؟<a class="headerlink" href="#postgresql" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) SQLite في الذاكرة؛ (2) PostgreSQL حقيقية في حاوية (testcontainers / خدمة
+compose)؛ (3) قاعدة بيانات اختبار مشتركة طويلة العمر.</p>
+<p><strong>المقايضات:</strong> SQLite فوري ومجاني — وهي قاعدة بيانات مختلفة: فرض القيود، JSONB، دلالات المعاملات،
+حساسية حالة الأحرف، والإكراه على النوع كلها تختلف، لذا تشهد الاختبارات على سلوك لا يملكه الإنتاج
+وتفوت سلوكًا يملكه. الحاويات تكلف ثوانٍ من البدء لكل المجموعة وتعطيك المحرك والإصدار الدقيق اللذين
+تنشرهما. قاعدة بيانات اختبار مشتركة تتجنب تكلفة البدء وتتراكم فيها الحالة، تنحرف، وتربط كل مطور
+وكل تشغيل CI بمثيل قابل للتغيير واحد.</p>
+<p><strong>التوصية:</strong> PostgreSQL حقيقية، الإصدار الرئيسي للإنتاج، في حاوية تُشغّلها المجموعة (fixture على
+مستوى session محليًا، حاوية خدمة في CI — المرحلة 7، الفصل 05). ثواني البدء تُستهلَك على كامل
+المجموعة. SQLite مقبول فقط عندما تكون قاعدة بيانات الإنتاج، وهو ما لا يحدث أبدًا لمكدس هذا
+الدليل.</p>
+<h3 id="_9">كيف تبقى الاختبارات معزولة عن بعضها؟<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) transaction-per-test — شغّل كل اختبار داخل معاملة وتراجع؛ (2) اقتطاع كل الجداول
+بين الاختبارات؛ (3) قاعدة بيانات/مخطط جديد لكل اختبار؛ (4) لا شيء — حالة مشتركة وأمل.</p>
+<p><strong>المقايضات:</strong> الـ rollback هو الأسرع (لا شيء للتنظيف) وهو بنيوي — الحالة <em>لا يمكن</em> أن تتسرب — لكنه
+لا يستطيع اختبار كود يلتزم نفسه أو يجب أن يلاحظ commits اتصال آخر. الاقتطاع أبطأ قليلًا، يعمل مع
+commits حقيقية، ويحتاج إلى قائمة الجداول المُصانة. قاعدة بيانات جديدة لكل اختبار مضمونة وبطيئة
+جدًا كافتراضي. الحالة المشتركة هي المجموعة المتذبذبة المعتمدة على الترتيب من الفصل 01.</p>
+<p><strong>التوصية:</strong> transaction-per-test مع rollback (نمط savepoint أعلاه) كافتراضي — سريع ومستحيل التسرب.
+عُد إلى الاقتطاع للحفنة من الاختبارات التي تمارس فعلًا سلوك الالتزام أو الرؤية عبر الاتصالات. لا
+تشارك الحالة أبدًا: أي اختبار يعتمد على صفوف اختبار آخر هو خطأ، وتشغيل المجموعة بترتيب عشوائي
+يُجبر ذلك.</p>
+<h3 id="_10">من أين يأتي مخطط الاختبار؟<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) <code>Base.metadata.create_all()</code> من الـ models؛ (2) سلسلة Alembic migration الحقيقية؛
+(3) dump SQL مُصان يُستعاد لكل مجموعة.</p>
+<p><strong>المقايضات:</strong> <code>create_all</code> سريع ومريح ويختبر مخططًا لا يملكه الإنتاج — سلسلة الـ migration نفسها
+تبقى غير مُتحققة، وينجرف الـ models مقابل الـ migrations بصمت حتى النشر. تشغيل الـ migrations يختبر
+الأثر الفني الذي يعمل فعلًا في الإنتاج ويكلّف بضع ثوانٍ لكل مجموعة (أكثر كلما نمت السلسلة). الـ
+dump سريع الاستعادة وهو أثر فني ثالث ينجرف هو نفسه.</p>
+<p><strong>التوصية:</strong> شغّل سلسلة الـ migration الحقيقية (<code>alembic upgrade head</code>) في fixture الـ session. هذا
+يجعل كل تشغيل CI بروفة لليلة النشر (المرحلة 6، الفصل 06) ويلتقط انحراف الـ models مقابل الـ
+migrations مجانًا — أضف الحارس الرخيص الذي يقارن الـ metadata بعد الـ upgrade. عندما تنمو السلسلة
+بما يكفي لتؤلم، التقط dump مُهاجَر <em>مشتق من السلسلة</em> واحتفظ بوظيفة واحدة لا تزال تُشغّل السلسلة من
+الصفر.</p>
+<h3 id="api">كيف تُعالَج المصادقة في اختبارات الـ API؟<a class="headerlink" href="#api" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) شغّل مسار المصادقة الحقيقي بـ tokens موقّعة حقيقية لكل اختبار؛ (2) override
+dependency المصادقة بـ principal اختبار؛ (3) عطّل المصادقة في إعداد اختبار.</p>
+<p><strong>المقايضات:</strong> الـ tokens الحقيقية تمارس أكثر وتجعل كل اختبار فاتورة أيضًا اختبار JWT — بطيء،
+فشل صاخب، ومراسم fixture في كل مكان. الـ override للـ dependency يبقي كل اختبار مركّزًا على عقده
+ويترك مسار المصادقة دون اختبار <em>إذا توقفت عند ذلك</em>. إعداد auth-off عام هو انحراف في الإعدادات بين
+الاختبار والإنتاج، وعلم مخيف لوجوده.</p>
+<p><strong>التوصية:</strong> override dependency المصادقة بـ principal اختبار لاختبارات الموارد — الـ authorization
+(الـ tenancy، الملكية، الأدوار) يبقى حقيقيًا ومُختبرًا، لأنه يعيش أسفل الـ override. ثم اختبر درز
+المصادقة نفسه، مباشرة وبشكل شامل، في ملفه الخاص بـ tokens حقيقية: صالح، منتهي الصلاحية، مُعدَّل،
+جمهور خاطئ. لا تُصدّر أبدًا إعدادًا يعطّل المصادقة؛ الـ overrides توجد فقط في عملية الاختبار.</p>
+<h3 id="_11">ما الذي ينتمي إلى هذا المستوى — وعبر أي نقطة دخول؟<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) قيادة كل شيء عبر HTTP؛ (2) اختبار الخدمات/الـ repositories مباشرة عبر واجهاتها
+الـ Python؛ (3) كلاهما، مختار حسب ما هو الدرز.</p>
+<p><strong>المقايضات:</strong> HTTP فقط يمارس المكدس الكامل بما في ذلك الـ serialization والـ middleware، ويصبح
+بطيئًا ومتكلفًا للـ jobs، وحالات حافة الـ repository، وحقن الأخطاء. اختبارات على مستوى الخدمة أسرع
+وتتخطى طبقة العقد — وهي حيث تعيش فئة من الأخطاء. اختبار كلاهما دون تمييز يكرر التغطية ويضاعف
+الصيانة.</p>
+<p><strong>التوصية:</strong> اختر نقطة الدخول حسب ما يثبته الاختبار. العقود (رموز الحالة، الأشكال، استجابات الـ
+authz، التحقق) تذهب عبر HTTP — هذا ماهية العقد. سلوك SQL (الـ repositories، الـ jobs، المعاملات)
+يذهب عبر نقطة دخول الخدمة أو الـ job المالكة — HTTP لا يضيف شيئًا لاختبار filter استعلام. احتفظ
+باختبار smoke واحد يُحمّل كامل التطبيق ويضرب نقطة نهاية health، بحيث تفشل أخطاء التجميع الخالصة
+بسرعة وبشكل لا لبس فيه.</p>
+<h2 id="_12">المقايضات<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>اختبارات التكامل تشتري الواقع؛ العملة هي الوقت والآلات.</p>
+<p><strong>البنية التحتية الحقيقية تقايض سرعة المجموعة بفئة أخطاء لا يمسكها شيء آخر.</strong> بدء حاوية وتشغيل
+migration يكلفان عشرات الثواني مرة واحدة، وكل اختبار يكلف ميلي ثوانٍ إلى عشرات أكثر من اختبار
+الوحدة. ما يشتريه ذلك — SQL، توصيل، عقود، migrations مُتحقَّق منها في كل commit — هو فئة الأخطاء
+بالضبط وراء معظم حوادث "كيف مرّت الاختبارات؟". التخفيف هو انضباط النطاق: درزات هنا، مصفوفات في
+الفصل 02.</p>
+<p><strong>الـ harness يقايض التعقيد المسبق ببساطة كل اختبار.</strong> الحاويات، خطافات الـ migration، تراجعات
+savepoint، وتوصيل الـ override هي فعلًا مزعجة للبناء — مرة واحدة. بعد ذلك كل اختبار خمسة أسطر.
+الفرق التي تتخطى الاستثمار تدفع لكل اختبار بدلًا من ذلك: تنظيف يدوي، fixtures مشتركة، والمجموعة
+المتذبذبة التي تلي ذلك.</p>
+<p><strong>عزل الـ rollback يقايض نقطة عمياء بأمان بنيوي.</strong> transaction-per-test لا يستطيع ملاحظة سلوك
+الالتزام الحقيقي — ثقب صغير ومعروف مغطى عمدًا ببضعة اختبارات قائمة على الاقتطاع — مقابل جعل
+تسرب الحالة مستحيلًا بدلًا من مجرد منفرًا عنه.</p>
+<p><strong>الحلقة الخارجية تقايض تغطية تحجب الـ merges بالاستقرار.</strong> إبقاء اختبارات رمل المزوّد خارج مجموعة
+كل merge يعني أن افتراض Stripe يمكن أن ينحرف لساعات قبل أن يلتقطه التشغيل المجدول؛ وضعها في
+الداخل يعني أن كل merge يرث uptime وزمن استجابة الرمل. المجدول هو الافتراضي الصحيح — الانحراف
+يُقاس بالأيام، الـ merges بالدقائق.</p>
+<h2 id="_13">الأخطاء الشائعة<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<p><strong>اختبارات تكامل ضد قاعدة بيانات مختلفة.</strong> SQLite تحل محل PostgreSQL؛ اختبارات خضراء، سلوك إنتاج
+غير مُختبر. الإصلاح: PostgreSQL في حاوية، إصدار الإنتاج — جدال التكلفة مات مع testcontainers.</p>
+<p><strong><code>create_all</code> بدلًا من الـ migrations.</strong> مخطط الاختبار يُولد من الـ models؛ سلسلة الـ migration — الشيء
+الذي يعمل فعلًا ضد الإنتاج — لا يُنفَّذ أبدًا. الإصلاح: <code>alembic upgrade head</code> في الـ harness؛
+تأكد من أن الـ models والمخطط المُهاجَر متفقان.</p>
+<p><strong>حالة مشتركة بين الاختبارات.</strong> بيانات seed مُعدَّلة عبر الاختبارات؛ المجموعة تنجح بالترتيب وتنهار
+عند الخلط أو التوازي. الإصلاح: تراجع أو اقتطاع لكل اختبار في الـ fixtures؛ ترتيب عشوائي في CI.</p>
+<p><strong>إعادة اختبار مصفوفة الوحدة عبر HTTP.</strong> ثلاثون حالة رسوم مدفوعة عبر الـ API بـ 50ms لكل واحدة،
+مكررة من الفصل 02. الإصلاح: درزات هنا، مصفوفات هناك؛ اختبار عقد واحد لكل سلوك.</p>
+<p><strong>بذر البيانات عبر إدراج خام.</strong> بيانات اختبار مكتوبة مباشرة في الجداول، تتجاوز التحقق والافتراضات
+الافتراضية — تختبر حالات لا يستطيع التطبيق إنتاجها. الإصلاح: ابذر عبر مسار الإنشاء العام (API
+أو خدمة)، انزل إلى الإدراج فقط لبناء حالات قديمة/فاسدة عمدًا.</p>
+<p><strong>التأكيد على تفاصيل استجابة عرضية.</strong> تثبيت ترتيب الحقول، الطوابع الزمنية، أو كامل جسم JSON،
+بحيث يكسر كل تغيير تراكمي الاختبارات. الإصلاح: أكد على الحقول التي هي العقد؛ سامح الإضافات ما لم
+يحظرها العقد.</p>
+<h2 id="_14">أخطاء الذكاء الاصطناعي<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p>هarnesss التكامل هي حيث يقطع المساعدون الزوايا الأكثر أهمية، لأن الاختصارات كلها <em>تعمل</em>: قاعدة
+بيانات مزيفة تعمل، <code>create_all</code> يعمل، حالة مشتركة تعمل. راجع الـ harness — الـ <code>conftest</code>، لا
+الاختبارات — بأشد ما يمكن.</p>
+<h3 id="claude-code-sqlite">Claude Code: استبدال SQLite بقاعدة البيانات الحقيقية بهدوء<a class="headerlink" href="#claude-code-sqlite" title="Permanent link">&para;</a></h3>
+<p>عندما يُطلب منه "إضافة اختبارات تكامل"، يولّد Claude Code frequently وصفة pytest الكلاسيكية:
+محرك <code>sqlite:///:memory:</code>، <code>create_all</code>، و fixture session. يعمل في أي مكان بدون أي إعداد — وبهدوء
+يُلغي تكامل الاختبارات: قيود PostgreSQL، عوامل تشغيل JSONB، دلالات المعاملات، وسلوك اللهجات كلها
+غير مُختبرة، بينما تُبلغ المجموعة عن تغطية تكامل خضراء لا يملكها الـ codebase.</p>
+<p><strong>الكشف:</strong> <code>sqlite</code> في أي connection string تحت <code>tests/integration/</code>؛ عناوين URL لمحرك "TESTING"
+شرطية في إعدادات التطبيق؛ اختبارات تنجح بدون توفر Docker حين يدّعي الـ harness استخدام الحاويات؛
+كود يعتمد على JSONB/array/قيود مع اختبارات "تكامل" خضراء.</p>
+<p><strong>الإصلاح:</strong> ثبّت البنية التحتية في الـ prompt والمراجعة:</p>
+<blockquote>
+<p>اختبارات التكامل يجب أن تعمل ضد PostgreSQL 16 حقيقية عبر testcontainers (fixture على
+مستوى session) — لا SQLite في أي مكان تحت tests/integration/. طبّق سلسلة Alembic الحقيقية،
+وليس create_all. إذا لم يكن Docker متوفرًا، يجب أن تفشل الاختبارات بصوت عالٍ، لا أن تسقط
+إلى قاعدة بيانات مختلفة.</p>
+</blockquote>
+<h3 id="gpt-create_all-migration">GPT: <code>create_all</code> ومخطط موازي — سلسلة الـ migration لا تعمل أبدًا<a class="headerlink" href="#gpt-create_all-migration" title="Permanent link">&para;</a></h3>
+<p>نماذج عائلة GPT تبنّي افتراضيًا مخطط الاختبار من الـ models (<code>Base.metadata.create_all</code>) وكثيرًا
+ما تضيف جداول أو أعمدة fixture خاصة بالاختبار — منتجة مخططًا يشبه الإنتاج لكنه لم يُنتَج كما
+يُنتج الإنتاج. سلسلة الـ migration، الأثر الفني الذي سيعمل فعلًا عند النشر، لا تُنفَّذ أبدًا في
+أي اختبار؛ ينجرف الـ models مقابل الـ migrations بصمت حتى ليلة النشر.</p>
+<p><strong>الكشف:</strong> <code>create_all</code> في fixtures التكامل؛ لا استدعاء <code>alembic</code> في أي مكان في شجرة الاختبار؛
+migrations تفشل عند التشغيل من الصفر على قاعدة بيانات جديدة رغم أن CI أخضر؛ عناصر مخطط موجودة في
+الاختبارات لا ينشئها أي migration.</p>
+<p><strong>الإصلاح:</strong> اجعل الـ migrations المصدر الوحيد للمخطط:</p>
+<blockquote>
+<p>مخطط قاعدة بيانات الاختبار يجب أن يأتي من <code>alembic upgrade head</code> — نفس السلسلة التي يشغّلها
+الإنتاج. لا <code>create_all</code>، لا DDL خاص بالاختبار. أضف تأكيدًا أن المخطط المُهاجَر يطابق
+metadata الـ models، بحيث يفشل الـ build عند الانحراف.</p>
+</blockquote>
+<h3 id="cursor-harness">Cursor: تسرّب الحالة عبر الـ harness — اختبارات مقترنة ببقايا قاعدة البيانات<a class="headerlink" href="#cursor-harness" title="Permanent link">&para;</a></h3>
+<p>عند إكمال الاختبارات في ملف موجود، يتبع Cursor الأنماط المحلية بدون العزل الذي يفترضه الـ harness:
+commit داخل اختبارات لا يستطيع fixture الـ rollback التراجع عنها، sessions على مستوى module مُعاد
+استخدامها عبر الاختبارات، مساعدات seed تتحقق-ثم-تنشئ ("get or create") بحيث تعتمد اختبارات لاحقة
+بصمت على صفوف اختبارات سابقة. تنجح المجموعة بترتيب الملف اليوم؛ بعد ثلاثة أسابيع يُفشلها إعادة
+الترتيب أو التوازي بطرق لا يستطيع أحد إعادة إنتاجها محليًا.</p>
+<p><strong>الكشف:</strong> <code>session.commit()</code> داخل اختبارات تستخدم fixture الـ rollback؛ fixtures في نطاق
+<code>module</code>/<code>session</code> تُرجع sessions قاعدة بيانات أو صفوفًا مُنشأة؛ مساعدات seed من نوع get-or-create؛
+إخفاقات تظهر فقط مع <code>-p randomly</code>، <code>-n auto</code>، أو عند تشغيل ملف منفرد.</p>
+<p><strong>الإصلاح:</strong> اجعل العزل بنيويًا ومُتحقَّقًا منه:</p>
+<blockquote>
+<p>كل اختبار يحصل على session خاص به ملفوف في معاملة من fixture الـ harness وينشئ بياناته الخاصة
+— لا sessions على مستوى module، لا seed من نوع get-or-create، لا commits لا يستطيع fixture
+الـ rollback التراجع عنها. شغّل المجموعة بترتيب عشوائي وعمال متوازين وتأكد من نجاحها قبل
+الانتهاء.</p>
+</blockquote>
+<h2 id="_15">أفضل الممارسات<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p><strong>اجعل الـ harness حقيقيًا: PostgreSQL في حاوية، migrations حقيقية.</strong> محرك وإصدار الإنتاج،
+<code>alembic upgrade head</code>، فحص انحراف بين الـ models والمخطط المُهاجَر — كل تشغيل CI يبرّح النشر.</p>
+<p><strong>اعزل بنيويًا.</strong> transaction-per-test مع rollback كافتراضي، اقتطاع لاختبارات سلوك الالتزام الحقيقية،
+ترتيب عشوائي وعمال متوازون في CI لإبقاء الجميع صادقين.</p>
+<p><strong>اختبر العقود عبر HTTP، وSQL عبر مالكها.</strong> رموز الحالة، الأشكال، الـ authz، والتحقق عبر الـ client
+الحقيقي؛ سلوك الـ repository والـ job عبر نقاط دخولها؛ اختبار smoke واحد للتجميع يُحمّل ويضرب
+health.</p>
+<p><strong>ابذر عبر الباب الأمامي.</strong> أنشئ بيانات اختبار عبر طبقة API أو الخدمة بحيث تكون بيانات يمكن للتطبيق
+إنتاجها فعلًا؛ احفظ الإدراج الخام لبناء حالات قديمة عمدًا.</p>
+<p><strong>حلّق حول الاختبارات الخارجية.</strong> اختبارات الـ adapter ضد أوضاع اختبار المزوّد مُعلَمة، ذات بيانات
+اعتماد، ومجدولة — تسدّد fakes الفصل 03 دون وضع رمل مزوّد على مسار الـ merge.</p>
+<p><strong>اكتب قواعد الـ harness في <code>CLAUDE.md</code>.</strong> "Postgres حقيقية عبر testcontainers، migrations وليس
+create_all، عزل بالـ rollback، لا SQLite، ابذر عبر الـ API" — اختصارات المساعد معروفة؛ سمّها
+قبل أن تُتّخذ.</p>
+<h2 id="_16">الأنماط المضادة<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<p><strong>التكامل الزائف.</strong> اختبارات "تكامل" ضد SQLite أو sessions مُحاكاة. العلامة: <code>sqlite:///:memory:</code>
+في شجرة التكامل؛ الاختبارات تنجح بدون Docker؛ كود JSONB، مجموعة خضراء.</p>
+<p><strong>المخطط الموازي.</strong> مخطط اختبار من <code>create_all</code> بينما مخطط الإنتاج يأتي من الـ migrations. العلامة:
+لا استدعاء alembic في شجرة الاختبار؛ تشغيل migration على قاعدة بيانات جديدة يفشل بينما CI أخضر.</p>
+<p><strong>مجموعة البقايا.</strong> اختبارات مقترنة بصفوف متبقية وsessions مشتركة. العلامة: تنجح بالترتيب، تفشل
+عند الخلط أو التوازي؛ مساعدات seed من نوع get-or-create.</p>
+<p><strong>مصفوفة HTTP.</strong> مصفوفات حالات على مستوى الوحدة تُعاد عبر الـ API. العلامة: عشرات اختبارات تنويع
+مدخلات لكل نقطة نهاية؛ وقت تشغيل المجموعة ينمو مع تعقيد المنطق، لا مع عدد الدرزات.</p>
+<p><strong>بذر الباب الخلفي.</strong> fixtures تُدرج صفوفًا خامًا تتجاوز التحقق. العلامة: اختبارات تمارس حالات لا
+يمكن لأي استدعاء API إنشاؤها؛ افتراضات وقيود الأعمدة غير مُختبرة.</p>
+<p><strong>الرمل على مسار الـ Merge.</strong> اختبارات معتمدة على مزوّد تحجب كل PR. العلامة: merges محجوبة بانقطاعات
+رمل طرف ثالث؛ إعادة المحاولات مُطبَّعة لـ "اختبارات Stripe."</p>
+<h2 id="_17">شجرة القرار<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<p>"أحتاج للتحقق من سلوك عند درز — كيف أختبره هنا؟"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>What kind of seam is it?
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>├── the HTTP contract (codes, shapes, authz, validation)
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>│      └─► through the real client (httpx/TestClient), real app wiring.
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>│          auth: override the authn dependency; authz stays real.
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>│          one test per contract behavior — the input matrix lives in Ch 02.
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>├── SQL behavior (query filters, joins, constraints, transactions, jobs)
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>│      └─► through the owning service/job entry point, against container Postgres.
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>│          needs real commit / cross-connection visibility?
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>│          ├── NO ──► default rollback isolation.
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>│          └── YES ─► truncation-based test, explicitly marked.
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>├── the wiring itself (app boots, DI resolves, middleware ordered)
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>│      └─► one smoke test: boot app, hit /health, assert 200.
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>└── a third-party adapter (Stripe, SMTP, S3)
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>       └─► vendor test mode, @pytest.mark.external, scheduled in CI —
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>           this is what keeps the Ch 03 fake honest.
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>Harness checkpoints (before writing any test):
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>    real PostgreSQL, prod version? · schema via alembic upgrade head?
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>    per-test isolation structural? · suite passes shuffled AND parallel?
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    └── any NO ─► fix the harness first. Tests on a broken harness are debt.
+</code></pre></div>
+<h2 id="_18">قائمة المراجعة<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h2>
+<h3 id="_19">قائمة مراجعة التنفيذ<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] اختبارات التكامل تعمل ضد PostgreSQL في حاوية تطابق الإصدار الرئيسي للإنتاج — لا SQLite، لا
+  قاعدة بيانات اختبار مشتركة قابلة للتغيير.</li>
+<li>[ ] مخطط الاختبار يُنتَج بواسطة <code>alembic upgrade head</code>؛ فحص انحراف يتأكد من أن الـ models والمخطط
+  المُهاجَر متفقان.</li>
+<li>[ ] كل اختبار معزول (rollback أو اقتطاع عبر fixtures) والمجموعة تنجح بترتيب عشوائي وعمال متوازين.</li>
+<li>[ ] عقد كل نقطة نهاية مُختبر عبر HTTP: شكل النجاح، سلوك 401/403/404، أخطاء تحقق يمكن للعملاء عرضها.</li>
+<li>[ ] الكود الذي يحمل SQL (الـ repositories، الـ jobs) لديه اختبارات تبذر حالات واقعية عبر مسار
+  الإنشاء العام.</li>
+<li>[ ] كل fake من الفصل 03 مُسدَّد باختبار adapter ضد وضع اختبار المزوّد، مُعلَم كـ external.</li>
+</ul>
+<h3 id="_20">قائمة مراجعة البنية<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] الـ authn مُستبدل في درز dependency الخاص به في اختبارات الموارد؛ درز المصادقة نفسه لديه
+  اختبارات tokens حقيقية مخصصة؛ لا يوجد إعداد لتعطيل المصادقة.</li>
+<li>[ ] المنافذ الخارجية مُستبدَلة بالـ fakes المشتركة؛ لا شيء آخر في التطبيق مُضاعف.</li>
+<li>[ ] نقاط الدخول تطابق الدرز: العقود عبر HTTP، SQL عبر الخدمات المالكة، التجميع عبر اختبار smoke
+  — لا مصفوفات وحدة مكررة.</li>
+<li>[ ] حلقة الاختبار الخارجية ذات بيانات اعتماد، مُعلَمة، ومجدولة خارج مسار الـ merge.</li>
+<li>[ ] قواعد الـ harness (Postgres حقيقية، migrations، عزل، بذر) مُسجَّلة في <code>CLAUDE.md</code>.</li>
+</ul>
+<h3 id="_21">قائمة مراجعة الكود<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] لا اختبار جديد يعتمد على بيانات اختبار آخر، commits خارج سيطرة fixture، أو يوسّع نطاق
+  fixture إلى ما بعد الدالة.</li>
+<li>[ ] نقاط النهاية الجديدة/المُعدّلة تصل مع اختبارات عقد تشمل حالات الفشل، وليس فقط الـ 200s.</li>
+<li>[ ] الاستعلامات والـ jobs المُعدّلة لديها اختبارات تكامل تغطي الحالات التي يجب أن يتضمنها الاستعلام
+  <em>ويستبعدها</em> (راقب فروق الذكاء الاصطناعي بحثًا عن فلاتر مسقوطة).</li>
+<li>[ ] تأكيدات الاستجابة تثبّت حقول العقد، لا تفاصيل الجسم العرضية.</li>
+<li>[ ] لا SQLite، ولا <code>create_all</code>، ولا بذر بإدراج خام تسلل إلى شجرة التكامل (اختصارات الذكاء
+  الاصطناعي الثلاثة — راجع فرق الـ conftest).</li>
+</ul>
+<h3 id="_22">قائمة مراجعة النشر<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] CI يشغّل مجموعة التكامل ضد حاوية خدمة PostgreSQL من إصدار الإنتاج في كل merge (المرحلة 7،
+  الفصل 05).</li>
+<li>[ ] سلسلة الـ migration تعمل من الصفر في CI، بحيث تفشل السلسلة المكسورة الـ pipeline، لا النشر.</li>
+<li>[ ] حلقة الـ adapter الخارجية تعمل على جدول مع تنبيهات، باستخدام بيانات اعتماد وضع اختبار
+  المزوّد المخزنة كأسرار CI.</li>
+<li>[ ] وقت تشغيل مجموعة التكامل مُتعقّب؛ يُضاف التوازي قبل أن تصبح المجموعة بطيئة بما يكفي
+  لتُتخطّى.</li>
+</ul>
+<h2 id="_23">التمارين<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h2>
+<p><strong>1. ابنِ الـ harness، ثم أثبت العزل.</strong> شغّل الـ harness الكامل لتطبيق FastAPI + SQLAlchemy:
+حاوية PostgreSQL، Alembic migrations، تراجع لكل اختبار، مصادقة مُستبدَلة. ثم أثبت ذلك: شغّل
+المجموعة مخلوطة (<code>-p randomly</code>) ومتوازية (<code>-n auto</code>)، واكتب اختبارًا يتسرب عمدًا (session على
+مستوى module، صف مُلتزم) لمشاهدة نمط الفشل قبل حذفه. الأثر الفني هو الـ conftest وسجلات التشغيل
+المخلوط/المتوازي.</p>
+<p><strong>2. اكتب اختبار الحادثة.</strong> خذ job الرسوم المتأخرة (أو أي استعلام مجمع مفلتر بالحالة في الـ
+codebase الخاص بك). ابذر كل حالة عبر المسار العام، شغّل الـ job، وأكد على مجموعتي التضمين/الاستبعاد
+الدقيقتين. ثم أعد تقديم خطأ الفصل 01 — أسقط filter الحالة — وتأكد أن هذا الاختبار يفشل بينما
+مجموعة الوحدة تبقى خضراء. الأثر الفني هو الاختبار والتشغيلان.</p>
+<p><strong>3. سدد fake.</strong> اختر حدًا تُضاعفه (المدفوعات أو البريد الإلكتروني). اكتب اختبار adapter خارجي
+ضد وضع اختبار المزوّد يغطي النجاح، الفشل، والاستدعاءات المكررة/idempotent، وشغّله ضد كل من
+المحوّل الحقيقي والـ fake (نمط عقد الفصل 03). أصلح كل انحراف في الـ fake. الأثر الفني هو الاختبار
+وقائمة الانحرافات.</p>
+<h2 id="_24">قراءة إضافية<a class="headerlink" href="#_24" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>وثائق Testcontainers للـ Python (testcontainers-python.readthedocs.io)</strong> — نمط حاوية لكل
+  مجموعة الذي يُبنى عليه harness هذا الفصل؛ وحدات لـ PostgreSQL، Redis، وبقية مكدس المرحلة 7.</li>
+<li><strong>وثائق FastAPI — "Testing" و "Testing Dependencies with Overrides" (fastapi.tiangolo.com)</strong> —
+  الميكانيكا الرسمية للـ client ودرزات dependency-override المستخدمة في كل هذا الفصل.</li>
+<li><strong>وثائق SQLAlchemy — "Joining a Session into an External Transaction" (docs.sqlalchemy.org)</strong> —
+  وصفة عزل savepoint/rollback، بالتفاصيل التي تجعلها تعمل عندما يلتزم كود التطبيق نفسه.</li>
+<li><strong>المرحلة 6، الفصل 06 — Migrations &amp; Schema Evolution</strong> — لماذا سلسلة الـ migration هي الأثر
+  الفني الذي يستحق الاختبار، وأنماط فشل ليلة النشر التي يحولها هذا الـ harness إلى إخفاقات CI.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  عد إلى الأعلى
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="هامش سفلي" >
+        
+          
+          <a href="../03-mocking-and-test-doubles/" class="md-footer__link md-footer__link--prev" aria-label="السابقة: المحاكاة وبدائل الاختبار">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                السابقة
+              </span>
+              <div class="md-ellipsis">
+                المحاكاة وبدائل الاختبار
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../05-end-to-end-testing/" class="md-footer__link md-footer__link--next" aria-label="التالية: الاختبارات الشاملة">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                التالية
+              </span>
+              <div class="md-ellipsis">
+                الاختبارات الشاملة
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tracking", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "clipboard.copy": "\u0646\u0633\u062e \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "search.result.more.one": "\u0623\u0643\u062b\u0631 \u0645\u0646 1 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.more.other": "\u0623\u0643\u062b\u0631 \u0645\u0646 # \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.none": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c", "search.result.one": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b \u0645\u0633\u062a\u0646\u062f \u0648\u0627\u062d\u062f", "search.result.other": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b # \u0645\u0633\u062a\u0646\u062f\u0627\u062a", "search.result.placeholder": "\u0627\u0643\u062a\u0628 \u0644\u0628\u062f\u0621 \u0627\u0644\u0628\u062d\u062b", "search.result.term.missing": "\u0645\u0641\u0642\u0648\u062f", "select.version": "\u0625\u062e\u062a\u0631 \u0627\u0644\u0625\u0635\u062f\u0627\u0631"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

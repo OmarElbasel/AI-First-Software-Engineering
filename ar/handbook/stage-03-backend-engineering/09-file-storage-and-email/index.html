@@ -1,0 +1,5830 @@
+
+<!doctype html>
+<html lang="ar" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A production-grade handbook for engineering software with AI as a disciplined teammate.">
+      
+      
+      
+      
+        <link rel="prev" href="../08-logging-and-observability/">
+      
+      
+        <link rel="next" href="../../stage-04-frontend-engineering/">
+      
+      
+        
+          <link rel="alternate" href="../../../../handbook/stage-03-backend-engineering/09-file-storage-and-email/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ar">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>تخزين الملفات والبريد الإلكتروني - هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="rtl" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          انتقل إلى المحتوى
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="عنوان العارضة">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-header__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              تخزين الملفات والبريد الإلكتروني
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="إختر اللغة">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../handbook/stage-03-backend-engineering/09-file-storage-and-email/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ar" class="md-select__link">
+              العربية
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="بحث" placeholder="بحث" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="إبحث">
+        
+        <button type="reset" class="md-search__icon md-icon" title="مسح كلي" aria-label="مسح كلي" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            بدء البحث
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="تصفح" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-nav__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الرئيسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../START-HERE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ابدأ من هنا
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/01-what-is-software-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ما هي هندسة البرمجيات؟
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/02-product-thinking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفكير بعقلية المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/03-ai-first-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطوير بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/04-engineering-trade-offs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المفاضلات الهندسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/05-technical-debt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الدَّين التقني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/06-build-vs-buy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء مقابل الشراء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/07-simplicity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البساطة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/08-maintainability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية الصيانة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/01-layered-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية الطبقية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/02-feature-based-and-vertical-slice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية القائمة على الميزات والشرائح الرأسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/03-clean-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية النظيفة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/04-monolith-modular-monolith-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المتراصّ والمتراصّ المعياري والخدمات المصغّرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/05-service-layer-and-repository-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    طبقة الخدمات ونمط المستودع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/06-dependency-injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن التبعيات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/07-event-driven-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية المدفوعة بالأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-building-apis-with-fastapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء واجهات API باستخدام FastAPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-data-persistence-sqlalchemy-alembic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حفظ البيانات: SQLAlchemy و Alembic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-error-handling-and-api-versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معالجة الأخطاء وإصدارات API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-background-jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المهام الخلفية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التخزين المؤقت
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-logging-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسجيل وقابلية المراقبة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        هيكل المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القرارات الهندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="القرارات الهندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أين تُخزَّن الملفات؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        نقل مباشر موقّع مسبقًا، أم تمرير عبر التطبيق؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف يُخوَّل الوصول إلى الملف؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بناء أم شراء — التخزين والبريد الإلكتروني؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بريد إلكتروني متزامن أم غير متزامن؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: تخزين الملفات في قاعدة البيانات أو على القرص المحلي
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: مفاتيح يتحكم فيها العميل وتحميلات غير مُحقَّقة
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: إرسال البريد الإلكتروني بشكل متزامن في الطلب
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة المراجعة">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة الكود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/01-building-uis-with-react-and-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء الواجهات باستخدام React و TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/02-nextjs-and-the-app-router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next.js وموجّه التطبيق App Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/03-server-and-client-components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مكوّنات الخادم والعميل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/04-data-fetching-and-server-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    جلب البيانات وحالة الخادم
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/05-state-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الحالة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/06-forms-and-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النماذج والتحقق من الإدخال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/07-frontend-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/08-frontend-architecture-and-folder-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معمارية الواجهة الأمامية وهيكل المجلدات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/01-react-native-and-expo-foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أساسيات React Native و Expo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/02-navigation-and-deep-linking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التنقّل والروابط العميقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/03-authentication-on-mobile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة على الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/04-offline-support-and-data-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دعم العمل دون اتصال ومزامنة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/05-push-notifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الإشعارات الفورية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/06-mobile-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/07-building-shipping-and-ota-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء والنشر وتحديثات OTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/01-relational-databases-and-data-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قواعد البيانات العلائقية ونمذجة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/02-schema-design-and-normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصميم المخطط والتطبيع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/03-indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الفهرسة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/04-transactions-and-concurrency-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعاملات والتحكم في التزامن
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/05-query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحسين الاستعلامات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/06-migrations-and-schema-evolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الترحيلات وتطوّر المخطط
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 7 · DevOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 7 · DevOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/01-linux-for-production-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux لخوادم الإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/02-docker-and-containerization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker والحاويات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/03-docker-compose-and-multi-service-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose والبيئات متعددة الخدمات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/05-ci-cd-with-github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD باستخدام GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/06-deploying-to-a-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النشر على خادم VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/07-monitoring-and-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المراقبة والتسجيل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 8 · الاختبارات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 8 · الاختبارات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/01-test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    استراتيجية الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/02-unit-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات الوحدة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/03-mocking-and-test-doubles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المحاكاة وبدائل الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/04-integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/05-end-to-end-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الاختبارات الشاملة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 9 · الأمان
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 9 · الأمان
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/01-security-mindset-and-owasp-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عقلية الأمان وقائمة OWASP العشرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/02-jwt-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أمان JWT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/03-oauth2-and-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/04-secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الأسرار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/05-sql-injection-and-input-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن SQL ومعالجة المدخلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/06-xss-and-content-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/07-csrf-cors-and-browser-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSRF و CORS وأمان المتصفح
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/08-rate-limiting-and-abuse-prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحديد المعدل ومنع إساءة الاستخدام
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/01-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/02-openai-codex-and-cursor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Codex و Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/03-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/04-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة الموجّهات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/05-multi-agent-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الأنظمة متعددة الوكلاء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/06-ai-code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/07-ai-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصحيح الأخطاء بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/08-ai-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    سير عمل الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/01-scalability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية التوسّع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/02-load-balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    موازنة الحمل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/03-horizontal-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التوسّع الأفقي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/04-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/05-queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الطوابير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/06-cdn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CDN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/07-event-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بثّ الأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/01-mvp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنتج الأولي (MVP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/02-pricing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسعير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/03-payments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المدفوعات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/04-analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التحليلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/05-user-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ملاحظات المستخدمين
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/06-product-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مقاييس المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/07-growth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النمو
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوائم التحقق
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    قوائم التحقق
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة مراجعة الكود
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة الجاهزية للإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أدلة العمل
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    أدلة العمل
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/starting-an-ai-first-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دليل عمل: بدء مشروع بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    القوالب
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    القوالب
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب سجل القرار المعماري (ADR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-conceptual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-technical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/claude-md-starter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/project-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب موجز المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/pull-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب طلب الدمج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عن المشروع
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    عن المشروع
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/00-CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دستور المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/01-project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    رؤية المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/02-curriculum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنهج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطبيق المرجعي (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../starter-kits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوالب البدء (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        هيكل المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القرارات الهندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="القرارات الهندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أين تُخزَّن الملفات؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        نقل مباشر موقّع مسبقًا، أم تمرير عبر التطبيق؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف يُخوَّل الوصول إلى الملف؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بناء أم شراء — التخزين والبريد الإلكتروني؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بريد إلكتروني متزامن أم غير متزامن؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: تخزين الملفات في قاعدة البيانات أو على القرص المحلي
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: مفاتيح يتحكم فيها العميل وتحميلات غير مُحقَّقة
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: إرسال البريد الإلكتروني بشكل متزامن في الطلب
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة المراجعة">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة الكود
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة مراجعة النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_26" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">تخزين الملفات والبريد الإلكتروني<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">المقدمة<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>يتناول هذا الفصل الأخير من المرحلة الثالثة قابلتين تحتاجهما كل منصة SaaS تقريبًا
+ويجب ألا تبنيهما بنفسك: تخزين ملفات المستخدمين (التحميلات، ملفات PDF المُنشأة،
+الصادرات) وإرسال البريد الإلكتروني المعتمد على المعاملات (الإيصالات، إعادة تعيين
+كلمة المرور، الإشعارات). يُدرَّسان معًا لأنهما من نفس <em>النوع</em> — عمليات تكامل مع
+خدمات خارجية متخصصة — ولأن إنجازهما بشكل صحيح يستند إلى كل ما سبق في هذه
+المرحلة: يمران عبر المهام الخلفية (الفصل 06)، ويتطلبان تخويلًا متعدد المستأجرين
+(الفصل 04)، وهما حالات نموذجية للشراء بدلاً من البناء (المرحلة 1، الفصل 06).</p>
+<p>الدرس الجامع هو أن تخزين الكائنات والبريد الإلكتروني بنية تحتية سلعية حلّها
+مزودون يتركز عملهم كله على أدائها جيدًا — تخزين ملفات متين وقابل للتوسع
+(S3 والخدمات المتوافقة مع S3) وبريد إلكتروني معاملات قابل للتسليم (SES، SendGrid،
+Postmark، Resend). وظيفتك ليست بناء نظام تخزين أو خادم بريد؛ بل <em>تكامل</em> مع
+أحدهما بشكل صحيح: تخزين الملفات في تخزين الكائنات مع البيانات الوصفية في
+قاعدة البيانات، ونقل الملفات عبر URLs موقّتة مسبقًا، وتخويل كل وصول، وإرسال
+البريد الإلكتروني بشكل غير متزامن عبر مزود مع آليات الموثوقية من الفصل 06.</p>
+<p>كلتاهما مليئتان أيضًا بفخاخ الأمان والسلامة التي يقع فيها التنفيذ الساذج
+مباشرة — ملفات مخزّنة في مكان تختفي فيه عند إعادة النشر، ومفاتيح تخزين يتحكم
+فيها العميل تُمكّن من اجتياز المسارات، وملفات تُقدَّم دون تخويل (IDOR للملفات)،
+وبريد إلكتروني يُرسل بشكل متزامن في الطلب حيث يحجب العمل ويُفقد. يدور هذا
+الفصل حول دمج هذه السلع بالطريقة التي يتطلبها نظام إنتاجي.</p>
+<h2 id="_3">لماذا هذا مهم<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>يبدو تخزين الملفات والبريد الإلكتروني بسيطًا ومليئًا بطرق الفشل الهادئ في
+الإنتاج — وكلاهما، إذا نُفّذ بسذاجة، يفشل بطرق لا يكشفها العرض التجريبي أبدًا.</p>
+<p>بالنسبة لـ <strong>تخزين الملفات</strong>، تنكسر جميع الأساليب الساذجة عند التوسع أو عند
+إعادة النشر التالية. تخزين الملفات كبايتات في قاعدة البيانات يُنفخ حجمها، ويُفسد
+النسخ الاحتياطية، ولا يتوسع؛ وكتابتها على القرص المحلي لخادم التطبيق يعني
+اختفاءها عند إعادة النشر وعدم رؤيتها من قِبل النسخ الأخرى خلف موازن التحميل؛
+وتمرير التحميلات والتنزيلات الكبيرة عبر التطبيق يرهق العمّال والذاكرة. وفخاخ
+الأمان شديدة: مفتاح تخزين يتحكم فيه العميل يُمكّن من اجتياز المسارات، والتحميل
+غير المُحقَّق منه يُعد ناقلًا للبرمجيات الخبيثة أو استنزاف الموارد، والأهم —
+تقديم الملفات دون التحقق من الملكية هو IDOR للملفات (الفصل 04)، يكشف مستندات
+مستأجر لمستأجر آخر.</p>
+<p>بالنسبة لـ <strong>البريد الإلكتروني</strong>، تفشل الأساليب الساذجة في الموثوقية وقابلية
+التسليم. الإرسال المتزامن في الطلب يحجب الاستجابة على استدعاء خارجي بطيء ويفقد
+البريد الإلكتروني عند الفشل (الفصلان 01 و06). تشغيل خادم البريد الخاص بك هو
+كارثة قابلية التسليم — رسائلك تذهب إلى البريد العشوائي دون السمعة والمصادقة
+(SPF، DKIM، DMARC) التي يديرها المزودون. وبدون خاصية Idempotency، تعيد المحاولات
+تسليم نفس الإيصال مرتين؛ وبدون معالجة الارتدادات، تستمر في إرسال البريد إلى
+عناوين ميتة وتُفسد سمعة المرسل.</p>
+<p>كلتاهما في جوهرهما قرار <strong>الشراء لا البناء</strong> من المرحلة 1، الفصل 06: تخزين
+الكائنات والبريد الإلكتروني بنية تحتية غير متمايزة وحرجة من ناحية الأمان والسمعة
+ينفذها المتخصصون أفضل منك. الهندسة تكمن في التكامل — ويجب أن يكون التكامل
+موثوقًا (مهام)، ومُخولًا (متعدد المستأجرين)، وآمنًا (التحقق، خاص بشكل افتراضي).</p>
+<p>يتبع ذلك بُعد الذكاء الاصطناعي: تخزّن المساعدات الملفات على القرص المحلي أو في
+قاعدة البيانات (أبسط شيء "يعمل" محليًا)، وتستخدم اسم ملف العميل كمفتاح تخزين
+دون أي تحقق (اجتياز المسارات)، وترسل البريد الإلكتروني بشكل متزامن في الطلب
+دون أي إعادة محاولة أو خاصية Idempotency. ينتج كل منها عرضًا تجريبيًا يعمل
+ونظامًا يفقد الملفات عند النشر، وقابلًا للاستغلال، ويفقد البريد الإلكتروني
+الحاسم أو يكرّره.</p>
+<h2 id="_4">النموذج الذهني<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>تتبع كلتا القابلتين نفس الشكل — تكامل رفيع وصحيح فوق خدمة مشتراة — مع
+بعض القواعد غير القابلة للتفاوض:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>   FILE STORAGE
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>   ┌───────────────────────────────────────────────────────────────┐
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>   │ FILE bytes ──► OBJECT STORAGE (S3-compatible)   NOT the DB, NOT local disk │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   │ METADATA (key, size, type, OWNER) ──► your DATABASE (references the object)│
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   │                                                                            │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>   │ UPLOAD:  client ──presigned PUT──► storage directly (bypass your server)   │
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>   │ DOWNLOAD: authorize (owner?) ──► presigned GET (short-lived) ──► client     │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   │ KEYS: server-generated (uuid, account-prefixed) — NEVER the client filename │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>   │ VALIDATE: type + size; private-by-default; authorize EVERY access (Ch 04)  │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>   └───────────────────────────────────────────────────────────────┘
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>   EMAIL
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>   ┌───────────────────────────────────────────────────────────────┐
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>   │ request ──► enqueue a JOB (Ch 06) ──► provider API (SES/SendGrid/…)         │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>   │ NEVER send synchronously in the request. NEVER run your own mail server.   │
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>   │ job is IDEMPOTENT (no double-send) + RETRIED (Ch 06)                        │
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   │ DELIVERABILITY: SPF + DKIM + DMARC on a real sending domain                 │
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>   │ handle BOUNCES/complaints (webhook) to protect sender reputation            │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>   └───────────────────────────────────────────────────────────────┘
+</code></pre></div>
+<p>أربعة مبادئ يحملها الفصل:</p>
+<p><strong>تعيش الملفات في تخزين الكائنات؛ وتعيش البيانات الوصفية في قاعدة البيانات.</strong>
+تذهب البايتات إلى مخزن كائنات متوافق مع S3 (متين، قابل للتوسع، قابل للإيصال عبر
+CDN)؛ ويحمل صف في قاعدة البيانات مفتاح التخزين والحجم ونوع المحتوى — والأهم —
+الحساب المالك، ويُشير إلى الكائن. لا تخزّن أبدًا بايتات الملفات في قاعدة البيانات،
+ولا على القرص المحلي لخادم التطبيق (زائل ولكل نسخة).</p>
+<p><strong>انقل الملفات عبر URLs موقّتة مسبقًا، وأنشئ المفاتيح بنفسك.</strong> يحمّل العملاء
+مباشرة إلى التخزين عبر PUT موقّع مسبقًا قصير العمر وينزّلون عبر GET موقّع
+مسبقًا قصير العمر، بحيث لا تمر الملفات الكبيرة أبدًا عبر تطبيقك. يُولَّد مفتاح
+التخزين من جانب الخادم (UUID تحت بادئة محددة نطاقها للحساب)، وليس اسم ملف
+العميل أبدًا — الذي سيمكّن من اجتياز المسارات والتصادمات.</p>
+<p><strong>خوّل كل وصول إلى ملف؛ خاص بشكل افتراضي.</strong> ينتمي الملف إلى حساب، وكل وصول —
+إصدار URL تنزيل، تقديم ملف — يتحقق من أن المتصل يملكه (الفصل 04). تكون الحاويات
+والكائنات خاصة بشكل افتراضي؛ ولا يُصدر URL موقّع مسبقًا إلا <em>بعد</em> فحص التخويل
+وينتهي بسرعة. تقديم ملف بالمفتاح أو المعرّف دون فحص الملكية هو IDOR للملفات.</p>
+<p><strong>أرسل البريد الإلكتروني بشكل غير متزامن عبر مزود، بشكل موثوق.</strong> يخرج البريد
+الإلكتروني عبر API لمزود بريد إلكتروني معاملات، من مهمة خلفية (الفصل 06) حتى
+لا يحجب الطلب مطلقًا وتُعيد المحاولة عند الفشل — وتكون المهمة متكررة idempotent
+بحيث لا تُسبب المحاولة إرسالًا مزدوجًا. قابلية التسليم (SPF/DKIM/DMARC على
+نطاق حقيقي) ومعالجة الارتدادات جزء من التنفيذ الصحيح، وليست إضافات.</p>
+<p>تعريف عملي:</p>
+<blockquote>
+<p><strong>تخزين الملفات والبريد الإلكتروني تكاملات سلعية تشتريها، لا تبنيها: ملفات في
+تخزين الكائنات مع بيانات وصفية في قاعدة البيانات، تُنقل عبر URLs موقّتة
+مسبقًا مع مفاتيح مولّدة من جانب الخادم وتخويل لكل حساب؛ بريد إلكتروني يُرسل
+بشكل غير متزامن عبر مزود عبر مهمة متكررة idempotent مع إعادة محاولة، مع
+قابلية التسليم ومعالجة الارتدادات. الهندسة تكمن في تكامل صحيح وآمن وموثوق.</strong></p>
+</blockquote>
+<h2 id="_5">مثال إنتاجي<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>تحتاج <strong>Invoicely</strong> إلى كليهما. يحمّل العملاء شعارات الشركات ويرفقون الملفات
+بالفواتير، ويُنشئ النظام ملفات PDF للفواتير — يجب تخزين كل منها بشكل متين،
+وخدمتها فقط للحساب الذي يملكها، وأن تنجو من عمليات النشر. ويرسل Invoicely
+رسائل البريد الإلكتروني الخاصة بـ PDF والإيصالات إلى العملاء — وظيفة "إرسال
+الفاتورة" من الفصل 06 — التي يجب أن تخرج بشكل موثوق، وليس مرتين، وتصل فعليًا
+إلى صندوق الوارد.</p>
+<p>سندمج تخزين الكائنات للملفات (متوافق مع S3)، مع التحميل والتنزيل عبر URLs
+موقّتة مسبقًا، ومفاتيح محددة النطاق للحساب مولّدة من جانب الخادم، والتحقق من
+النوع/الحجم، والبيانات الوصفية في قاعدة البيانات، والتخويل لكل حساب عند كل
+وصول — مع إغلاق ثغرة IDOR للملفات صراحةً. وسنكمل جانب البريد الإلكتروني:
+تكامل المزود المعاملات، والإرسال عبر وظيفة الفصل 06 (متكررة idempotent، مع
+إعادة محاولة)، و webhook للارتدادات. كلتاهما تكاملان رفيعان فوق خدمات مشتراة،
+وكلتاهما حيث يكون الإصدار الساذج غير آمن أو غير موثوق أو كليهما.</p>
+<h2 id="_6">هيكل المجلدات<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>core/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── storage.py            # object-storage client + presigned URL helpers + key generation
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>└── email.py              # transactional email provider client + template rendering
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>modules/files/
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├── router.py             # request upload URL, confirm upload, request download URL
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>├── _service.py           # validation, key generation, per-account authorization
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>└── _models.py            # StoredFile: key, size, content_type, account_id (owner)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>modules/invoicing/
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>└── tasks.py              # send_invoice_email job (Ch 06) — now sends via the provider
+</code></pre></div>
+<p>لماذا هذا الشكل:</p>
+<ul>
+<li><strong><code>core/storage.py</code></strong> يغلّف عميل تخزين الكائنات ويُركّز إنشاء URLs الموقّتة
+  مسبقًا وإنشاء المفاتيح من جانب الخادم، بحيث تكون المفاتيح دائمًا آمنة والوصول
+  محدودًا بوقت دائمًا.</li>
+<li><strong><code>modules/files/_service.py</code></strong> يملك الأمان: التحقق، وإنشاء المفاتيح، والتخويل
+  لكل حساب الذي يمر عبره كل وصول إلى ملف.</li>
+<li><strong><code>_models.py</code></strong> يخزّن البيانات الوصفية للملف <em>metadata</em> (بما في ذلك
+  <code>account_id</code> المالك) في قاعدة البيانات، مع الإشارة إلى الكائن في التخزين —
+  الفصل الذي يحافظ على خفة قاعدة البيانات وقابلية تخويل الوصول.</li>
+<li><strong><code>core/email.py</code></strong> يغلّف المزود؛ ويحدث الإرسال من وظيفة الفصل 06 في
+  <code>tasks.py</code>، وليس مضمّنًا في طلب.</li>
+</ul>
+<h2 id="_7">التنفيذ<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p><strong>تحميل موقّع مسبقًا بمفتاح مولّد من جانب الخادم (<code>files/_service.py</code> + <code>storage.py</code>).</strong>
+يطلب العميل URL تحميل؛ يتحقق الخادم، ويُولّد مفتاحًا آمنًا محدد النطاق للحساب
+(ليس اسم ملف العميل أبدًا)، ويُسجّل البيانات الوصفية، ويُرجع PUT موقّعًا مسبقًا
+قصير العمر. يحمّل العميل <em>مباشرة</em> إلى التخزين.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># core/storage.py</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">boto3</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">_s3</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s2">&quot;s3&quot;</span><span class="p">,</span> <span class="n">endpoint_url</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">S3_ENDPOINT</span><span class="p">)</span>   <span class="c1"># S3 or S3-compatible</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">generate_key</span><span class="p">(</span><span class="n">account_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="c1"># Server-generated, account-scoped key. NEVER the client filename (path traversal!).</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">ext</span> <span class="o">=</span> <span class="n">sanitize_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>         <span class="c1"># derive a safe extension only</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;accounts/</span><span class="si">{</span><span class="n">account_id</span><span class="si">}</span><span class="s2">/uploads/</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="k">def</span><span class="w"> </span><span class="nf">presigned_put</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">expires</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>    <span class="k">return</span> <span class="n">_s3</span><span class="o">.</span><span class="n">generate_presigned_url</span><span class="p">(</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>        <span class="s2">&quot;put_object&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>        <span class="n">Params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Bucket&quot;</span><span class="p">:</span> <span class="n">settings</span><span class="o">.</span><span class="n">S3_BUCKET</span><span class="p">,</span> <span class="s2">&quot;Key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;ContentType&quot;</span><span class="p">:</span> <span class="n">content_type</span><span class="p">},</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>        <span class="n">ExpiresIn</span><span class="o">=</span><span class="n">expires</span><span class="p">,</span>        <span class="c1"># short-lived</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    <span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># modules/files/_service.py</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">ALLOWED_TYPES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;image/png&quot;</span><span class="p">,</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;application/pdf&quot;</span><span class="p">}</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">MAX_SIZE</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>   <span class="c1"># 10 MB</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">FileService</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_upload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">account_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                            <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UploadTicket</span><span class="p">:</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        <span class="c1"># Validate BEFORE issuing a URL. Never trust client-supplied type/size blindly,</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>        <span class="c1"># and re-check server-side after upload where it matters.</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>        <span class="k">if</span> <span class="n">content_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_TYPES</span><span class="p">:</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;Unsupported file type.&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        <span class="k">if</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="n">MAX_SIZE</span><span class="p">:</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>            <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="s2">&quot;File too large.&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        <span class="n">key</span> <span class="o">=</span> <span class="n">generate_key</span><span class="p">(</span><span class="n">account_id</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>          <span class="c1"># server-side, account-scoped</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">StoredFile</span><span class="p">(</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">account_id</span><span class="o">=</span><span class="n">account_id</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="n">content_type</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>            <span class="n">status</span><span class="o">=</span><span class="s2">&quot;pending&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>        <span class="p">))</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>        <span class="k">return</span> <span class="n">UploadTicket</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">presigned_put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">content_type</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>تنزيل مُخوَّل — تم إغلاق IDOR للملفات (<code>files/router.py</code>).</strong> لا يُصدر URL تنزيل
+إلا بعد التأكد من أن الملف ينتمي إلى حساب المتصل. يكون GET الموقّع مسبقًا
+قصير العمر. لا يوجد مسار يُرجع ملفًا بالمفتاح دون فحص الملكية.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nd">@router</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/files/</span><span class="si">{file_id}</span><span class="s2">/download-url&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_download_url</span><span class="p">(</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">file_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">service</span><span class="p">:</span> <span class="n">FileServiceDep</span><span class="p">,</span> <span class="n">account</span><span class="p">:</span> <span class="n">CurrentAccountDep</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DownloadUrlOut</span><span class="p">:</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="c1"># AUTHORIZE: the file must belong to THIS account (Ch 04). Scoped query, no IDOR.</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">stored</span> <span class="o">=</span> <span class="k">await</span> <span class="n">service</span><span class="o">.</span><span class="n">get_for_account</span><span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">account</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="k">if</span> <span class="n">stored</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status</span><span class="o">.</span><span class="n">HTTP_404_NOT_FOUND</span><span class="p">,</span> <span class="s2">&quot;File not found&quot;</span><span class="p">)</span>   <span class="c1"># not-yours == 404</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="c1"># Only now issue a short-lived presigned GET.</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="n">url</span> <span class="o">=</span> <span class="n">presigned_get</span><span class="p">(</span><span class="n">stored</span><span class="o">.</span><span class="n">key</span><span class="p">,</span> <span class="n">expires</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="k">return</span> <span class="n">DownloadUrlOut</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>بريد إلكتروني معاملات عبر مزود، من وظيفة الفصل 06 (<code>core/email.py</code> +
+<code>tasks.py</code>).</strong> الإرسال استدعاء API للمزود، يُجرى من المهمة المتكررة idempotent
+مع إعادة المحاولة المبنية في الفصل 06 — وليس مضمّنًا في طلب.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># core/email.py — a thin wrapper over the transactional provider</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">EmailClient</span><span class="p">:</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subject</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>                   <span class="n">idempotency_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_provider</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>                 <span class="c1"># SES / SendGrid / Postmark / Resend</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>            <span class="n">to</span><span class="o">=</span><span class="n">to</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>            <span class="n">idempotency_key</span><span class="o">=</span><span class="n">idempotency_key</span><span class="p">,</span>        <span class="c1"># provider-side dedup, belt-and-braces</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># modules/invoicing/tasks.py — the Ch 06 job, now sending through the provider</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nd">@task</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">retry_backoff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">acks_late</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_invoice_email</span><span class="p">(</span><span class="n">invoice_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">correlation_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="k">if</span> <span class="k">await</span> <span class="n">email_log</span><span class="o">.</span><span class="n">already_sent</span><span class="p">(</span><span class="n">invoice_id</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">):</span>   <span class="c1"># idempotent (Ch 06)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        <span class="k">return</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">invoice</span> <span class="o">=</span> <span class="k">await</span> <span class="n">invoices</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">invoice_id</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">html</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">render_invoice_email</span><span class="p">(</span><span class="n">invoice</span><span class="p">)</span>     <span class="c1"># server-rendered template, HTML + text</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>        <span class="k">await</span> <span class="n">email</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>            <span class="n">to</span><span class="o">=</span><span class="n">invoice</span><span class="o">.</span><span class="n">customer_email</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invoice </span><span class="si">{</span><span class="n">invoice</span><span class="o">.</span><span class="n">number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>            <span class="n">html</span><span class="o">=</span><span class="n">html</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">idempotency_key</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;invoice-</span><span class="si">{</span><span class="n">invoice_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        <span class="p">)</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>    <span class="k">except</span> <span class="n">EmailProviderTimeout</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        <span class="k">raise</span> <span class="n">Retry</span><span class="p">()</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>                       <span class="c1"># transient → bounded retry (Ch 06)</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    <span class="k">await</span> <span class="n">email_log</span><span class="o">.</span><span class="n">record_sent</span><span class="p">(</span><span class="n">invoice_id</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;invoice&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>معالجة الارتدادات (قابلية التسليم).</strong> يُبلّغ webhook المزود عن الارتدادات
+والشكاوى؛ ومعالجتها (إيقاف إرسال البريد إلى العناوين الميتة، احترام إلغاءات
+الاشتراك) تحمي سمعة المرسل بحيث يستمر وصول البريد المستقبلي إلى صناديق الوارد.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nd">@router</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/email&quot;</span><span class="p">)</span>     <span class="c1"># verify the provider&#39;s signature (like Stripe webhooks)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">email_events</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="n">EmailEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="k">if</span> <span class="n">payload</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;bounce&quot;</span><span class="p">,</span> <span class="s2">&quot;complaint&quot;</span><span class="p">}:</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>        <span class="k">await</span> <span class="n">suppression_list</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>    <span class="c1"># stop sending to this address</span>
+</code></pre></div>
+<p>الخيط الرابط: تذهب الملفات إلى تخزين الكائنات مع البيانات الوصفية في قاعدة
+البيانات، وتنتقل عبر URLs موقّتة مسبقًا قصيرة العمر مع مفاتيح محددة النطاق
+للحساب ومولّدة من جانب الخادم، وتُقدَّم فقط بعد فحص الملكية (لا IDOR للملفات)؛
+ويخرج البريد الإلكتروني عبر مزود، من المهمة المتكررة idempotent مع إعادة
+المحاولة، على نطاق إرسال مُصادَق عليه، مع معالجة الارتدادات. كل واحد من هذه
+الأشياء هو ما يحذفه الإصدار الساذج — تخزين على القرص المحلي يموت عند النشر،
+ومفاتيح سماها العميل تجتاز المسارات، وملفات تُقدَّم لأي شخص، وبريد إلكتروني
+يُرسل مضمّنًا يحجب العمل ويختفي. وكلاهما تكاملان فوق سلع مشتراة، وليسا
+نظامين بنيتهما — قرار المرحلة 1، الفصل 06، مُحققًا.</p>
+<h2 id="_8">القرارات الهندسية<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>تحدد خمسة قرارات هذه التكاملات.</p>
+<h3 id="_9">أين تُخزَّن الملفات؟<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) في قاعدة البيانات (كبايتات/BLOBs)؛ (2) على القرص المحلي لخادم
+التطبيق؛ (3) في تخزين الكائنات.</p>
+<p><strong>المقايضات:</strong> قاعدة البيانات متعدية المعاملات ورهيئة للملفات — تُنفخ حجم
+قاعدة البيانات، وتُفسد النسخ الاحتياطية والنسخ المتماثل، ولا تتوسع. القرص
+المحلي بسيط وزائل — تختفي الملفات عند إعادة النشر ولا تراها النسخ الأخرى خلف
+موازن التحميل. تخزين الكائنات متين، ويتسع إلى ما لا نهاية، وقابل للإيصال عبر
+CDN، وهو ما بُني له المزودون — بتكلفة تبعية خارجية وسباكة URLs موقّتة مسبقًا.</p>
+<p><strong>التوصية:</strong> تخزين الكائنات (S3 أو المتوافق مع S3: MinIO، Cloudflare R2، Spaces)،
+دائمًا، مع البيانات الوصفية للملف <em>metadata</em> في قاعدة البيانات تُشير إلى الكائن.
+لا تخزّن أبدًا بايتات الملف في قاعدة البيانات أو على القرص المحلي. هذه ليست
+مقاربة قريبة لأي تطبيق يتجاوز عمره خادمًا واحدًا أو نشرًا واحدًا.</p>
+<h3 id="_10">نقل مباشر موقّع مسبقًا، أم تمرير عبر التطبيق؟<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) تمرير التحميلات/التنزيلات عبر تطبيقك؛ (2) URLs موقّتة مسبقًا
+لنقل مباشر بين العميل والتخزين.</p>
+<p><strong>المقايضات:</strong> التمرير أبسط في التفكير ويسمح لك بفحص/تحويل التدفق، لكنه يرهق
+عمّال التطبيق والذاكرة على الملفات الكبيرة ولا يتوسع. تتيح URLs الموقّتة
+مسبقًا للعميل النقل مباشرة من/إلى التخزين، بحيث لا يتعامل تطبيقك أبدًا مع
+البايتات — قابل للتوسع ورخيص — بتكلفة تدفق التوقيع المسبق وتحكم مباشر أقل
+بسيطًا.</p>
+<p><strong>التوصية:</strong> URLs موقّتة مسبقًا للنقل المباشر كإعداد افتراضي، خاصة لأي شيء
+كبير — يبقي بايتات الملفات بعيدًا عن تطبيقك تمامًا. مرّر عبر التطبيق فقط عندما
+تكون الملفات صغيرة ولديك سبب قوي لرؤية التدفق (مثل التحويل من جانب الخادم)،
+وحتى حينها كن واعيًا للحمل. في كلتا الحالتين، تكون المفاتيح مولّدة من جانب
+الخادم والوصول مُخوَّلًا.</p>
+<h3 id="_11">كيف يُخوَّل الوصول إلى الملف؟<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) وصول عام/غير مُصادَق بالمفتاح؛ (2) تخويل لكل حساب عند كل
+وصول مع URLs قصيرة العمر.</p>
+<p><strong>المقايضات:</strong> الوصول العام (حاوية قابلة للقراءة من الجميع، أو الخدمة بالمفتاح
+دون فحص) هو الأبسط ويُعرّض كل ملف لأي شخص لديه المفتاح أو يخمنه — خرق
+للبيانات الخاصة. التخويل لكل حساب مع URLs موقّتة مسبقًا قصيرة العمر يحافظ
+على خصوصية الملفات وتحكم الوصول، بتكلفة فحص تخويل وانتهاء صلاحية URL عند كل
+وصول.</p>
+<p><strong>التوصية:</strong> خاص بشكل افتراضي، خوّل كل وصول بواسطة الحساب المالك (الفصل 04)،
+وأصدر فقط URLs موقّتة مسبقًا قصيرة العمر <em>بعد</em> الفحص. تقديم ملف بالمفتاح أو
+المعرّف دون فحص الملكية هو IDOR للملفات — نفس ثغرة OWASP-#1 من الفصل 04، مطبقة
+على المستندات. الوصول العام فقط للأصول العامة حقًا (صورة تسويقية)، وليس
+بيانات المستخدم أبدًا.</p>
+<h3 id="_12">بناء أم شراء — التخزين والبريد الإلكتروني؟<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) بناء (تشغيل نظام التخزين/خادم البريد الخاص بك)؛ (2) شراء
+(تخزين الكائنات ومزودو البريد الإلكتروني).</p>
+<p><strong>المقايضات:</strong> البناء يعني تشغيل تخزين متين وقابل للتوسع أو نظام بريد مدار
+بالسمعة بنفسك — مهمة ضخمة ومتخصصة وحرجة من ناحية الأمان وقابلية التسليم
+بتمايز صفري. الشراء يُحمّل كل ذلك إلى المتخصصين، بتكلفة لكل استخدام وتبعية.</p>
+<p><strong>التوصية:</strong> اشترِ كليهما — هذه أوضح حالة ممكنة من المرحلة 1، الفصل 06. تخزين
+الكائنات والبريد الإلكتروني المعاملات بنية تحتية سلعية ينفذها المزودون أفضل
+بكثير منك، وبناء أي منهما لا يُبرر تقريبًا. هندستك تذهب إلى <em>التكامل</em>، وليس
+النظام.</p>
+<h3 id="_13">بريد إلكتروني متزامن أم غير متزامن؟<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) إرسال البريد الإلكتروني مضمّنًا في الطلب؛ (2) إرسال من مهمة
+خلفية.</p>
+<p><strong>المقايضات:</strong> المضمّن هو الأبسط ويحجب الاستجابة على استدعاء خارجي بطيء، ويفشل
+طلب المستخدم إذا تعثر المزود، ويفقد البريد الإلكتروني دون إعادة محاولة. تُرجع
+المهمة الخلفية المستخدم فورًا، وتُعيد المحاولة عند الفشل، وتُزيل التكرار لتجنب
+الإرسال المزدوج — بتكلفة آليات المهمة (التي لديك بالفعل من الفصل 06).</p>
+<p><strong>التوصية:</strong> أرسل دائمًا البريد الإلكتروني من مهمة خلفية (الفصل 06) — متكررة
+idempotent بحيث لا تُسبب المحاولات إرسالًا مزدوجًا، مع إعادة المحاولة بحيث
+يتعافى فشل المزود العابر، وبعيدًا عن مسار الطلب بحيث لا يُحجب المستخدم.
+يجب أن يستخدم البريد الإلكتروني الحاسم (إعادة تعيين كلمة المرور، الإيصالات)
+إجراء enqueue-after-commit / موثوقية outbox من الفصل 06 بحيث لا يُفقد أبدًا.
+البريد الإلكتروني في مسار الطلب هو نمط مضاد يجمع بين الفصل 01 والفصل 06.</p>
+<h2 id="_14">المقايضات<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p>تقايض هذه التكاملات البساطة والتحكم بالتوسع والأمان والموثوقية، وبعض النقاط
+سياقية.</p>
+<p><strong>يضيف تخزين الكائنات تبعية وغير مباشرة.</strong> URLs الموقّتة مسبقًا، والمفاتيح
+المولّدة من جانب الخادم، وفصل البيانات الوصفية/الكائنات هي أجزاء متحركة أكثر
+من كتابة ملف إلى القرص — تستحق ذلك من أجل المتانة والتوسع، وتُعد عبئًا حقيقيًا
+لنموذج أولي مؤقت لن يعمل أبدًا على أكثر من جهاز واحد. لأي شيء حقيقي، بساطة
+القرص المحلي هي فخ ينطلق عند أول إعادة نشر أو نسخة ثانية.</p>
+<p><strong>النقل المباشر الموقّع مسبقًا يقايض التحكم بالتوسع.</strong> يعني ترك العملاء يتحدثون
+مباشرة إلى التخزين أن تطبيقك لا يستطيع فحص البايتات أو تحويلها أثناء النقل —
+جيد لمعظم التحميلات، وقيد حقيقي إذا كنت تحتاج معالجة من جانب الخادم (فحص
+الفيروسات، إنشاء الصور المصغرة)، التي تحدث بعد التحميل (غالبًا عبر مهمة،
+الفصل 06). اختر التمرير عبر التطبيق فقط عندما يكون هذا التحكم أثناء النقل
+مطلوبًا حقًا والملفات صغيرة.</p>
+<p><strong>الشراء يقايض رسومًا وقفلًا بعدم امتلاك الجزء الصعب.</strong> يفرض المزودون رسومًا
+لكل استخدام ويُنشئون بعض القفل (رغم أن API الخاص بـ S3 هو معيار بحكم الواقع،
+ومزودو البريد الإلكتروني قابلون للتبديل خلف غلاف رفيع). البديل — تشغيل
+التخزين أو البريد بنفسك — أسوأ بكثير لهذه السلع حتى أن المقارنة نادرًا ما
+تكون متقاربة. أبقِ التكامل خلف واجهة رفيعة بحيث يكون المزود قابلاً للتبديل
+(المرحلة 2، الفصلان 03 و06).</p>
+<p><strong>الموثوقية وقابلية التسليم مستمرتان، وليستا لمرة واحدة.</strong> البريد الإلكتروني
+المتكرر idempotent مع إعادة المحاولة، ومعالجة الارتدادات، وSPF/DKIM/DMARC هي
+إعداد <em>وصيانة</em> — تتدهور سمعة المرسل إذا أرسلت إلى عناوين ميتة، وتحتاج قابلية
+التسليم إلى مراقبة. هذا عمل مستمر حقيقي؛ وهو أيضًا بالضبط العمل الذي يساعد فيه
+المزود، وهو حجة أخرى للشراء والتكامل بعناية بدلًا من الارتجال.</p>
+<h2 id="_15">الأخطاء الشائعة<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p><strong>ملفات في قاعدة البيانات أو على القرص المحلي.</strong> BLOBs تُنفخ حجم قاعدة البيانات
+وتُفسد أداء النسخ الاحتياطي/الاستعادة، أو ملفات على القرص المحلي تختفي عند
+إعادة النشر ولا ترى النسخ الأخرى. الإصلاح: تخزين الكائنات للبايتات، وقاعدة
+البيانات للبيانات الوصفية.</p>
+<p><strong>مفاتيح تخزين يتحكم فيها العميل / دون تحقق.</strong> استخدام اسم ملف العميل كمفتاح
+تخزين أو مسار (اجتياز المسارات، تصادمات)، وقبول أي نوع أو حجم. الإصلاح: مفاتيح
+محددة النطاق للحساب ومولّدة من جانب الخادم، والتحقق من النوع والحجم (لا تثق
+أبدًا في البيانات الوصفية من العميل).</p>
+<p><strong>الوصول إلى الملف دون تخويل (IDOR للملفات).</strong> تقديم الملفات بالمفتاح أو
+المعرّف، أو إصدار URLs موقّتة مسبقًا، دون التحقق من أن المتصل يملك الملف —
+يكشف مستندات مستأجر لمستأجر آخر. الإصلاح: خوّل كل وصول بواسطة الحساب المالك
+(الفصل 04)؛ خاص بشكل افتراضي؛ URLs قصيرة العمر فقط بعد الفحص.</p>
+<p><strong>حاويات عامة لبيانات خاصة.</strong> حاوية قابلة للقراءة من الجميع تحوي ملفات
+المستخدمين، مكشوفة لأي شخص لديه (أو يخمن) URL. الإصلاح: خاص بشكل افتراضي؛
+الوصول العام فقط للأصول العامة حقًا.</p>
+<p><strong>بريد إلكتروني متزامن وغير موثوق.</strong> الإرسال في مسار الطلب (يحجب، يُفقد عند
+الفشل) دون خاصية Idempotency أو إعادة محاولات، بحيث يُرسل البريد الإلكتروني
+مرتين أو يختفي. الإصلاح: أرسل من مهمة خلفية متكررة idempotent مع إعادة محاولة
+(الفصل 06)؛ استخدم outbox للبريد الحاسم.</p>
+<p><strong>إهمال قابلية التسليم.</strong> تشغيل خادم البريد الخاص بك، أو تخطي SPF/DKIM/DMARC
+ومعالجة الارتدادات، بحيث يذهب البريد إلى البريد العشوائي وتتآكل سمعة المرسل.
+الإصلاح: استخدم مزودًا ذا سمعة على نطاق إرسال مُصادَق، وعالج الارتدادات/الشكاوى.</p>
+<h2 id="_16">أخطاء الذكاء الاصطناعي<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<p>تخزين الملفات والبريد الإلكتروني تكاملات يعمل شكلها الساذج بشكل مثالي على
+إعداد مطور واحد، ومستأجر واحد، ولا شيء يفشل، وينكسر عند النشر، وعند التوسع،
+وتحت الهجوم. يُنتج المساعد هذا الشكل الساذج. راجع التكاملات المولّدة لمعرفة ما
+يحدث عند النسخة الثانية، والمستأجر الثاني، والإرسال الفاشل.</p>
+<h3 id="claude-code">Claude Code: تخزين الملفات في قاعدة البيانات أو على القرص المحلي<a class="headerlink" href="#claude-code" title="Permanent link">&para;</a></h3>
+<p>عند طلبه معالجة تحميل ملف، يكتب Claude Code عادةً البايتات إلى نظام الملفات
+المحلي (<code>open(path, "wb")</code>) أو يخزنها في عمود قاعدة بيانات، لأن كليهما "يعمل"
+فورًا في بيئة تطوير ذات عملية واحدة. في الإنتاج تختفي الملفات المحلية عند
+إعادة النشر التالية ولا تراها النسخ الأخرى، و BLOBs في قاعدة البيانات تُنفخ
+وتُبطئ قاعدة البيانات.</p>
+<p><strong>الاكتشاف:</strong> بايتات الملف مكتوبة إلى مسار محلي أو مقدمة من نظام الملفات؛ عمود
+قاعدة بيانات يحوي محتويات الملف؛ تحميلات مخزنة بالكامل في ذاكرة التطبيق.</p>
+<p><strong>الإصلاح:</strong> اشترط تخزين الكائنات:</p>
+<blockquote>
+<p>خزّن بايتات الملف في تخزين الكائنات (متوافق مع S3)، وليس على القرص المحلي أو
+في قاعدة البيانات. احتفظ فقط بالبيانات الوصفية (مفتاح التخزين، الحجم، نوع
+المحتوى، الحساب المالك) في قاعدة البيانات. انقل الملفات عبر URLs موقّتة
+مسبقًا بحيث لا تمر البايتات عبر التطبيق.</p>
+</blockquote>
+<h3 id="gpt">GPT: مفاتيح يتحكم فيها العميل وتحميلات غير مُحقَّقة<a class="headerlink" href="#gpt" title="Permanent link">&para;</a></h3>
+<p>تستخدم نماذج عائلة GPT بشكل روتيني اسم الملف المقدم من العميل كمفتاح تخزين أو
+مسار وتتخطى التحقق من النوع/الحجم، لأنها الطريقة المباشرة لـ "حفظ الملف
+المحمّل". اسم ملف العميل كمفتاح يُمكّن من اجتياز المسارات والتصادمات، والتحميل
+غير المُحقَّق منه هو ناقل للبرمجيات الخبيثة واستنزاف الموارد.</p>
+<p><strong>الاكتشاف:</strong> اسم ملف العميل مُستخدم كمفتاح تخزين أو في مسار؛ لا توجد قائمة
+مسموح بها لأنواع المحتوى؛ لا يوجد حد للحجم؛ الوثوق بنوع المحتوى المقدم من
+العميل دون فحص.</p>
+<p><strong>الإصلاح:</strong> اشترط مفاتيح مولّدة من جانب الخادم والتحقق:</p>
+<blockquote>
+<p>ولّد مفتاح التخزين من جانب الخادم (UUID تحت بادئة محددة النطاق للحساب) — لا
+تستخدم أبدًا اسم ملف العميل كمفتاح أو مسار. تحقق من نوع الملف مقابل قائمة
+مسموح بها وفرض حدًا أقصى للحجم قبل قبول التحميل، ولا تثق بنوع المحتوى المقدم
+من العميل.</p>
+</blockquote>
+<h3 id="cursor">Cursor: إرسال البريد الإلكتروني بشكل متزامن في الطلب<a class="headerlink" href="#cursor" title="Permanent link">&para;</a></h3>
+<p>عند توصيل البريد الإلكتروني مضمّنًا، يميل Cursor إلى استدعاء مزود البريد
+الإلكتروني (أو مكتبة SMTP) مباشرة في معالج الطلب دون مهمة، أو إعادة محاولة، أو
+خاصية Idempotency، لأن هذا أقصر مسار من "فعل المستخدم X" إلى "البريد
+الإلكتروني مُرسل". يحجب الاستجابة على استدعاء خارجي، ويفشل الطلب إذا تعثر
+المزود، ويفقد البريد الإلكتروني عند الخطأ، ويُرسل مرتين عند أي إعادة محاولة
+ساذجة.</p>
+<p><strong>الاكتشاف:</strong> إرسال بريد إلكتروني/SMTP داخل معالج طلب؛ لا توجد مهمة خلفية؛
+لا توجد إعادة محاولة أو خاصية Idempotency حول الإرسال؛ الطلب ينتظر المزود
+قبل الاستجابة.</p>
+<p><strong>الإصلاح:</strong> اشترط إرسالًا غير متزامن وموثوقًا:</p>
+<blockquote>
+<p>أرسل البريد الإلكتروني من مهمة خلفية (الفصل 06)، وليس بشكل متزامن في
+الطلب. يجب أن تكون المهمة متكررة idempotent (لا إرسال مزدوج عند إعادة
+المحاولة) وتُعيد المحاولة عند إخفاقات المزود العابرة، ويجب أن يستخدم البريد
+الحاسم إجراء enqueue-after-commit / outbox بحيث لا يُفقد أبدًا. يُرجع الطلب
+فورًا.</p>
+</blockquote>
+<h2 id="_17">أفضل الممارسات<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<p><strong>خزّن الملفات في تخزين الكائنات، والبيانات الوصفية في قاعدة البيانات.</strong> تذهب
+البايتات إلى مخزن متوافق مع S3؛ ويحمل صف قاعدة البيانات المفتاح والحجم ونوع
+المحتوى والحساب المالك. لا قاعدة البيانات ولا القرص المحلي للبايتات أبدًا.</p>
+<p><strong>انقل الملفات عبر URLs موقّتة مسبقًا ومفاتيح مولّدة من جانب الخادم.</strong> النقل
+المباشر بين العميل والتخزين عبر URLs موقّتة مسبقًا قصيرة العمر يُبقي البايتات
+بعيدًا عن تطبيقك؛ المفاتيح مولّدة من جانب الخادم ومحددة النطاق للحساب، وليس
+اسم ملف العميل أبدًا. تحقق من النوع والحجم عند التحميل.</p>
+<p><strong>خوّل كل وصول إلى ملف؛ خاص بشكل افتراضي.</strong> ينتمي الملف إلى حساب، وكل وصول
+يتحقق من الملكية (الفصل 04) قبل إصدار URL قصير العمر. الحاويات والكائنات
+خاصة؛ الوصول العام فقط للأصول العامة حقًا. لا تقديم بالمفتاح دون فحص (لا
+IDOR للملفات).</p>
+<p><strong>أرسل البريد الإلكتروني بشكل غير متزامن، وموثوق، عبر مزود.</strong> يخرج البريد
+الإلكتروني من مهمة خلفية متكررة idempotent مع إعادة محاولة (الفصل 06) عبر مزود
+معاملات — ليس مضمّنًا أبدًا، وليس خادم البريد الخاص بك أبدًا. استخدم outbox
+للبريد الحاسم بحيث لا يُفقد أبدًا.</p>
+<p><strong>اشترِ كليهما، وادمج خلف واجهة رفيعة، وأدِر قابلية التسليم.</strong> تخزين الكائنات
+والبريد الإلكتروني سلع للشراء (المرحلة 1، الفصل 06)؛ غلّف كل مزود بطبقة رفيعة
+بحيث يكون قابلاً للتبديل، وأعدّ SPF/DKIM/DMARC على نطاق إرسال حقيقي، وعالج
+الارتدادات/الشكاوى لحماية قابلية التسليم. سجّل خيارات المزود في ADR
+(<a href="../../../templates/adr/"><code>templates/adr.md</code></a>)؛ وثّق اصطلاحات التكامل في
+<code>CLAUDE.md</code>.</p>
+<h2 id="_18">الأنماط المضادة<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h2>
+<p><strong>الملفات في قاعدة البيانات.</strong> ملفات المستخدم مخزنة كـ BLOBs، تُنفخ حجم قاعدة
+البيانات وتدمر أداء النسخ الاحتياطي/الاستعادة. العلامة: عمود <code>bytea</code>/<code>BLOB</code>
+يحوي التحميلات.</p>
+<p><strong>التحميل الزائل.</strong> ملفات مكتوبة على القرص المحلي لخادم التطبيق، تختفي عند إعادة
+النشر التالية ولا تراها النسخ الأخرى. العلامة: <code>open(path, "wb")</code> لتحميلات
+المستخدم، أو تقديم الملفات من نظام الملفات المحلي خلف موازن التحميل.</p>
+<p><strong>المفتاح الذي سماه العميل.</strong> اسم ملف العميل مُستخدم كمفتاح تخزين أو مسار —
+اجتياز المسارات، وتصادمات، وحقن. العلامة: مفتاح التحميل مشتق من <code>file.filename</code>
+بدلًا من توليده من جانب الخادم.</p>
+<p><strong>الحاوية العامة.</strong> بيانات المستخدم الخاصة في حاوية قابلة للقراءة من الجميع أو
+مقدمة بالمفتاح دون تخويل — IDOR للملفات. العلامة: ملفات يمكن لأي شخص الوصول
+إليها بالـ URL، أو endpoint تنزيل دون فحص ملكية.</p>
+<p><strong>بريد إلكتروني متزامن.</strong> بريد إلكتروني يُرسل مضمّنًا في الطلب — يحجب، هش،
+يُفقد عند الفشل، يتكرر عند إعادة المحاولة. العلامة: استدعاء مزود/SMTP في معالج
+طلب دون مهمة.</p>
+<p><strong>خادم البريد المُنشأ ذاتيًا.</strong> تشغيل SMTP الخاص بك لإرسال البريد المعاملات،
+يذهب إلى البريد العشوائي بسبب نقص السمعة والمصادقة. العلامة: SMTP مباشر من
+خوادمك بدلًا من مزود معاملات، ومشكلة قابلية تسليم في مجلد البريد العشوائي.</p>
+<h2 id="_19">شجرة القرار<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h2>
+<p>"أحتاج إلى تخزين الملفات / إرسال البريد الإلكتروني — كيف أدمجها بشكل صحيح؟"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>FILE STORAGE
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>├─ Where? ──► OBJECT STORAGE (S3-compatible) for bytes; DATABASE for metadata.
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>│             Never local disk, never DB BLOBs.
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>├─ Transfer? ──► presigned URLs (client ↔ storage directly). Proxy only if small
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>│                AND you truly need the stream. Keys are SERVER-generated + account-scoped.
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>├─ Validate? ──► type allowlist + size limit on upload; don&#39;t trust client content-type.
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>└─ Access? ──► authorize by owning account (Ch 04) BEFORE a short-lived presigned URL.
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>              private by default. No serving-by-key without a check (file IDOR).
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>EMAIL
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>├─ Build or buy? ──► BUY a transactional provider (Stage 1 Ch 06). Never your own mailserver.
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>├─ How to send? ──► from a background JOB (Ch 06): idempotent (no double-send) + retried.
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>│                   NEVER synchronously in the request. Critical mail → outbox (Ch 06).
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>├─ Deliverability? ──► SPF + DKIM + DMARC on a real sending domain.
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>└─ Bounces? ──► handle provider webhooks; suppress dead addresses to protect reputation.
+</code></pre></div>
+<h2 id="_20">قائمة المراجعة<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<h3 id="_21">قائمة مراجعة التنفيذ<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] بايتات الملف في تخزين الكائنات؛ البيانات الوصفية فقط (المفتاح، الحجم، النوع، الحساب المالك) في قاعدة البيانات.</li>
+<li>[ ] التحميلات/التنزيلات تستخدم URLs موقّتة مسبقًا قصيرة العمر؛ الملفات الكبيرة لا تمر عبر التطبيق.</li>
+<li>[ ] مفاتيح التخزين مولّدة من جانب الخادم ومحددة النطاق للحساب — ليست اسم ملف العميل أبدًا.</li>
+<li>[ ] التحميلات مُحقَّقة (قائمة مسموح بها للأنواع، حد للحجم)؛ نوع المحتوى من العميل غير موثوق به أعمى.</li>
+<li>[ ] كل وصول إلى الملف مُخوَّل بواسطة الحساب المالك قبل إصدار URL (لا IDOR للملفات)؛ الكائنات خاصة بشكل افتراضي.</li>
+<li>[ ] البريد الإلكتروني يُرسل من مهمة خلفية متكررة idempotent مع إعادة محاولة عبر مزود — ليس متزامنًا.</li>
+</ul>
+<h3 id="_22">قائمة مراجعة البنية<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] تخزين الكائنات والبريد الإلكتروني مزودان مشتريان، مدمجان خلف واجهات رفيعة قابلة للتبديل (المرحلة 1، الفصل 06).</li>
+<li>[ ] تخويل الوصول إلى الملف يعيد استخدام نموذج المستأجر من الفصل 04.</li>
+<li>[ ] إرسال البريد الإلكتروني يعيد استخدام موثوقية وظائف الفصل 06 (Idempotency، إعادة المحاولات، outbox للبريد الحاسم).</li>
+<li>[ ] قابلية التسليم (SPF/DKIM/DMARC) ومعالجة الارتدادات مُعدّة، وليست مؤجلة.</li>
+<li>[ ] خيارات المزود مسجلة (ADR)؛ اصطلاحات التكامل في <code>CLAUDE.md</code>.</li>
+</ul>
+<h3 id="_23">قائمة مراجعة الكود<a class="headerlink" href="#_23" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] لا يوجد ملف مخزّن على القرص المحلي أو كـ DB BLOB (راقب فروق الذكاء الاصطناعي).</li>
+<li>[ ] لا يوجد اسم ملف عميل مُستخدم كمفتاح/مسار تخزين؛ التحميلات تتحقق من النوع والحجم.</li>
+<li>[ ] لا يوجد ملف يُقدَّم أو URL تنزيل يُصدَر دون فحص ملكية.</li>
+<li>[ ] لا يوجد بريد إلكتروني يُرسل متزامنًا في معالج طلب؛ الإرسالات متكررة idempotent ومع إعادة محاولة.</li>
+<li>[ ] لا توجد بيانات خاصة في حاوية عامة.</li>
+</ul>
+<h3 id="_24">قائمة مراجعة النشر<a class="headerlink" href="#_24" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] حاوية تخزين الكائنات خاصة بشكل افتراضي بسياسات وصول صحيحة (انظر <a href="../../../checklists/production-readiness/"><code>checklists/production-readiness.md</code></a>).</li>
+<li>[ ] بيانات اعتماد التخزين تُدار كـ secrets ومحدودة بأقل امتياز.</li>
+<li>[ ] نطاق الإعداد يحتوي على SPF و DKIM و DMARC مُكوَّنة ومُتحقَّق منها.</li>
+<li>[ ] webhooks الارتدادات/الشكاوى للبريد الإلكتروني مُعالَجة وتواقيعها مُتحقَّق منها.</li>
+<li>[ ] انقطاعات مزود تخزين الملفات والبريد الإلكتروني تتدهور بسلاسة (التحميلات/الإرسالات تُعيد المحاولة أو تُرتّب في قائمة انتظار؛ يظل الطلب الأساسي ناجحًا).</li>
+</ul>
+<h2 id="_25">التمارين<a class="headerlink" href="#_25" title="Permanent link">&para;</a></h2>
+<p><strong>1. ادمج تخزين الكائنات بأمان.</strong> نفّذ تحميل شعار Invoicely: تدفق تحميل URL
+موقّع مسبقًا بمفتاح محدد النطاق للحساب مولّد من جانب الخادم، والتحقق من النوع
+والحجم، والبيانات الوصفية المخزنة في قاعدة البيانات، و URL تنزيل مُخوَّل يُرجع
+404 لملف لا يملكه المتصل. الناتج هو التدفق بالإضافة إلى اختبار عبر المستأجرين
+يثبت أن حسابًا واحدًا لا يمكنه الحصول على ملف حساب آخر.</p>
+<p><strong>2. أصلح معالج الملفات الساذج.</strong> خذ تحميل ملف يكتب على القرص المحلي ويستخدم
+اسم ملف العميل (اكتبه، أو اطلب من المساعد توليد "معالجة تحميل ملف في
+FastAPI"). حدد كل مشكلة — التخزين الزائل، اجتياز المسارات، عدم التحقق، عدم
+التخويل — وأصلحها جميعًا. الناتج هو قبل/بعد وسطر يُسمّي فشل الإنتاج أو
+الاستغلال الذي مكّنته كل مشكلة.</p>
+<p><strong>3. اجعل البريد الإلكتروني موثوقًا وقابلاً للتسليم.</strong> خذ معالجًا يرسل البريد
+الإلكتروني بشكل متزامن وحوله إلى نمط وظائف الفصل 06 (متكرر idempotent، مع
+إعادة محاولة، بعيدًا عن مسار الطلب)، ثم اذكر إعداد قابلية التسليم
+(SPF/DKIM/DMARC، المزود، معالجة الارتدادات) الذي تحتاجه Invoicely لتصل رسائل
+البريد الإلكتروني الخاصة بالفواتير إلى صناديق الوارد. الناتج هو كود الإرسال
+غير المتزامن وقائمة مراجعة قابلية التسليم.</p>
+<h2 id="_26">قراءات إضافية<a class="headerlink" href="#_26" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>وثائق Amazon S3 — Presigned URLs، و Bucket policies / Block Public Access</strong>
+  (docs.aws.amazon.com/s3) — المرجع للتحميل/التنزيل الموقّع مسبقًا وللحفاظ على
+  خصوصية الكائنات؛ تنطبق المفاهيم على أي مخزن متوافق مع S3 (R2، MinIO، Spaces).</li>
+<li><strong>OWASP File Upload Cheat Sheet</strong> (cheatsheetseries.owasp.org) — قائمة مراجعة
+  الأمان للتحميلات: التحقق من النوع/الحجم، الأسماء المولّدة من جانب الخادم،
+  تجنب اجتياز المسارات، ومعالجة المحتوى. المرجع لنصف أمن التحميل في هذا الفصل.</li>
+<li><strong>وثائق مزود البريد الإلكتروني المعاملات</strong> (Postmark، SES، SendGrid، Resend)،
+  خاصة أدلتهم على <strong>SPF/DKIM/DMARC وقابلية التسليم</strong> — اقرأ دليل قابلية التسليم
+  لمزود واحد من البداية إلى النهاية؛ إنه أوضح شرح لسبب الشراء بدلًا من تشغيل
+  البريد الخاص بك وكيف تصل إلى صندوق الوارد.</li>
+<li><strong>DMARC.org ودراسات عامة عن "Email Authentication"</strong> — خلفية عن SPF و DKIM
+  و DMARC ولماذا تحدد ما إذا كان بريدك موثوقًا به؛ سياق ضروري لتكوين نطاق
+  الإرسال بشكل صحيح.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  عد إلى الأعلى
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="هامش سفلي" >
+        
+          
+          <a href="../08-logging-and-observability/" class="md-footer__link md-footer__link--prev" aria-label="السابقة: التسجيل وقابلية المراقبة">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                السابقة
+              </span>
+              <div class="md-ellipsis">
+                التسجيل وقابلية المراقبة
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../stage-04-frontend-engineering/" class="md-footer__link md-footer__link--next" aria-label="التالية: نظرة عامة">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                التالية
+              </span>
+              <div class="md-ellipsis">
+                نظرة عامة
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tracking", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "clipboard.copy": "\u0646\u0633\u062e \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "search.result.more.one": "\u0623\u0643\u062b\u0631 \u0645\u0646 1 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.more.other": "\u0623\u0643\u062b\u0631 \u0645\u0646 # \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.none": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c", "search.result.one": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b \u0645\u0633\u062a\u0646\u062f \u0648\u0627\u062d\u062f", "search.result.other": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b # \u0645\u0633\u062a\u0646\u062f\u0627\u062a", "search.result.placeholder": "\u0627\u0643\u062a\u0628 \u0644\u0628\u062f\u0621 \u0627\u0644\u0628\u062d\u062b", "search.result.term.missing": "\u0645\u0641\u0642\u0648\u062f", "select.version": "\u0625\u062e\u062a\u0631 \u0627\u0644\u0625\u0635\u062f\u0627\u0631"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

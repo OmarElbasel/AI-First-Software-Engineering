@@ -1,0 +1,5599 @@
+
+<!doctype html>
+<html lang="ar" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A production-grade handbook for engineering software with AI as a disciplined teammate.">
+      
+      
+      
+      
+        <link rel="prev" href="../05-sql-injection-and-input-handling/">
+      
+      
+        <link rel="next" href="../07-csrf-cors-and-browser-security/">
+      
+      
+        
+          <link rel="alternate" href="../../../../handbook/stage-09-security/06-xss-and-content-security/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ar">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>XSS وأمان المحتوى - هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="rtl" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#xss" class="md-skip">
+          انتقل إلى المحتوى
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="عنوان العارضة">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-header__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              XSS وأمان المحتوى
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="إختر اللغة">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../handbook/stage-09-security/06-xss-and-content-security/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ar" class="md-select__link">
+              العربية
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="بحث" placeholder="بحث" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="إبحث">
+        
+        <button type="reset" class="md-search__icon md-icon" title="مسح كلي" aria-label="مسح كلي" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            بدء البحث
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="تصفح" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-nav__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الرئيسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../START-HERE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ابدأ من هنا
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/01-what-is-software-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ما هي هندسة البرمجيات؟
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/02-product-thinking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفكير بعقلية المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/03-ai-first-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطوير بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/04-engineering-trade-offs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المفاضلات الهندسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/05-technical-debt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الدَّين التقني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/06-build-vs-buy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء مقابل الشراء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/07-simplicity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البساطة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/08-maintainability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية الصيانة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/01-layered-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية الطبقية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/02-feature-based-and-vertical-slice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية القائمة على الميزات والشرائح الرأسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/03-clean-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية النظيفة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/04-monolith-modular-monolith-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المتراصّ والمتراصّ المعياري والخدمات المصغّرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/05-service-layer-and-repository-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    طبقة الخدمات ونمط المستودع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/06-dependency-injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن التبعيات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/07-event-driven-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية المدفوعة بالأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/01-building-apis-with-fastapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء واجهات API باستخدام FastAPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/02-data-persistence-sqlalchemy-alembic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حفظ البيانات: SQLAlchemy و Alembic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/03-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/04-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/05-error-handling-and-api-versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معالجة الأخطاء وإصدارات API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/06-background-jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المهام الخلفية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/07-caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التخزين المؤقت
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/08-logging-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسجيل وقابلية المراقبة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/09-file-storage-and-email/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/01-building-uis-with-react-and-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء الواجهات باستخدام React و TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/02-nextjs-and-the-app-router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next.js وموجّه التطبيق App Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/03-server-and-client-components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مكوّنات الخادم والعميل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/04-data-fetching-and-server-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    جلب البيانات وحالة الخادم
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/05-state-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الحالة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/06-forms-and-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النماذج والتحقق من الإدخال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/07-frontend-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/08-frontend-architecture-and-folder-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معمارية الواجهة الأمامية وهيكل المجلدات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/01-react-native-and-expo-foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أساسيات React Native و Expo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/02-navigation-and-deep-linking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التنقّل والروابط العميقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/03-authentication-on-mobile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة على الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/04-offline-support-and-data-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دعم العمل دون اتصال ومزامنة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/05-push-notifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الإشعارات الفورية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/06-mobile-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/07-building-shipping-and-ota-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء والنشر وتحديثات OTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/01-relational-databases-and-data-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قواعد البيانات العلائقية ونمذجة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/02-schema-design-and-normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصميم المخطط والتطبيع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/03-indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الفهرسة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/04-transactions-and-concurrency-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعاملات والتحكم في التزامن
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/05-query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحسين الاستعلامات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/06-migrations-and-schema-evolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الترحيلات وتطوّر المخطط
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 7 · DevOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 7 · DevOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/01-linux-for-production-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux لخوادم الإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/02-docker-and-containerization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker والحاويات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/03-docker-compose-and-multi-service-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose والبيئات متعددة الخدمات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/05-ci-cd-with-github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD باستخدام GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/06-deploying-to-a-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النشر على خادم VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/07-monitoring-and-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المراقبة والتسجيل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 8 · الاختبارات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 8 · الاختبارات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/01-test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    استراتيجية الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/02-unit-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات الوحدة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/03-mocking-and-test-doubles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المحاكاة وبدائل الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/04-integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/05-end-to-end-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الاختبارات الشاملة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 9 · الأمان
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 9 · الأمان
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-security-mindset-and-owasp-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عقلية الأمان وقائمة OWASP العشرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-jwt-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أمان JWT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-oauth2-and-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الأسرار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-sql-injection-and-input-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن SQL ومعالجة المدخلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قرارات هندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قرارات هندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ترميز/تهريب، أم تنظيف، أم تحقق — أيٌّ وأين؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        افتراضي يهرّب تلقائيًا، أم ترميز يدوي؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف يُعالَج HTML الذي يقدّمه المستخدم (نص منسّق)؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#content-security-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        انشر Content Security Policy، وبأي صرامة؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xss_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أين تعيش رموز الجلسة (قرار نصف القطر الانفجاري لـ XSS)؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-dangerouslysetinnerhtml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: dangerouslySetInnerHTML لعرض محتوى المستخدم
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: HTML مبني على الخادم بربط السلاسل النصية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: عرض البيانات المخزّنة في قاعدة البيانات خامًا أثناء إكمال ميزة عرض
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة التحقق">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة تحقق التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة تحقق البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة تحقق مراجعة الشيفرة
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة تحقق النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-csrf-cors-and-browser-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSRF و CORS وأمان المتصفح
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-rate-limiting-and-abuse-prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحديد المعدل ومنع إساءة الاستخدام
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/01-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/02-openai-codex-and-cursor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Codex و Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/03-context-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/04-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة الموجّهات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/05-multi-agent-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الأنظمة متعددة الوكلاء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/06-ai-code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/07-ai-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصحيح الأخطاء بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-10-ai-engineering/08-ai-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    سير عمل الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/01-scalability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية التوسّع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/02-load-balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    موازنة الحمل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/03-horizontal-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التوسّع الأفقي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/04-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/05-queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الطوابير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/06-cdn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CDN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/07-event-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بثّ الأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/01-mvp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنتج الأولي (MVP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/02-pricing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسعير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/03-payments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المدفوعات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/04-analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التحليلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/05-user-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ملاحظات المستخدمين
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/06-product-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مقاييس المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/07-growth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النمو
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوائم التحقق
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    قوائم التحقق
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة مراجعة الكود
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة الجاهزية للإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أدلة العمل
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    أدلة العمل
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/starting-an-ai-first-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دليل عمل: بدء مشروع بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    القوالب
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    القوالب
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب سجل القرار المعماري (ADR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-conceptual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-technical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/claude-md-starter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/project-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب موجز المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/pull-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب طلب الدمج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عن المشروع
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    عن المشروع
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/00-CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دستور المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/01-project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    رؤية المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/02-curriculum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنهج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطبيق المرجعي (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../starter-kits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوالب البدء (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قرارات هندسية
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قرارات هندسية">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ترميز/تهريب، أم تنظيف، أم تحقق — أيٌّ وأين؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        افتراضي يهرّب تلقائيًا، أم ترميز يدوي؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        كيف يُعالَج HTML الذي يقدّمه المستخدم (نص منسّق)؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#content-security-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        انشر Content Security Policy، وبأي صرامة؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xss_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أين تعيش رموز الجلسة (قرار نصف القطر الانفجاري لـ XSS)؟
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code-dangerouslysetinnerhtml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: dangerouslySetInnerHTML لعرض محتوى المستخدم
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: HTML مبني على الخادم بربط السلاسل النصية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: عرض البيانات المخزّنة في قاعدة البيانات خامًا أثناء إكمال ميزة عرض
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المضادة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة التحقق
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="قائمة التحقق">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة تحقق التنفيذ
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة تحقق البنية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة تحقق مراجعة الشيفرة
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة تحقق النشر
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="xss">XSS وأمن المحتوى<a class="headerlink" href="#xss" title="Permanent link">&para;</a></h1>
+<h2 id="_1">مقدمة<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Cross-Site Scripting هو حقن يتولى المتصفح تفسيره. فحيث خدع حقن SQL (الفصل 05) قاعدة البيانات لتشغيل مُدخل المهاجم كاستعلام SQL، فإن XSS يخدع <em>المتصفح</em> ليشغّل مُدخل المهاجم كجافاسكريبت — في جلسة الضحية، وبكوكيز الضحية، على نطاقك (origin). الآلية هي نفسها: خلط بين البيانات والشيفرة؛ إذ يُدرَج محتوى يقدّمه المستخدم في الصفحة دون ترميز (encoding) مناسب للسياق، فتصبح قيمة مثل <code>&lt;script&gt;steal(document.cookie)&lt;/script&gt;</code> نصًا عاديًا ثم تتحول إلى شيفرة تنفيذية. والصلة بالفصول السابقة مباشرة: أي XSS في صفحة تخزّن JWT في <code>localStorage</code> (الفصل 02) يعني سرقة فورية للرمز؛ وأي XSS في أي مكان من نطاقك يمكنه تنفيذ أي فعل يستطيع المستخدم تنفيذه.</p>
+<p>يتناول هذا الفصل الأشكال الثلاثة التي يتخذها XSS — الانعكاسي (reflected) (تنطّح الحمولة في الطلب)، والمخزّن (stored) (تُحفظ الحمولة وتُقدَّم لكل زائر — وهو الأخطر)، والقائم على DOM (لا تصل الحمولة إلى الخادم أبدًا؛ بل تُحقنها جافاسكريبت من جانب العميل) — والدفاع متعدد الطبقات الذي يسدّها. الترميز عند الإخراج (Output encoding) هو الدفاع الأساسي: ترميز البيانات وفقًا للسياق الدقيق الذي ستُعرَض فيه (متن HTML، سمة، جافاسكريبت، URL، CSS) حتى لا تتمكّن من الخروج والتنفيذ. تُهرّب (escape) أُطر العمل الحديثة (React، Vue، ومحركات القوالب) افتراضيًا، وهو ما يغطي معظم الحالات — لذلك يركّز هذا الفصل بشدة على الحالات التي يُتجاوَز فيها هذا الافتراضي: <code>dangerouslySetInnerHTML</code>، و<code>v-html</code>، و<code>innerHTML</code>، وسلاسل HTML المبنية على الخادم، وميزة النص المنسّق التي تحتاج فعلًا إلى عرض HTML يقدّمه المستخدم وبالتالي تتطلب تنظيفًا حقيقيًا (sanitization). فوق الترميز يجلس Content Security Policy (CSP)، وهو حاجز احتياطي يفرضه المتصفح يحدّ مما يمكن للسكربتات تنفيذه حتى لو انسلّ الحقن — دفاع في العمق، وليس بديلًا عن الترميز.</p>
+<p>الحدود: الواجهة الأمامية نفسها — المكوّنات، والعرض، وتطبيق Next.js/React — بُنيت في <strong>المرحلة 4</strong>؛ هذا الفصل يُحكّم (hardens) كيفية عرضها للمحتوى غير الموثوق. يُعدّ XSS العضو المتعلق بالمتصفح في عائلة الحقن، التي كان أعضاؤها المتعلقون بالخادم في <strong>الفصل 05</strong>. وآليات ثقة المتصفح التي يتشاركها CSP مع الاستجابة — CORS، ورؤوس الأمان الأخرى، وCSRF — موجودة في <strong>الفصل 07</strong>؛ يغطي هذا الفصل CSP تحديدًا كوسيلة تحكّم في XSS.</p>
+<h2 id="_2">لماذا هذا مهم<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>يُعدّ XSS باستمرار من بين الثغرات الأكثر شيوعًا في الويب، وعواقبه وخيمة لأن تنفيذ سكربت في جلسة الضحية يكاد يكون معادلًا لكونك <em>أنت</em> الضحية.</p>
+<ul>
+<li><strong>يعمل XSS في جلسة الضحية، على نطاقك.</strong> السكربت المحقون يحمل كوكيز الضحية، ويستطيع قراءة أي شيء تستطيع الصفحة قراءته، وإجراء طلبات مصادَق عليها بصفته الضحية، وإعادة كتابة الصفحة. يمكنه سرقة رموز الجلسة (لا سيما من <code>localStorage</code>، الفصل 02)، وإرسال النماذج، وتغيير بريد الحساب، واستخراج البيانات، أو زرع keylogger مستمر. "تنفيذ سكربت على نطاقك" يقترب من الاستيلاء الكامل على الحساب.</li>
+<li><strong>يُصِيب XSS المخزّن كل زائر، بمن فيهم المشرفون.</strong> الحمولة المحفوظة في حقل يُعرض للآخرين — اسم عميل، ملاحظة فاتورة، رسالة دعم — تنفّذ في متصفح كل زائر. عندما يطّلع المشرف على السجل الخبيث، تعمل السكربت بصلاحيات <em>المشرف</em>. حمولة مخزّنة واحدة قد تتسلسل إلى اختراق كامل؛ ولا تحتاج الضحية إلى النقر على أي شيء.</li>
+<li><strong>الافتراضي آمن، لذلك يظهر XSS حيث يُتجاوَز الافتراضي.</strong> تُهرّب React وVue ومحركات القوالب افتراضيًا — لذا فإن معظم القيم المعروضة آمنة تلقائيًا. يدخل XSS في الغالب عبر استثناء مقصود: <code>dangerouslySetInnerHTML</code>، أو <code>v-html</code>، أو <code>innerHTML</code>، أو <code>mark_safe</code>/<code>| safe</code>، أو HTML مبني بسلسلة نصية على جانب الخادم. الأمان هنا هو مراجعة <em>الاستثناءات</em>، لأن القاعدة آمنة فعلًا.</li>
+<li><strong>بياناتك المخزّنة نفسها مُدخل غير موثوق عند الخروج.</strong> أكثر المصادر إغفالًا: البيانات التي تُقرأ من قاعدة بياناتك وكان المستخدم قد أدخلها سابقًا. يوجد XSS المخزّن تحديدًا لأن "بياناتنا هي" تدفع المطوّرين إلى عرضها دون ترميز. حدود الثقة هي <em>العرض في الصفحة</em>، بصرف النظر عن مصدر البيانات.</li>
+<li><strong>رموز <code>localStorage</code> تحوّل أي XSS إلى سرقة للرموز.</strong> هذه ثمرة قرار التخزين في الفصل 02. إذا كانت الرموز تعيش في <code>localStorage</code>، فإن أي XSS في أي مكان من النطاق يستطيع قراءتها واستخراجها. تحافظ كوكيز <code>HttpOnly</code> على الرمز بعيدًا عن متناول السكربت، لذا يظل XSS قادرًا على <em>التصرّف</em> باسم المستخدم لكن لا يستطيع <em>سرقة بيانات الاعتماد</em> — وهو تخفيض ملموس في نصف القطر الانفجاري.</li>
+<li><strong>البُعد المتعلّق بالـ AI مباشر.</strong> تصل المساعدين إلى <code>dangerouslySetInnerHTML</code> لعرض محتوى منسّق يقدّمه المستخدم، وتبني HTML بالربط على الخادم، وتعرض البيانات المخزّنة دون معاملتها كغير موثوقة. ينتج عن كل ذلك ميزة عاملة تعرض المحتوى بشكل صحيح وتنفّذ سكربت المهاجم عندما يكون المحتوى عدائيًا.</li>
+</ul>
+<h2 id="_3">النموذج الذهني<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>XSS هو بيانات غير موثوقة تُعرَض في صفحة دون ترميز مناسب للسياق. الدفاع متعدد الطبقات: ترميز عند الإخراج (أساسي)، وتنظيف عندما يتعيّن عليك قبول HTML، والسماح لـ CSP بالتقاط ما ينسلّ.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>   THE THREE SHAPES
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>     REFLECTED  payload in the request, echoed into the response (search term in an error page)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>     STORED     payload saved, served to EVERY viewer (invoice note, customer name) — worst;
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                hits admins; no click needed
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>     DOM-BASED  payload never hits the server; client JS writes it into the DOM
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                (location.hash → innerHTML)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>   THE PRIMARY DEFENSE — CONTEXT-AWARE OUTPUT ENCODING
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>     the SAME value needs DIFFERENT encoding depending on WHERE it lands:
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>       HTML body      &lt;div&gt;{value}&lt;/div&gt;          → HTML-entity encode  (&lt; becomes &amp;lt;)
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>       attribute      &lt;img alt=&quot;{value}&quot;&gt;          → attribute encode + always quote
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>       JavaScript     &lt;script&gt;var x=&quot;{value}&quot;&lt;/script&gt; → JS-string encode (or don&#39;t — see below)
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>       URL            &lt;a href=&quot;{value}&quot;&gt;           → URL encode + validate scheme (no javascript:)
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>       CSS            style=&quot;{value}&quot;               → CSS encode (or don&#39;t allow)
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>     frameworks (React/Vue/templates) do HTML+attr encoding AUTOMATICALLY. that&#39;s the safe default.
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   WHERE THE SAFE DEFAULT IS BYPASSED (audit THESE)
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>     React:  dangerouslySetInnerHTML     Vue: v-html      vanilla: el.innerHTML =
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>     server: string-built HTML, mark_safe, {{ x | safe }}, template autoescape off
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>     → each renders raw HTML. only safe if the content is SANITIZED or truly trusted.
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>   WHEN YOU MUST RENDER USER HTML (rich text editor) — SANITIZE
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>     run it through an allowlist sanitizer (DOMPurify) that permits safe tags/attrs and strips
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>     script, event handlers, javascript: URLs. NEVER a hand-rolled regex/blocklist.
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>   DEFENSE IN DEPTH — CONTENT SECURITY POLICY (browser-enforced backstop)
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>     Content-Security-Policy: default-src &#39;self&#39;; script-src &#39;self&#39;; object-src &#39;none&#39;; ...
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>     even if a payload is injected, CSP can block it from executing (no inline script, no
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>     evil.com). NOT a substitute for encoding — a second wall behind it.
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>   THE CONNECTION TO CH 02
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>     token in localStorage + any XSS = token stolen.  token in HttpOnly cookie = out of script reach.
+</code></pre></div>
+<p>ثلاثة مبادئ يحملها الفصل:</p>
+<p><strong>ترميز عند الإخراج، وفقًا للسياق — هذا هو الدفاع الحقيقي.</strong> القيمة نفسها آمنة في سياق وخطيرة في آخر، لذا فالترميز خاصية <em>لمكان العرض</em>، لا للبيانات. اعتمد على الترميز التلقائي لـ HTML/السمات الذي يقدّمه إطار العمل، وعامل كل موضع تخرج فيه من ذلك كقرار يحتاج إلى تبرير.</p>
+<p><strong>عامل كل البيانات المعروضة كغير موثوقة — بما في ذلك بياناتك.</strong> البيانات القادمة من قاعدة البيانات، وواجهة الـ API، وURL، والمستخدم، كلها معادية لحظة العرض. يعيش XSS المخزّن في اعتقاد أن "بياناتنا" آمنة. الحدّ هو الإخراج، لا المصدر.</p>
+<p><strong>نظّف فقط عندما يتعيّن عليك عرض HTML، وبمُنظّف حقيقي فقط؛ وأيّد ذلك بـ CSP.</strong> إذا كانت الميزة تحتاج فعلًا إلى HTML يقدّمه المستخدم (نص منسّق)، فعّرها عبر مُنظّف قائم على قائمة سماح (allowlist) — ولا تستخدم regex أبدًا. وانشر CSP كحاجز احتياطي يحدّ من الضرر عندما يُفوت الترميز في موضع ما، لأنه في تطبيق كبير، سيُفوَّت الترميز في موضع ما.</p>
+<p>تعريف عملي:</p>
+<blockquote>
+<p><strong>XSS هو بيانات غير موثوقة تُعرَض في صفحة دون ترميز مناسب للسياق، فيُسمح لها بالتنفيذ كسكربت في جلسة الضحية. الدفاع متعدد الطبقات: ترميز الإخراج المراعي للسياق كتحكّم أساسي (تلقائي إلى حدّ بعيد عبر إطار العمل، ومُراجَع حيثما يُتجاوَز)، وتنظيف حقيقي قائم على قائمة سماح للحالة النادرة لعرض HTML يقدّمه المستخدم، وContent Security Policy كحاجز احتياطي يفرضه المتصفح — مع معاملة كل البيانات المعروضة، بما في ذلك بياناتك المخزّنة، كغير موثوقة.</strong></p>
+</blockquote>
+<h2 id="_4">مثال إنتاجي<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>يُعرِض <strong>Invoicely</strong> محتوى يتحكّم فيه المستخدم في كل مكان: أسماء العملاء وأوصاف بنود الفاتورة (يدخلها المستخدمون ويعرضها مستخدمون آخرون ومشرفون)، وملاحظات الفاتورة بتنسيق منسّق بسيط (غامق، قوائم، روابط)، وخيط رسائل دعم، وقوالب PDF/بريد إلكتروني تُولَّد من بيانات الفاتورة. كل واحد من هذه يمثّل سطحًا لهجوم XSS، وملاحظة النص المنسّق هي الحالة التي تحتاج تنظيفًا حقيقيًا لا مجرد ترميز بسيط. يُحكّم هذا الفصل كل ذلك ويُظهر نسخة XSS المخزّن لكل حالة.</p>
+<p>تُعرَض الحقول النصية البسيطة (الأسماء، والأوصاف، والحالات) عبر React، الذي يُرمّزها بترميز HTML تلقائيًا — فالعميل الذي يحمل اسم <code>&lt;script&gt;alert(1)&lt;/script&gt;</code> يُعرض كنص حرفي، لا كسكربت. لا حاجة إلى عمل خاص <em>طالما لم يلجأ أحد إلى</em> <code>dangerouslySetInnerHTML</code>، وقاعدة المراجعة هي بالضبط ذلك. ملاحظة الفاتورة بالنص المنسّق هي الحالة الصعبة: يُرسل المستخدمون HTML عن حق (غامق، روابط، قوائم)، لذا لا يمكن ترميزها ببساطة. ينظّفها Invoicely باستخدام DOMPurify عند العرض، بالسماح بقائمة سماح صغيرة من الوسوم/السمات، وبتجريد <code>&lt;script&gt;</code>، ومعالِجات الأحداث (<code>onerror</code>، <code>onclick</code>)، وروابط <code>javascript:</code> — فتصبح <code>&lt;a href="javascript:steal()"&gt;</code> و<code>&lt;img src=x onerror=steal()&gt;</code> خاملة. تُجبَر الروابط أيضًا على مخططات آمنة و<code>rel="noopener noreferrer"</code>.</p>
+<p>تستخدم قوالب PDF والبريد الإلكتروني المولَّدة على الخادم — المبنية خارج حماية React — محرك قوالب يهرّب (auto-escaping) تلقائيًا، ولا تستخدم أبدًا ربط السلاسل النصية، حتى لا تستطيع بيانات الفاتورة الحقن في HTML المولَّد. والأهم من ذلك، يُخزّن Invoicely رمز JWT في كوكيز <code>HttpOnly</code> (الفصل 02)، لذا حتى لو انسلّ XSS من موضع ما، يظل رمز الجلسة بعيدًا عن متناول السكربت — يمكن للمهاجم التصرّف داخل الصفحة لكنه لا يستطيع سرقة بيانات الاعتماد الدائمة. فوق كل ذلك يجلس Content Security Policy: <code>script-src 'self'</code>، ولا سكربتات مضمّنة (inline)، و<code>object-src 'none'</code> — فليس للحمولة المحقونة طريقة لتنفيذ inline أو للتحميل من نطاق المهاجم. في هذا الفصل نبني كل دفاع ونقارنه بنسخة المساعد الافتراضية: ملاحظة <code>dangerouslySetInnerHTML</code>، وHTML البريد الإلكتروني المربوط، واسم العميل المخزّن الذي يُعرض خامًا.</p>
+<h2 id="_5">بنية المجلدات<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>web/ (Next.js — Stage 4)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── components/
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│   ├── RichText.tsx        # the ONLY component that renders HTML — sanitizes with DOMPurify
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>│   └── SafeLink.tsx        # forces safe URL schemes; rel=noopener; no javascript:
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>├── lib/
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│   └── sanitize.ts         # DOMPurify config: tag/attr allowlist, strip handlers &amp; bad schemes
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>├── middleware.ts           # sets Content-Security-Policy + related headers (Ch 07 shares this)
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>api/ (FastAPI — Stage 3)
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>├── templates/              # PDF/email: auto-escaping engine, NEVER string-built HTML
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>└── core/security_headers.py  # CSP for server-rendered/API responses
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>tests/
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>└── security/
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    └── test_xss.py         # stored &amp; reflected payloads render inert; CSP header present
+</code></pre></div>
+<p>لماذا هذا الشكل:</p>
+<ul>
+<li><strong><code>RichText.tsx</code> كمكوّن HTML الوحيد الذي يعرض HTML</strong> يحصر <code>dangerouslySetInnerHTML</code> في موضع واحد مُراجَع ومُنظَّف. أي مكان آخر يعرض HTML خامًا هو علامة إنذار في المراجعة بحكم التصميم — للواجهة الخطرة بيت مشروع واحد فقط.</li>
+<li><strong><code>lib/sanitize.ts</code></strong> يُركّز قائمة سماح DOMPurify بحيث تُعرَّف سياسة التنظيف مرة واحدة، وتُراجَع مرة واحدة، ولا يمكن أن تنزلق إلى إعداد أضعف لكل استخدام.</li>
+<li><strong><code>SafeLink.tsx</code></strong> يتعامل مع XSS سياق URL (مخططات الروابط <code>javascript:</code> و<code>data:</code>) التي لا يغطيها ترميز HTML، في موضع واحد يمرّ عبره كل رابط يقدّمه المستخدم.</li>
+<li><strong><code>templates/</code> بمحرك يهرّب تلقائيًا</strong> يُبقي HTML المولَّد على الخادم (PDF، البريد الإلكتروني) — الذي يقع خارج حماية React التلقائية — آمنًا افتراضيًا، ويُغلق سطح XSS الذي لا تغطيه أُطر العمل.</li>
+<li><strong><code>middleware.ts</code> / <code>security_headers.py</code></strong> يضبطان CSP كحاجز احتياطي في كل استجابة، ليفرض المتصفح قيودًا على السكربتات حتى في المواضع التي يُفوت فيها الترميز.</li>
+<li><strong><code>tests/security/test_xss.py</code></strong> يُطلق حمولات مخزّنة ومنعكسة ويتأكد من عرضها خاملة ومن وجود CSP — الدليل، المُبقي خضراء في CI.</li>
+</ul>
+<h2 id="_6">التنفيذ<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p><strong>القيم البسيطة: اعتمد على الترميز التلقائي لإطار العمل.</strong> يتعامل الافتراضي الآمن مع الحالة الشائعة — الانضباط هو عدم كسره.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// SAFE — React HTML-encodes automatically. &lt;script&gt; shows as text.</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">className</span><span class="o">=</span><span class="s">&quot;customer&quot;</span><span class="p">&gt;{</span><span class="nx">invoice</span><span class="p">.</span><span class="nx">customerName</span><span class="p">}&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;{</span><span class="nx">invoice</span><span class="p">.</span><span class="nx">lineDescription</span><span class="p">}&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">// DANGER — the ONLY way XSS enters here. never do this with user content:</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1">// &lt;div dangerouslySetInnerHTML={{ __html: invoice.note }} /&gt;   ← raw HTML, executes payloads</span>
+</code></pre></div>
+<p>سطح النص البسيط بأكمله آمن مجانًا. قاعدة المراجعة تكتب نفسها: محتوى المستخدم يدخل في <code>{أقواس معقوصة}</code>، ولا يدخل أبدًا في <code>dangerouslySetInnerHTML</code>.</p>
+<p><strong>النص المنسّق: نظّف بقائمة سماح (<code>sanitize.ts</code> + <code>RichText.tsx</code>).</strong> عندما يتعيّن عليك <em>عرض</em> HTML يقدّمه المستخدم، فإن المُنظّف الحقيقي هو المسار الآمن الوحيد.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// lib/sanitize.ts — one policy, allowlist-based</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">sanitizeHtml</span><span class="p">(</span><span class="nx">dirty</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">DOMPurify</span><span class="p">.</span><span class="nx">sanitize</span><span class="p">(</span><span class="nx">dirty</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nx">ALLOWED_TAGS</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;i&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;em&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;strong&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ul&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ol&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;li&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;p&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;br&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;a&quot;</span><span class="p">],</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="nx">ALLOWED_ATTR</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;href&quot;</span><span class="p">],</span><span class="w">                       </span><span class="c1">// no onerror/onclick/style</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="nx">ALLOWED_URI_REGEXP</span><span class="o">:</span><span class="w"> </span><span class="sr">/^(https?|mailto):/i</span><span class="p">,</span><span class="w">     </span><span class="c1">// no javascript:/data: URLs</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="p">});</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// RichText.tsx — the one sanctioned place raw HTML renders, and it&#39;s sanitized first</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">RichText</span><span class="p">({</span><span class="w"> </span><span class="nx">html</span><span class="w"> </span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">html</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">dangerouslySetInnerHTML</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">__html</span><span class="o">:</span><span class="w"> </span><span class="kt">sanitizeHtml</span><span class="p">(</span><span class="nx">html</span><span class="p">)</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="p">/&gt;;</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">}</span>
+</code></pre></div>
+<p>يُحلّل DOMPurify الـ HTML ويُجرّد كل ما ليس في قائمة السماح — فتُزال <code>&lt;script&gt;</code>، و<code>onerror</code>، وروابط <code>javascript:</code> — فيصبح <code>&lt;img src=x onerror=steal()&gt;</code> على شكل <code>&lt;img src="x"&gt;</code> أو لا شيء. هذه قائمة سماح (السماح لما هو معروف أنه آمن)، وليست قائمة حظر (تجريد المعروف أنه خبيث)، لأن ترميزات المهاجم لا تنتهي.</p>
+<p><strong>الروابط الآمنة (<code>SafeLink.tsx</code>): دفاع سياق URL الذي يفوته ترميز HTML.</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">export</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">SafeLink</span><span class="p">({</span><span class="w"> </span><span class="nx">href</span><span class="p">,</span><span class="w"> </span><span class="nx">children</span><span class="w"> </span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="nx">Props</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">safe</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">/^(https?|mailto):/i</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">href</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">href</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;#&quot;</span><span class="p">;</span><span class="w">   </span><span class="c1">// no javascript:/data: schemes</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">a</span><span class="w"> </span><span class="na">href</span><span class="o">=</span><span class="p">{</span><span class="nx">safe</span><span class="p">}</span><span class="w"> </span><span class="na">rel</span><span class="o">=</span><span class="s">&quot;noopener noreferrer&quot;</span><span class="w"> </span><span class="na">target</span><span class="o">=</span><span class="s">&quot;_blank&quot;</span><span class="p">&gt;{</span><span class="nx">children</span><span class="p">}&lt;/</span><span class="nt">a</span><span class="p">&gt;;</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">}</span>
+</code></pre></div>
+<p>ترميز HTML في <code>href</code> لا يوقف <code>javascript:alert(1)</code> — قد تكون القيمة مرمّزة ترميزًا مثاليًا وتظل مخططًا خطيرًا. يحتاج سياق URL إلى التحقق من المخطط، ولهذا تمرّ روابط المستخدم عبر مكوّن واحد.</p>
+<p><strong>HTML المولَّد على الخادم: قوالب تهرّب تلقائيًا، ولا ربط (<code>templates/</code>).</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># PDF/email built with an autoescaping engine — invoice data is escaped into the HTML</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">template</span> <span class="o">=</span> <span class="n">jinja_env</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;invoice.html&quot;</span><span class="p">)</span>   <span class="c1"># autoescape=True</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">html</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">invoice</span><span class="o">=</span><span class="n">invoice</span><span class="p">)</span>             <span class="c1"># customer_name is escaped automatically</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># NEVER: html = f&quot;&lt;h1&gt;{invoice.customer_name}&lt;/h1&gt;&quot;  ← concatenated server HTML, injectable</span>
+</code></pre></div>
+<p>تحمي React تطبيق المتصفح، لكن HTML المولَّد على الخادم (PDFs، رسائل البريد) خارج هذه الحماية ويُمثّل سطح XSS/حقن HTML حقيقيًا — محرك يهرّب تلقائيًا يجعله آمنًا افتراضيًا.</p>
+<p><strong>Content Security Policy: الحاجز الاحتياطي (<code>middleware.ts</code>).</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">// even if a payload slips past encoding somewhere, CSP blocks its execution</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">csp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="s2">&quot;default-src &#39;self&#39;&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="s2">&quot;script-src &#39;self&#39;&quot;</span><span class="p">,</span><span class="w">            </span><span class="c1">// no inline &lt;script&gt;, no eval, no external script hosts</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="s2">&quot;object-src &#39;none&#39;&quot;</span><span class="p">,</span><span class="w">            </span><span class="c1">// no plugins</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="s2">&quot;base-uri &#39;self&#39;&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span><span class="s2">&quot;frame-ancestors &#39;none&#39;&quot;</span><span class="p">,</span><span class="w">       </span><span class="c1">// clickjacking defense (Ch 07)</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;; &quot;</span><span class="p">);</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="nx">response</span><span class="p">.</span><span class="nx">headers</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;Content-Security-Policy&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">csp</span><span class="p">);</span>
+</code></pre></div>
+<p>يعني <code>script-src 'self'</code> أن أي <code>&lt;script&gt;</code> مضمّن محقون لن يعمل ببساطة، وأن الحمولة لا تستطيع تحميل <code>evil.com/steal.js</code>. CSP هو الجدار خلف الجدار — لا يُعفيك من الترميز، بل يحدّ من الضرر عند تفويته.</p>
+<p><strong>اختبارات الهجوم (<code>tests/security/test_xss.py</code>): إثبات أن الحمولات خاملة.</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_stored_customer_name_payload_renders_as_text</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="n">create_customer</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;&lt;script&gt;window.__xss=1&lt;/script&gt;&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">page</span> <span class="o">=</span> <span class="n">render_invoice_page</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="k">assert</span> <span class="s2">&quot;&lt;script&gt;window.__xss=1&lt;/script&gt;&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">page</span>       <span class="c1"># escaped, not raw</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="k">assert</span> <span class="s2">&quot;&amp;lt;script&amp;gt;&quot;</span> <span class="ow">in</span> <span class="n">page</span>                             <span class="c1"># rendered as visible text</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_rich_note_strips_event_handlers</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="n">note</span> <span class="o">=</span> <span class="n">sanitize_html</span><span class="p">(</span><span class="s1">&#39;&lt;img src=x onerror=&quot;steal()&quot;&gt;&lt;b&gt;ok&lt;/b&gt;&#39;</span><span class="p">)</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="k">assert</span> <span class="s2">&quot;onerror&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">note</span> <span class="ow">and</span> <span class="s2">&quot;&lt;b&gt;ok&lt;/b&gt;&quot;</span> <span class="ow">in</span> <span class="n">note</span>        <span class="c1"># handler stripped, safe tag kept</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">test_csp_header_blocks_inline_script</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>    <span class="k">assert</span> <span class="s2">&quot;script-src &#39;self&#39;&quot;</span> <span class="ow">in</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Security-Policy&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>هذه هي المُسلَّمة: دفاع XSS لا تستطيع أن تُثبت أنه أحبط حمولة حقيقية ليس سوى اعتقاد. تُثبت المجموعة أن الحمولات المخزّنة تُعرض كنص، وأن المُنظّف يُجرّد المعالِجات، وأن CSP موجود.</p>
+<h2 id="_7">قرارات هندسية<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>خمسة قرارات تحدّد وضع XSS في أي تطبيق.</p>
+<h3 id="_8">ترميز/تهريب، أم تنظيف، أم تحقق — أيٌّ وأين؟<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) ترميز الإخراج حسب السياق (الافتراضي في إطار العمل)؛ (2) تنظيف HTML بمكتبة قائمة على قائمة سماح؛ (3) تحقق/رفض المُدخل؛ (4) مزيج من ذلك.</p>
+<p><strong>المقايضات:</strong> الترميز عند الإخراج هو الدفاع الأساسي وهو تلقائي إلى حدّ بعيد — يجعل البيانات آمنة لسياق العرض دون تغيير ما يُخزَّن. التنظيف مخصّص للحالة المعيّنة لعرض HTML يقدّمه المستخدم، وهو فاقد للمعلومات وأصعب في الصواب. التحقق من المُدخل يُقلّل السطح لكنه <em>ليس</em> دفاعًا ضد XSS (السلسلة الصالحة قد تكون حمولة صالحة، والبيانات نفسها قد تكون آمنة في سياق وخطيرة في آخر — لذا يجب أن يحدث الترميز عند الإخراج، لا المُدخل).</p>
+<p><strong>التوصية:</strong> ترميز الإخراج في كل مكان (اعتمد على إطار العمل، وراجع حالات التجاوز) كتحكّم أساسي؛ نظّف <em>فقط</em> الحقول التي يجب أن تحتوي HTML، بمكتبة حقيقية؛ تحقّق عند الحدود دفاعًا في العمق. الحكم الأساسي: ترميز عند <em>الإخراج</em> ووفقًا لـ <em>السياق</em>، لأن أمان القيمة نفسها يعتمد على مكان عرضها — فالترميز عند المُدخل لا يمكنه معرفة السياق المستقبلي.</p>
+<h3 id="_9">افتراضي يهرّب تلقائيًا، أم ترميز يدوي؟<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) إطار/محرك يهرّب تلقائيًا افتراضيًا (React، Vue، <code>autoescape</code> في Jinja)؛ (2) ترميز يدوي عند كل عرض؛ (3) تعطيل التهريب التلقائي للراحة.</p>
+<p><strong>المقايضات:</strong> التهريب التلقائي يجعل المسار الآمن هو الافتراضي ويجعل XSS هو الاستثناء — وهو أقوى موقف هيكلي. الترميز اليدوي عرضة للخطأ (استدعاء واحد منسي يصنع ثغرة). تعطيل التهريب التلقائي (من أجل "المرونة" أو لعرض HTML) يجعل السطح بأكمله خطيرًا لتوفير بعض استدعاءات التنظيف.</p>
+<p><strong>التوصية:</strong> استخدم دائمًا أُطر/محركات تهرّب تلقائيًا وأبقِ الافتراضي مُفعَّلًا — لتطبيق المتصفح <em>ولـ</em> HTML المولَّد على الخادم (البريد الإلكتروني، PDF). لا تُعطّل التهريب التلقائي على مستوى عام لعرض HTML في بعض المواضع؛ بل نظّف تلك المواضع القليلة. الكسب الهيكلي هو أن السلامة هي الافتراضي وأن كل استثناء يكون مرئيًا.</p>
+<h3 id="html">كيف يُعالَج HTML الذي يقدّمه المستخدم (نص منسّق)؟<a class="headerlink" href="#html" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) لا تسمح بـ HTML — خزّن/اعرض نصًا بسيطًا أو Markdown يُعرض بأمان؛ (2) اسمح بـ HTML، ونظّفه بمكتبة قائمة على قائمة سماح (DOMPurify)؛ (3) اسمح بـ HTML، وفلتره بقائمة حظر/Regex مكتوبة يدويًا.</p>
+<p><strong>المقايضات:</strong> عدم السماح بـ HTML هو الأكثر أمانًا وكثيرًا ما يكفي (Markdown، المعروض عبر مُعرِّض آمن، يغطي معظم احتياجات النص المنسّق دون HTML خام). يدعم مُنظّف قائمة السماح بأمان HTML حقيقيًا على حساب تبعية وإعداد دقيق. فلتر Regex المكتوب يدويًا ثغرة مضمونة — تحليل HTML عبر Regex خاسر شهيرًا، ولدى المهاجمين وسائل تحايل لا تنتهي.</p>
+<p><strong>التوصية:</strong> تجنّب HTML الخام المقدَّم من المستخدم عندما تستطيع — إذ يلبي Markdown المعروض عبر مُعرِّض آمن معظم الاحتياجات. عندما تحتاج فعلًا إلى HTML، نظّف بمكتبة قائمة على قائمة سماح متمرّسة (DOMPurify)، مُعدَّة بمجموعة وسوم/سمات دنيا، ولا تكتبها يدويًا أبدًا. مُنظّف HTML قائم على Regex هو نمط مضاد، بلا أي استثناء.</p>
+<h3 id="content-security-policy">انشر Content Security Policy، وبأي صرامة؟<a class="headerlink" href="#content-security-policy" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) لا CSP؛ (2) CSP صارم (<code>script-src 'self'</code>، مع nonces/hashes لأي inline)؛ (3) CSP متساهل مع <code>unsafe-inline</code>/<code>unsafe-eval</code> (مما يُبطل كثيرًا من فائدته).</p>
+<p><strong>المقايضات:</strong> لا CSP يعني أن أي حقن يتجاوز الترميز ينفّذ بحرية. CSP الصارم يحظر السكربتات المضمّنة وأصول السكربت الخارجية، فيحوّل كثيرًا من أخطاء XSS إلى أحداث لا تحدث — على حساب عمل حقيقي (لا سكربتات/معالِجات inline، nonces لما يلزم، ضبط للأدوات الخارجية). CSP المتساهل مع <code>unsafe-inline</code> سهل وشكلي إلى حدّ بعيد — فهو يسمح بالضبط بحقن inline الذي يستغلّه XSS.</p>
+<p><strong>التوصية:</strong> انشر CSP صارمًا دفاعًا في العمق: <code>script-src 'self'</code> مع nonces أو hashes لأي سكربت inline ضروري، و<code>object-src 'none'</code>، و<code>base-uri 'self'</code>. تجنّب <code>unsafe-inline</code>/<code>unsafe-eval</code>. ابدأ في وضع report-only لاكتشاف الانتهاكات، ثم انتقل إلى الفرض. CSP حاجز احتياطي أنقذ كثيرًا من التطبيقات من ترميز فائت — لكنه ليس أبدًا سببًا لتقليل الترميز.</p>
+<h3 id="xss_1">أين تعيش رموز الجلسة (قرار نصف القطر الانفجاري لـ XSS)؟<a class="headerlink" href="#xss_1" title="Permanent link">&para;</a></h3>
+<p><strong>الخيارات:</strong> (1) كوكيز <code>HttpOnly</code> — غير قابلة للوصول من السكربت؛ (2) <code>localStorage</code>/<code>sessionStorage</code> — قابلة للقراءة من أي سكربت؛ (3) في الذاكرة.</p>
+<p><strong>المقايضات:</strong> هذا قرار الفصل 02 من ناحية XSS. كوكيز <code>HttpOnly</code> تبقي الرمز بعيدًا عن متناول XSS (يستطيع المهاجم التصرّف داخل الصفحة لكن لا يستطيع سرقة بيانات الاعتماد الدائمة)، على حساب الحاجة إلى دفاع CSRF (الفصل 07). <code>localStorage</code> تُستخرَج بسهولة بواسطة أي XSS — حمولة واحدة، وكل الرموز تذهب. في الذاكرة أكثر أمانًا من <code>localStorage</code> لكنها لا تستمر.</p>
+<p><strong>التوصية:</strong> كوكيز <code>HttpOnly</code>، <code>Secure</code>، <code>SameSite</code> للرموز، مع دفاع CSRF مقترن — حتى لا يستطيع XSS، إن وقع، جمع بيانات الاعتماد. هذا أكثر الطرق تأثيرًا في تقييد نصف القطر الانفجاري لـ XSS لم تكتشفه. لا تستخدم <code>localStorage</code> للرموز أبدًا.</p>
+<h2 id="_10">المقايضات<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h2>
+<p><strong>ترميز الإخراج شبه مجاني وهو التحكّم الوحيد الذي لا توجد له مقايضة حقيقية.</strong> مثل الـ parameterization، المسار الآمن (التهريب التلقائي لإطار العمل) بلا تكلفة وهو الافتراضي. "التكلفة" الوحيدة هي عدم الخروج عنه بخفّة. لا توجد حجة أداء أو تجربة مطوّر لعرض HTML خام للمستخدم حيث يكفي الترميز.</p>
+<p><strong>تنظيف HTML المنسّق يقايض الإخلاص وتبعية بنص منسّق آمن.</strong> سيُجرّد مُنظّف قائمة السماح بعض الترميز الذي قد يريده المستخدمون، ويضيف مكتبة يجب صيانتها وإعدادها. البديل — عرض HTML خام للمستخدم — هو XSS مخزّن. عندما تحتاج نصًا منسّقًا، فإن قيود المُنظّف هي ثمن السلامة؛ يُفضَّل Markdown لتجنّب المقايضة كليًا.</p>
+<p><strong>CSP الصارم يقايض الجهد الهندسي بحاجز احتياطي قوي.</strong> إزالة السكربتات المضمّنة، وإضافة nonces، والضبط للأدوات الخارجية، عمل حقيقي، وقد يكسر CSP الصارم أشياء أثناء النشر التدريجي (ولهذا ابدأ بـ report-only). ما يشتريه هو أن كثيرًا من الحقن تصير أحداثًا لا تحدث — وغالبًا يستحق في تطبيق يحوي بيانات حساسة، ومرحلة report-only تُقلّل مخاطر النشر.</p>
+<p><strong>كوكيز HttpOnly تقايض الحاجة إلى دفاع CSRF بتخزين رموز محصّن من XSS.</strong> إخراج الرموز من متناول السكربت يعني أنه يتعيّن عليك الآن الدفاع ضد CSRF (الفصل 07) — تقايض مشكلة بأخرى أفضل فهمًا وذات حل قياسي. إنها مقايضة جيدة: سرقة الرموز عبر XSS صامتة وكلّية؛ وCSRF لديه دفاعات راسخة ورخيصة.</p>
+<h2 id="_11">الأخطاء الشائعة<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<p><strong><code>dangerouslySetInnerHTML</code> / <code>v-html</code> / <code>innerHTML</code> مع محتوى المستخدم.</strong> عرض HTML خام للمستخدم، متجاوزًا ترميز إطار العمل — المتجه الأول لـ XSS في التطبيقات الحديثة. الإصلاح: اعرض كنص (<code>{value}</code>)؛ إذا كان HTML مطلوبًا، نظّف باستخدام DOMPurify أولًا، في مكوّن واحد.</p>
+<p><strong>عرض البيانات المخزّنة كأنها موثوقة.</strong> معاملة "قاعدة بياناتنا" كآمنة وعرضها دون ترميز — مصدر XSS المخزّن. الإصلاح: عامل كل البيانات المعروضة كغير موثوقة؛ الحدّ هو الإخراج، لا المصدر.</p>
+<p><strong>بناء HTML بربط السلاسل النصية على الخادم.</strong> رسائل البريد أو PDFs أو الصفحات المعروضة على الخادم المبنية بـ f-strings/format من البيانات. الإصلاح: محرك قوالب يهرّب تلقائيًا؛ لا تربط البيانات في HTML أبدًا.</p>
+<p><strong>"مُنظّف" Regex مكتوب يدويًا.</strong> تجريد <code>&lt;script&gt;</code> بـ Regex وتسمية HTML آمنًا — قابل للتحايل بلا نهاية (<code>&lt;img onerror&gt;</code>، حمولات مُرمَّزة، mutation XSS). الإصلاح: مُنظّف قائم على قائمة سماح متمرّس (DOMPurify)؛ لا تحلّل/تفلتر HTML بـ Regex أبدًا.</p>
+<p><strong>إهمال سياقات URL والسمات.</strong> ترميز HTML لقيمة في <code>href</code> والظن أنها آمنة، بينما مخططات <code>javascript:</code> تظل تنفّذ. الإصلاح: تحقّق من مخططات URL (قائمة سماح لـ <code>https</code>/<code>mailto</code>)؛ ضع السمات بين علامتي اقتباس دائمًا.</p>
+<p><strong>رموز في <code>localStorage</code>.</strong> تخزين رمز الجلسة في مكان يستطيع أي XSS قراءته، فتحويل كل XSS إلى سرقة للرموز. الإصلاح: كوكيز <code>HttpOnly</code> (الفصل 02)، حتى لا يستطيع XSS جمع بيانات الاعتماد.</p>
+<h2 id="_12">أخطاء الذكاء الاصطناعي<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<p>يُعدّ XSS مجالًا يعرض فيه المساعد المحتوى بشكل صحيح وينفّذ سكربت المهاجم، لأن الحمولة لا تنطلق إلا على مُدخل عدائي. راجع كل عرض لمحتوى المستخدم من حيث كيفية ترميزه، وكل تجاوز للافتراضي في إطار العمل للتحقق من وجود مُنظّف.</p>
+<h3 id="claude-code-dangerouslysetinnerhtml">Claude Code: <code>dangerouslySetInnerHTML</code> لعرض محتوى المستخدم<a class="headerlink" href="#claude-code-dangerouslysetinnerhtml" title="Permanent link">&para;</a></h3>
+<p>عند طلب عرض محتوى يقدّمه المستخدم "قد يحتوي تنسيقًا" — ملاحظة فاتورة، أو وصف، أو معاينة — يلجأ Claude Code بشكل متكرر إلى <code>dangerouslySetInnerHTML={{ __html: content }}</code> (أو <code>v-html</code>، أو <code>element.innerHTML = content</code>) لجعل HTML يُعرض. يعرض التنسيق بشكل صحيح، فيبدو القرار صائبًا — ويعرض أي <code>&lt;script&gt;</code>، أو <code>&lt;img onerror&gt;</code>، أو معالِج حدث في المحتوى كشيفرة تنفيذية. مُخزَّن في حقل يُعرض للآخرين، إنه XSS مخزّن يصيب كل زائر بمن فيهم المشرفون.</p>
+<p><strong>الاكتشاف:</strong> <code>dangerouslySetInnerHTML</code>، أو <code>v-html</code>، أو <code>innerHTML =</code> في أي موضع مع محتوى آتٍ من المستخدم أو من API؛ عرض HTML خام غير ملفوف في مُنظّف؛ النمط نفسه المستخدم لحقول "المعاينة" أو "التنسيق".</p>
+<p><strong>الإصلاح:</strong> اعرض كنص، أو نظّف في موضع واحد:</p>
+<blockquote>
+<p>لا تمرّر أبدًا محتوى المستخدم أو الـ API إلى <code>dangerouslySetInnerHTML</code>/<code>v-html</code>/<code>innerHTML</code>. اعرضه كنص في <code>{}</code> ليُرمّزه React. إذا كان يجب عرضه كـ HTML (نص منسّق)، فعّره عبر مكوّن تنظيف وحيد يستخدم DOMPurify بقائمة سماح دنيا. أضف اختبارًا يثبت أن حمولة <code>&lt;script&gt;</code> / <code>onerror</code> تُعرض خاملة.</p>
+</blockquote>
+<h3 id="gpt-html">GPT: HTML مبني على الخادم بربط السلاسل النصية<a class="headerlink" href="#gpt-html" title="Permanent link">&para;</a></h3>
+<p>ميل نماذج عائلة GPT، عند توليد رسائل البريد أو PDFs أو أي HTML معروض على الخادم، إلى بنائها بـ f-strings أو <code>.format()</code> — <code>f"&lt;h1&gt;Invoice for {customer_name}&lt;/h1&gt;"</code> — خارج أي تهريب تلقائي لإطار العمل. تتدفق بيانات الفاتورة والعميل مباشرة إلى HTML، فاسم العميل الذي يحتوي ترميزًا يحقن في كل بريد وPDF مولَّد. إنها توأم SQL-string على جانب الخادم من الفصل 05، ولا تكون مرئية حتى تكون البيانات عدائية.</p>
+<p><strong>الاكتشاف:</strong> HTML مبني بـ f-strings/<code>.format()</code>/ربط من البيانات؛ قوالب بريد/PDF مجمّعة كسلاسل؛ محرك قوالب مستخدم مع تعطيل autoescape؛ تطبيق <code>mark_safe</code>/<code>| safe</code> على قيم آتية من البيانات.</p>
+<p><strong>الإصلاح:</strong> قوالب تهرّب تلقائيًا، ولا ربط:</p>
+<blockquote>
+<p>ولّد كل HTML على جانب الخادم (البريد الإلكتروني، PDFs، الصفحات) بمحرك قوالب يهرّب تلقائيًا (<code>autoescape=True</code>)، مع تمرير البيانات كمتغيرات للقالب — ولا تبنِ HTML بتنسيق السلاسل النصية أبدًا. لا تستخدم <code>mark_safe</code>/<code>| safe</code> على أي قيمة آتية من البيانات. أضف اختبارًا يثبت أن حمولة في حقل بيانات مُهرَّبة في الإخراج.</p>
+</blockquote>
+<h3 id="cursor">Cursor: عرض البيانات المخزّنة في قاعدة البيانات خامًا أثناء إكمال ميزة عرض<a class="headerlink" href="#cursor" title="Permanent link">&para;</a></h3>
+<p>عند إكمال مكوّن أو endpoint يعرض بيانات محفوظة، يميل Cursor إلى معاملة البيانات القادمة من قاعدة البيانات أو استجابة API كموثوقة — ببناء DOM منها عبر <code>innerHTML</code>، أو إسقاطها في عرض HTML خام — لأن المهمة الفورية هي "إظهار المحتوى المحفوظ" وتبدو البيانات داخلية. هذا هو بالضبط الاعتقاد الذي ينتج XSS المخزّن: الحُمولة حُفِظت سابقًا (عبر واجهة بلا ترميز) وتُنفَّذ الآن، عند العرض، في جلسة كل زائر.</p>
+<p><strong>الاكتشاف:</strong> حقول استجابة API/قاعدة البيانات تُكتب في DOM عبر <code>innerHTML</code> أو خصائص HTML خام؛ عرض الحقول المخزّنة (الأسماء، الملاحظات، الرسائل) دون ترميز بافتراض أنها موثوقة؛ DOM مبني من استجابة fetch بربط/تجميع HTML.</p>
+<p><strong>الإصلاح:</strong> البيانات المخزّنة غير موثوقة عند العرض:</p>
+<blockquote>
+<p>عامل كل البيانات القادمة من قاعدة البيانات وواجهة الـ API كغير موثوقة عند العرض — فقد تحتوي حمولات خُزّنت سابقًا. اعرضها كنص (مُرمَّزة من إطار العمل)، ولا تستخدم <code>innerHTML</code> أو خصائص HTML خام؛ نظّف فقط حقول النص المنسّق الحقيقية عبر المُنظّف المشترك. أضف اختبار XSS مخزّن: احفظ حمولة <code>&lt;script&gt;</code> عبر API، ثم تأكد من عرضها كنص.</p>
+</blockquote>
+<h2 id="_13">أفضل الممارسات<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<p><strong>ترميز عند الإخراج، ووفقًا للسياق؛ اعتمد على افتراضي إطار العمل.</strong> اعرض محتوى المستخدم كنص ليُرمّزه React/Vue/القوالب تلقائيًا؛ عامل كل تجاوز لذلك الافتراضي كقرار يتطلب مُنظّفًا أو ثقة حقيقية.</p>
+<p><strong>عامل كل البيانات المعروضة كغير موثوقة — بما في ذلك بياناتك المخزّنة.</strong> حدود الثقة هي الإخراج، لا المصدر؛ يعيش XSS المخزّن في اعتقاد أن بيانات قاعدة البيانات آمنة.</p>
+<p><strong>نظّف HTML المقدَّم من المستخدم بمكتبة قائمة على قائمة سماح متمرّسة، في موضع واحد.</strong> DOMPurify بقائمة سماح وسوم/سمات دنيا، محصورة في مكوّن واحد؛ لا Regex مكتوب يدويًا؛ يُفضَّل Markdown لتجنّب HTML الخام كليًا.</p>
+<p><strong>اهرّب تلقائيًا HTML المولَّد على الخادم أيضًا.</strong> رسائل البريد، وPDFs، والصفحات المعروضة على الخادم المبنية بمحرك يهرّب تلقائيًا، لا ربط السلاسل النصية — السطح الذي لا تغطيه أُطر العمل.</p>
+<p><strong>تحقّق من مخططات URL واقتبس السمات.</strong> روابط المستخدم تمرّ عبر مكوّن واحد يضع <code>https</code>/<code>mailto</code> في قائمة سماح ويحظر <code>javascript:</code>/<code>data:</code>؛ تُوضع السمات بين علامتي اقتباس دائمًا.</p>
+<p><strong>انشر CSP صارمًا كحاجز احتياطي.</strong> <code>script-src 'self</code>، بلا <code>unsafe-inline</code>/<code>unsafe-eval</code>، وnonces/hashes للسكربتات inline الضرورية؛ انشر في وضع report-only أولًا. جدار خلف الترميز، وليس بديلًا عنه أبدًا.</p>
+<p><strong>أبقِ الرموز في كوكيز <code>HttpOnly</code>.</strong> حتى لا يستطيع XSS الذي يقع سرقة بيانات اعتماد الجلسة (الفصل 02) — أكثر تخفيضات نصف القطر الانفجاري تأثيرًا.</p>
+<p><strong>اختبر بحمولات حقيقية.</strong> حمولات <code>&lt;script&gt;</code>/<code>onerror</code>/<code>javascript:</code> مخزّنة ومنعكسة مُتحقَّق من خمولها، واختبارات المُنظّف، وفحص وجود CSP — خضراء في CI.</p>
+<h2 id="_14">الأنماط المضادة<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p><strong>عرض HTML الخام.</strong> محتوى المستخدم مُمرَّر إلى <code>dangerouslySetInnerHTML</code>/<code>v-html</code>/<code>innerHTML</code>. العلامة: واجهات HTML خام مع محتوى آتٍ من المستخدم أو الـ API؛ لا مُنظّف في المسار.</p>
+<p><strong>قاعدة البيانات الموثوقة.</strong> بيانات مخزّنة تُعرض دون ترميز. العلامة: حقول DB/API تُكتب خامًا في DOM؛ "إنها بياناتنا" سببًا لعدم التهريب؛ XSS مخزّن في حقل اسم أو ملاحظة.</p>
+<p><strong>القالب المربوط.</strong> HTML الخادم مبني بتنسيق السلاسل النصية. العلامة: f-string HTML؛ رسائل/PDFs مجمّعة كسلاسل؛ تعطيل autoescape أو <code>mark_safe</code> على البيانات.</p>
+<p><strong>مُنظّف Regex.</strong> HTML "مُنظَّف" بتجريد أنماط. العلامة: Regex تُزيل <code>&lt;script&gt;</code>؛ <code>clean_html</code> مكتوب يدويًا؛ التحايل عبر <code>onerror</code>/الترميز/mutation XSS.</p>
+<p><strong>CSP شكلي.</strong> CSP فيه <code>unsafe-inline</code>/<code>unsafe-eval</code> يسمح بالحقن الذي يدّعي منعه. العلامة: <code>script-src</code> يحتوي على <code>unsafe-inline</code>؛ CSP موجود لكن بلا أسنان.</p>
+<p><strong>رمز localStorage.</strong> رمز الجلسة قابل للقراءة من أي سكربت. العلامة: <code>localStorage.setItem</code> لرمز؛ حالة المصادقة في تخزين قابل للوصول من JS؛ أي XSS يصبح سرقة حساب كاملة.</p>
+<h2 id="_15">شجرة القرار<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<p>"أنا أعرض محتوى آتٍ من المستخدم أو من البيانات — كيف أعرضه بأمان؟"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Does this content need to render as HTML (formatting), or as text?
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>├── as TEXT (names, descriptions, most fields)
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>│     └─► render in the framework&#39;s encoded context ({value} in React). done — auto-encoded.
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>│         NEVER innerHTML / dangerouslySetInnerHTML / v-html for this.
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>│
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>├── as HTML (rich text: bold, links, lists)
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>│     ├── can it be Markdown instead? ─► yes: render Markdown through a safe renderer. simpler &amp; safer.
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>│     └── must be raw HTML ─► sanitize with DOMPurify (allowlist of tags/attrs) in ONE component.
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>│                             never a regex/blocklist. force safe URL schemes on links.
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>│
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>├── is it a URL (href/src)?
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>│     └─► allowlist the scheme (https/mailto); reject javascript:/data:. encoding alone isn&#39;t enough.
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>│
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>└── is it SERVER-generated HTML (email, PDF, SSR)?
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>      └─► auto-escaping template engine, data as variables. never string-concatenate HTML.
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>Across all of it, defense in depth:
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>   · treat DB/API data as untrusted at render (stored XSS)
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>   · strict CSP (script-src &#39;self&#39;, no unsafe-inline) as the backstop
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>   · tokens in HttpOnly cookies so an XSS can&#39;t steal them (Ch 02)
+</code></pre></div>
+<h2 id="_16">قائمة التحقق<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<h3 id="_17">قائمة تحقق التنفيذ<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] يُعرض محتوى المستخدم/البيانات من خلال السياق المرمَّز لإطار العمل (<code>{value}</code>)، لا من خلال <code>innerHTML</code>/<code>dangerouslySetInnerHTML</code>/<code>v-html</code>.</li>
+<li>[ ] حقول النص المنسّق (HTML) تُنظَّف بمكتبة قائمة على قائمة سماح متمرّسة (DOMPurify) في مكوّن واحد؛ لا يوجد مُنظّف Regex مكتوب يدويًا.</li>
+<li>[ ] روابط المقدَّمة من المستخدم مخططاتها في قائمة سماح (<code>https</code>/<code>mailto</code>)، مع حظر <code>javascript:</code>/<code>data:</code>.</li>
+<li>[ ] HTML المولَّد على الخادم (البريد الإلكتروني، PDFs، SSR) يستخدم محركًا يهرّب تلقائيًا؛ ولا يُبنى HTML بربط السلاسل النصية.</li>
+<li>[ ] CSP صارم (<code>script-src 'self'</code>، بلا <code>unsafe-inline</code>/<code>unsafe-eval</code>) مضبوط على الاستجابات.</li>
+<li>[ ] حمولات XSS المخزّنة والمنعكسة مُختبَرة وتُعرض خاملة؛ يوجد فحص لوجود CSP.</li>
+</ul>
+<h3 id="_18">قائمة تحقق البنية<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] عرض HTML الخام محصور في مكوّن تنظيف ومراجعة واحد؛ للواجهة الخطرة بيت مشروع واحد فقط.</li>
+<li>[ ] سياسة التنظيف (قائمة السماح) مُركَّزة ومُراجَعة مرة واحدة، لا تُعدَّل لكل استخدام.</li>
+<li>[ ] كل البيانات المعروضة تُعامل كغير موثوقة بصرف النظر عن مصدرها، مما يُغلق فجوة XSS المخزّن.</li>
+<li>[ ] رموز الجلسة في كوكيز <code>HttpOnly</code> (الفصل 02)، حتى لا يستطيع XSS استخراجها.</li>
+<li>[ ] CSP مُصدَّر/مُدار إلى جانب رؤوس الأمان الأخرى (الفصل 07)، ويُنشَر في وضع report-only قبل الفرض.</li>
+</ul>
+<h3 id="_19">قائمة تحقق مراجعة الشيفرة<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] لا <code>dangerouslySetInnerHTML</code>/<code>v-html</code>/<code>innerHTML</code> يستقبل محتوى آتٍ من المستخدم أو الـ API دون المرور عبر المُنظّف.</li>
+<li>[ ] لا HTML على جانب الخادم مبني بـ f-string/<code>.format()</code>/ربط؛ ولا <code>mark_safe</code>/<code>| safe</code> على قيم آتية من البيانات.</li>
+<li>[ ] لا Regex مكتوب يدويًا يُستخدم لتنظيف HTML.</li>
+<li>[ ] روابط المقدَّمة من المستخدم تتحقّق من مخططها؛ السمات بين علامتي اقتباس.</li>
+<li>[ ] مسارات العرض الجديدة للبيانات المخزّنة تتضمن اختبار XSS مخزّنًا.</li>
+</ul>
+<h3 id="_20">قائمة تحقق النشر<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] CSP مفروض (لا report-only فحسب) في الإنتاج، مع نقطة نهاية تقارير تُراقَب للانتهاكات.</li>
+<li>[ ] رؤوس الأمان (CSP، ومجموعة الفصل 07) مضبوطة عند الحافة/الوسيط في كل استجابة، بما في ذلك صفحات الخطأ.</li>
+<li>[ ] تبعية DOMPurify/المُنظّف مُحافَظ على تحديثها (تُرقَّع تحايلات المُنظّف مع الوقت).</li>
+<li>[ ] السكربتات الخارجية (التحليلات، الأدوات) مُعدَّة ومقيَّدة بـ CSP، لا تُسمح إجمالًا بـ <code>unsafe-inline</code>.</li>
+</ul>
+<h2 id="_21">التمارين<a class="headerlink" href="#_21" title="Permanent link">&para;</a></h2>
+<p><strong>1. نفّذ هجوم XSS مخزّنًا، ثم أغلقه.</strong> في مسار عرض يستخدم HTML خامًا (أو ابنِ واحدًا)، خزّن حمولة <code>&lt;script&gt;</code> أو <code>&lt;img onerror&gt;</code> عبر الواجهة العادية وأظهر أنها تنفّذ عندما يطّلع مستخدم آخر على السجل. ثم انتقل إلى العرض المرمَّز (أو المُنظّف) وأظهر أن الحمولة تُعرض كنص خامل. المُسلَّمة هي الاستغلال، والإصلاح، واختبار XSS المخزّن.</p>
+<p><strong>2. اكسر مُنظّف Regex.</strong> خذ مُنظّف HTML قائمًا على Regex مكتوبًا يدويًا (اكتب واحدًا مقبولًا). صمّم حمولات تتجاوزه (<code>&lt;img onerror&gt;</code>، حيل حالة/ترميز، mutation XSS). ثم استبدله بـ DOMPurify وأظهر أن الحمولات نفسها مُحايَدة. المُسلَّمة هي التحايلات وإعداد قائمة السماح الذي يوقفها.</p>
+<p><strong>3. انشر CSP صارمًا.</strong> أضف Content Security Policy إلى تطبيقك في وضع report-only، واجمع الانتهاكات (سكربتات inline، أصول خارجية)، وأصلحها أو أعطها nonces، ثم انتقل إلى الفرض. أثبت أن سكربت <code>&lt;script&gt;</code> inline محقونًا لم يعد ينفّذ تحت السياسة المفروضة. المُسلَّمة هي السياسة قبل/بعد ودليل الحظر.</p>
+<p><strong>4. أثبت الفرق في تخزين الرموز.</strong> خزّن رمزًا في <code>localStorage</code> ومحاكاة XSS يقرأه ويستخرجه. ثم انقل الرمز إلى كوكيز <code>HttpOnly</code> وأظهر أن XSS نفسه لم يعد يستطيع قراءته (مع قدرته بصدق على التصرّف داخل الصفحة). المُسلَّمة هما التشغيلان اللذان يُظهران فرق نصف القطر الانفجاري.</p>
+<h2 id="_22">قراءات إضافية<a class="headerlink" href="#_22" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>OWASP Cross-Site Scripting Prevention Cheat Sheet (cheatsheetseries.owasp.org)</strong> — القواعد
+  المرجعية للترميز المراعي للسياق وحالات تجاوز إطار العمل التي يراجعها هذا الفصل.</li>
+<li><strong>OWASP DOM-based XSS Prevention Cheat Sheet</strong> — نموذج المصدر/المصرف من جانب العميل
+  (<code>innerHTML</code>، <code>location</code>، <code>eval</code>) لشكل XSS القائم على DOM الذي لا يلمس الخادم أبدًا.</li>
+<li><strong>DOMPurify (github.com/cure53/DOMPurify)</strong> — مُنظّف HTML قائم على قائمة سماح متمرّس يستخدمه
+  هذا الفصل؛ توثيقه يغطي الإعداد الآمن ولماذا تفشل مُنظّفات Regex.</li>
+<li><strong>MDN — Content Security Policy (developer.mozilla.org)</strong> و<strong>content-security-policy.com</strong> — توجيهات
+  CSP، واستخدام nonce/hash، ونشر report-only الذي يعتمد عليه الحاجز الاحتياطي.</li>
+<li><strong>الفصل 02 — JWT Security</strong> (تخزين الرموز وقرار <code>HttpOnly</code>) و<strong>الفصل 07 — CSRF, CORS &amp; Browser
+  Security</strong> (بقية رؤوس استجابة الأمان ودفاع CSRF الذي تتطلبه كوكيز HttpOnly) — الفصلان اللذان
+  يتصل بهما هذا الفصل من الجانبين.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  عد إلى الأعلى
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="هامش سفلي" >
+        
+          
+          <a href="../05-sql-injection-and-input-handling/" class="md-footer__link md-footer__link--prev" aria-label="السابقة: حقن SQL ومعالجة المدخلات">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                السابقة
+              </span>
+              <div class="md-ellipsis">
+                حقن SQL ومعالجة المدخلات
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../07-csrf-cors-and-browser-security/" class="md-footer__link md-footer__link--next" aria-label="التالية: CSRF و CORS وأمان المتصفح">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                التالية
+              </span>
+              <div class="md-ellipsis">
+                CSRF و CORS وأمان المتصفح
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tracking", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "clipboard.copy": "\u0646\u0633\u062e \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "search.result.more.one": "\u0623\u0643\u062b\u0631 \u0645\u0646 1 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.more.other": "\u0623\u0643\u062b\u0631 \u0645\u0646 # \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.none": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c", "search.result.one": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b \u0645\u0633\u062a\u0646\u062f \u0648\u0627\u062d\u062f", "search.result.other": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b # \u0645\u0633\u062a\u0646\u062f\u0627\u062a", "search.result.placeholder": "\u0627\u0643\u062a\u0628 \u0644\u0628\u062f\u0621 \u0627\u0644\u0628\u062d\u062b", "search.result.term.missing": "\u0645\u0641\u0642\u0648\u062f", "select.version": "\u0625\u062e\u062a\u0631 \u0627\u0644\u0625\u0635\u062f\u0627\u0631"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

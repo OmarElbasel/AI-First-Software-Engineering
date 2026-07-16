@@ -1,0 +1,5732 @@
+
+<!doctype html>
+<html lang="ar" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A production-grade handbook for engineering software with AI as a disciplined teammate.">
+      
+      
+      
+      
+        <link rel="prev" href="../02-openai-codex-and-cursor/">
+      
+      
+        <link rel="next" href="../04-prompt-engineering/">
+      
+      
+        
+          <link rel="alternate" href="../../../../handbook/stage-10-ai-engineering/03-context-engineering/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="ar">
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>هندسة السياق - هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="rtl" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          انتقل إلى المحتوى
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="عنوان العارضة">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-header__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              هندسة السياق
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="إختر اللغة">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../../handbook/stage-10-ai-engineering/03-context-engineering/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ar" class="md-select__link">
+              العربية
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="بحث" placeholder="بحث" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="إبحث">
+        
+        <button type="reset" class="md-search__icon md-icon" title="مسح كلي" aria-label="مسح كلي" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            بدء البحث
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="تصفح" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../" title="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" class="md-nav__button md-logo" aria-label="هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    هندسة البرمجيات بمنهج الذكاء الاصطناعي أولاً
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/OmarElbasel/AI-First-Software-Engineering" title="اذهب إلى المصدر" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الرئيسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../START-HERE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ابدأ من هنا
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 1 · العقلية الهندسية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/01-what-is-software-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ما هي هندسة البرمجيات؟
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/02-product-thinking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفكير بعقلية المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/03-ai-first-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطوير بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/04-engineering-trade-offs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المفاضلات الهندسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/05-technical-debt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الدَّين التقني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/06-build-vs-buy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء مقابل الشراء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/07-simplicity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البساطة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-01-engineering-mindset/08-maintainability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية الصيانة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 2 · معمارية البرمجيات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/01-layered-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية الطبقية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/02-feature-based-and-vertical-slice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية القائمة على الميزات والشرائح الرأسية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/03-clean-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية النظيفة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/04-monolith-modular-monolith-microservices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المتراصّ والمتراصّ المعياري والخدمات المصغّرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/05-service-layer-and-repository-pattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    طبقة الخدمات ونمط المستودع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/06-dependency-injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن التبعيات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-02-software-architecture/07-event-driven-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعمارية المدفوعة بالأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 3 · هندسة الواجهة الخلفية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/01-building-apis-with-fastapi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء واجهات API باستخدام FastAPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/02-data-persistence-sqlalchemy-alembic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حفظ البيانات: SQLAlchemy و Alembic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/03-authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/04-authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التفويض
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/05-error-handling-and-api-versioning/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معالجة الأخطاء وإصدارات API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/06-background-jobs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المهام الخلفية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/07-caching/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التخزين المؤقت
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/08-logging-and-observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسجيل وقابلية المراقبة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-03-backend-engineering/09-file-storage-and-email/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تخزين الملفات والبريد الإلكتروني
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 4 · هندسة الواجهة الأمامية
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/01-building-uis-with-react-and-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بناء الواجهات باستخدام React و TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/02-nextjs-and-the-app-router/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Next.js وموجّه التطبيق App Router
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/03-server-and-client-components/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مكوّنات الخادم والعميل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/04-data-fetching-and-server-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    جلب البيانات وحالة الخادم
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/05-state-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الحالة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/06-forms-and-validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النماذج والتحقق من الإدخال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/07-frontend-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء الواجهة الأمامية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-04-frontend-engineering/08-frontend-architecture-and-folder-structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    معمارية الواجهة الأمامية وهيكل المجلدات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 5 · هندسة تطبيقات الجوال
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/01-react-native-and-expo-foundations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أساسيات React Native و Expo
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/02-navigation-and-deep-linking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التنقّل والروابط العميقة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/03-authentication-on-mobile/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المصادقة على الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/04-offline-support-and-data-sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دعم العمل دون اتصال ومزامنة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/05-push-notifications/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الإشعارات الفورية
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/06-mobile-performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أداء تطبيقات الجوال
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-05-mobile-engineering/07-building-shipping-and-ota-updates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    البناء والنشر وتحديثات OTA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 6 · هندسة قواعد البيانات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/01-relational-databases-and-data-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قواعد البيانات العلائقية ونمذجة البيانات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/02-schema-design-and-normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصميم المخطط والتطبيع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/03-indexing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الفهرسة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/04-transactions-and-concurrency-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المعاملات والتحكم في التزامن
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/05-query-optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحسين الاستعلامات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-06-database-engineering/06-migrations-and-schema-evolution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الترحيلات وتطوّر المخطط
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 7 · DevOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 7 · DevOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/01-linux-for-production-servers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux لخوادم الإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/02-docker-and-containerization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker والحاويات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/03-docker-compose-and-multi-service-environments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker Compose والبيئات متعددة الخدمات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/04-nginx-reverse-proxy-domains-and-tls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Nginx والوكيل العكسي والنطاقات و TLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/05-ci-cd-with-github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD باستخدام GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/06-deploying-to-a-vps/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النشر على خادم VPS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-07-devops/07-monitoring-and-logging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المراقبة والتسجيل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 8 · الاختبارات
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 8 · الاختبارات
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/01-test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    استراتيجية الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/02-unit-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات الوحدة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/03-mocking-and-test-doubles/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المحاكاة وبدائل الاختبار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/04-integration-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    اختبارات التكامل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-08-testing/05-end-to-end-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الاختبارات الشاملة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 9 · الأمان
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 9 · الأمان
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/01-security-mindset-and-owasp-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عقلية الأمان وقائمة OWASP العشرة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/02-jwt-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أمان JWT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/03-oauth2-and-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 و OpenID Connect
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/04-secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    إدارة الأسرار
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/05-sql-injection-and-input-handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    حقن SQL ومعالجة المدخلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/06-xss-and-content-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    XSS وأمان المحتوى
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/07-csrf-cors-and-browser-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CSRF و CORS وأمان المتصفح
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-09-security/08-rate-limiting-and-abuse-prevention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تحديد المعدل ومنع إساءة الاستخدام
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 10 · هندسة الذكاء الاصطناعي
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-openai-codex-and-cursor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenAI Codex و Cursor
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة السياق
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="التنفيذ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        خريطة الوثائق — خمسة أسطر تغير الاسترجاع
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecturemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        architecture.md — خريطة، لا جدارية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADRs — قرارات حيث يستطيع الاسترجاع إيجادها
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الإهمال عند نقطة الاسترجاع
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        نظافة الجلسة — تحديد النطاق، والإخراج، وإعادة الضبط
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القرارات الهندسية
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: عمل واثق على خريطة جزئية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: استدلال من لقطة قديمة لملفاتك الخاصة
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: مثال أقرب جار، إلى أينما يشير
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المعاكسة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-prompt-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    هندسة الموجّهات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-multi-agent-systems/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الأنظمة متعددة الوكلاء
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-ai-code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مراجعة الكود بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-ai-debugging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    تصحيح الأخطاء بالذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-ai-workflows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    سير عمل الذكاء الاصطناعي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" >
+        
+          
+          <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 11 · تصميم الأنظمة
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/01-scalability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قابلية التوسّع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/02-load-balancing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    موازنة الحمل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/03-horizontal-scaling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التوسّع الأفقي
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/04-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/05-queues/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    الطوابير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/06-cdn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CDN
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-11-system-design/07-event-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    بثّ الأحداث
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_14" >
+        
+          
+          <label class="md-nav__link" for="__nav_14" id="__nav_14_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    المرحلة 12 · هندسة SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/01-mvp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنتج الأولي (MVP)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/02-pricing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التسعير
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/03-payments/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المدفوعات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/04-analytics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التحليلات
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/05-user-feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ملاحظات المستخدمين
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/06-product-metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    مقاييس المنتج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../stage-12-saas-engineering/07-growth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    النمو
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوائم التحقق
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    قوائم التحقق
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/code-review/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة مراجعة الكود
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../checklists/production-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قائمة الجاهزية للإنتاج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_16" >
+        
+          
+          <label class="md-nav__link" for="__nav_16" id="__nav_16_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    أدلة العمل
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_16_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_16">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    أدلة العمل
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../playbooks/starting-an-ai-first-project/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دليل عمل: بدء مشروع بمنهج الذكاء الاصطناعي أولاً
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_17" >
+        
+          
+          <label class="md-nav__link" for="__nav_17" id="__nav_17_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    القوالب
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_17_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_17">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    القوالب
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    نظرة عامة
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/adr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب سجل القرار المعماري (ADR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-conceptual/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/chapter-technical/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب فصل
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/claude-md-starter/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLAUDE.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/project-brief/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب موجز المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../templates/pull-request/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قالب طلب الدمج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_18" >
+        
+          
+          <label class="md-nav__link" for="__nav_18" id="__nav_18_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    عن المشروع
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_18_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_18">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    عن المشروع
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/00-CONSTITUTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    دستور المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/01-project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    رؤية المشروع
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../meta/02-curriculum/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    المنهج
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    التطبيق المرجعي (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../starter-kits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    قوالب البدء (مخطط)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="جدول المحتويات">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      جدول المحتويات
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مقدمة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        لماذا هذا مهم
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        النموذج الذهني
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        مثال إنتاجي
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        بنية المجلدات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التنفيذ
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="التنفيذ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        خريطة الوثائق — خمسة أسطر تغير الاسترجاع
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecturemd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        architecture.md — خريطة، لا جدارية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADRs — قرارات حيث يستطيع الاسترجاع إيجادها
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الإهمال عند نقطة الاسترجاع
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        نظافة الجلسة — تحديد النطاق، والإخراج، وإعادة الضبط
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        القرارات الهندسية
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        المقايضات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأخطاء الشائعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أخطاء الذكاء الاصطناعي
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="أخطاء الذكاء الاصطناعي">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Claude Code: عمل واثق على خريطة جزئية
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPT: استدلال من لقطة قديمة لملفاتك الخاصة
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cursor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cursor: مثال أقرب جار، إلى أينما يشير
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        أفضل الممارسات
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        الأنماط المعاكسة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        شجرة القرار
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قائمة المراجعة
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        التمارين
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        قراءات إضافية
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">هندسة السياق<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<h2 id="_2">مقدمة<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>مخرجات وكيل الذكاء الاصطناعي هي دالة لمُدخَلين: ما يعرفه وقت التصرف (السياق) وما تطلبه
+منه (الموجِّه). يتناول هذا الفصل المُدخَل الأول — الأقوى والأقل ظهورًا من الاثنين.
+<strong>هندسة السياق هي disciplina التحكم فيما يوجد داخل نافذة سياق النموذج</strong>: انتقاء ما
+يُحمَّل في كل جلسة، وهيكلة مستودعك ووثائقك بحيث يستطيع الوكيل استرجاع المعرفة الصحيحة في
+اللحظة المناسبة، وإدارة النافذة على مدى عمر الجلسة بحيث لا تُدفن المهمة الحالية تحت
+بقايا المهمات السابقة.</p>
+<p>نافذة السياق هي كل ما يراه النموذج عند تقرير إجراءه التالي: موجِّه النظام، وملفات التعليمات،
+والمحادثة حتى الآن، وكل ملف قرأه، وكل مخرج أمر لاحظه. هي موارد محدودة، ومكلفة، والأهم —
+أنها الشيء <em>الوحيد</em> الذي يعرفه النموذج عن نظامك. يملك النموذج معرفة تدريبية واسعة عن
+FastAPI وPostgreSQL؛ لكنه لا يملك أي معرفة عن قاعدة عزل المستأجرين في Invoicely، أو وحدتك
+المحاسبية المهملة، أو القرار الذي اتخذته في مارس بخصوص التعامل مع الأموال — ما لم تصل هذه
+الحقائق إلى النافذة. كل فشل للوكيل يُلقى على عاتق "غباء النموذج" ينقسم، عند الفحص، إلى
+كومتين: حقائق لم تصل أبدًا إلى النافذة، ونافذة ملوثة لدرجة غرقت فيها الحقائق. كلتا الكومتين
+مشكلة هندسية، وهذا الفصل يبيّن كيفية حلّهما.</p>
+<p>بَنَى الفصلان 01 و02 طبقة <em>المحمَّل دائمًا</em> (ملفات التعليمات). يَبني هذا الفصل كل ما حولها:
+طبقة المعرفة عند الطلب، وبنية الاسترجاع، ونظافة الجلسة. ثم يغطي الفصل 04 المُدخَل الثاني —
+الموجِّه.</p>
+<h2 id="_3">لماذا هذا مهم<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>السياق يفسر تباين المخرجات أكثر من أي شيء آخر تتحكم فيه.</strong> نفس النموذج، ونفس الموجِّه،
+  ونفس المهمة ينتج كودًا متعارفًا عليه في مستودع مُحاط بسياق جيد، وكودًا مقبولًا ظاهريًا
+  لكنه غريب في مستودع مجرد. يحرق المهندسون أسابيعًا في ضبط الموجِّهات وتبديل النماذج لإصلاح
+  ما هو في الحقيقة فقرة سياق مفقودة.</li>
+<li><strong>النافذة ميزانية، واليتة تتدهور قبل أن تنفد.</strong> قبل الحدود الصلبة بوقت طويل، يحضر
+  النموذج بشكل أقل موثوقية للمادة المدفونة في منتصف نافذة ضخمة؛ تتلاشى التعليمات، وتبقى
+  نسخ الملفات القديمة، ويصبح السلوك فوضويًا. عبارة "النموذج يملك نافذة سياق ضخمة" حجة
+  لـ<em>هامش</em>، لا للتخلي عن الانتقاء — نافذة كبيرة مليئة بالضوضاء تؤدي أداءً أسوأ من نافذة
+  صغيرة تحتفظ بالحقائق ذات الصلة بالضبط، وتكلف أكثر في كل دوران.</li>
+<li><strong>السياق الخاطئ أسوأ من السياق المفقود.</strong> المعرفة المفقرة تجعل الوكيل يسأل أو يقرأ؛ المعرفة
+  المتقادمة تجعله يتصرف — بثقة، وبخطأ. وثيقة بنية قديمة، ونسخة مهملة من ملف قُرئ في وقت سابق
+  من الجلسة، ووحدة مهملة تم استرجاعها كنموذج: كل منها يوجّه الوكيل بنشاط نحو الخطأ. الانتقاء
+  يشمل الحذف.</li>
+<li><strong>جودة الاسترجاع خاصية في مستودعك.</strong> يجد الوكلاء المعرفة عن طريق الإدراج والبحث وقراءة
+  الملفات — بالطريقة نفسها التي يفعلها مهندس جديد. المستودع ذو التسمية المتوقعة، وخريطة
+  الوثائق، والوثائق الصغيرة المركّزة هو مستودع <em>قابل للاستعلام</em>؛ أما المستودع الذي تحبست
+  فيه المعرفة في سجلات المحادثات ووثيقة ARCHITECTURE.md واحدة بطول 3000 سطر فليس كذلك.
+  هندسة السياق هي في معظمها هندسة المستودعات.</li>
+<li><strong>كل ما يحتاجه الوكيل هو ما يحتاجه الموظف الجديد.</strong> خريطة الوثائق، وسجلات قرارات البنية
+  (ADRs)، وملفات README للوحدات، والمسرد — كل عنصر يبنيه هذا الفصل يخدم أيضًا كوثائق
+  تأهيل. الفرق التي تستثمر هنا تلاحظ الأثر نفسه مرتين: الوكلاء يتوقفون عن إعادة اختراع
+  المساعدات الموجودة، والمهندسون الجدد يتوقفون عن السؤال عن مكان وجود الأشياء.</li>
+<li><strong>السياق هو أيضًا حدود أمنية.</strong> أي شيء يدخل النافذة — سجلًا منسوخًا يحتوي رمز حامل
+  (bearer token)، أو ملف <code>.env</code> قُرئ "لتصحيح الأخطاء" — قد خرج عن نطاق سيطرتك (المرحلة 9،
+  الفصل 04). تقرير ما يجوز للوكيل رؤيته جزء من هذا الانضباط بقدر تقرير ما ينبغي له رؤيته.</li>
+</ul>
+<h2 id="_4">النموذج الذهني<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>عامل نافذة السياق كذاكرة عمل نادرة تُحمِّلها عن قصد، وتنفقها مهمة بمهمة، وتعيد ضبطها
+قبل أن تفسد.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>              THE CONTEXT WINDOW AS A BUDGET
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  ┌──────────────────────────────────────────────────────┐
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  │ ALWAYS LOADED (fixed cost — every session, every turn)│
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  │   system prompt · CLAUDE.md/AGENTS.md · tool defs    │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  │   → must be small and dense; Ch 01/02&#39;s discipline   │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  ├──────────────────────────────────────────────────────┤
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  │ LOADED ON DEMAND (variable cost — the working set)   │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  │   files the agent reads · docs it follows pointers to│
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  │   command output · search results                    │
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  │   → your repo&#39;s structure determines how cheaply the │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  │     RIGHT things load and how easily wrong ones do   │
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  ├──────────────────────────────────────────────────────┤
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  │ ACCUMULATED (residue — grows all session, never      │
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  │   shrinks on its own)                                │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>  │   conversation history · stale file versions ·       │
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  │   dead-end explorations · pasted logs                │
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>  │   → the reason long sessions degrade; managed by     │
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>  │     scoping, compaction, and reset                   │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>  └──────────────────────────────────────────────────────┘
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>  THE KNOWLEDGE SUPPLY CHAIN (where facts live → how they arrive)
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    code            → agent reads it        (cheap, always current)
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    docs/ + ADRs    → agent follows the map (cheap IF map exists)
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    instruction file→ always present        (expensive — reserve it)
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    your head       → only via prompt       (bottleneck — write it down)
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    chat scrollback → NEVER arrives         (knowledge graveyard)
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>  SESSION LIFECYCLE
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    scope task → load working set → work → verify
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>        └── next task? → RESET (new session / clear)
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>        └── long task? → COMPACT deliberately or externalize
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>                         state to a file the next session reads
+</code></pre></div>
+<p>ثلاثة مبادئ تنظّم الممارسة:</p>
+<p><strong>الصلة أهم من الحجم.</strong> الهدف ليس أبدًا "أعطِ النموذج كل شيء"؛ بل "أعطِ النموذج بالضبط ما
+تحتاجه هذه المهمة، وطريقة رخيصة لجلب ما لم تتنبأ به." التحميل المسبق للكوني (الاتفاقيات،
+والأوامر)؛ أما الاسترجاع فالخاص (الملفات الثلاثة التي تمسها هذه المهمة، وADR الواحد الذي
+يقيدها).</p>
+<p><strong>المستودع هو قاعدة بيانات السياق، والوكيل يستعلمها.</strong> كل خيار هيكلي — تسمية الملفات،
+وحدود الوحدات، وحجم الوثائق، وخريطة <code>docs/</code> — إما أن يسرّع استرجاع الوكيل أو يبطئه. تحسين
+هذا هندسة كلاسيكية: اجعل الاستعلام الشائع سريعًا (ابحث عن الاتفاقية، وعن النموذج، وعن
+القرار)، واجعل الاستعلام الخطير بطيئًا أو مستحيلًا (الأسرار، والأنماط المهملة المقدمة
+كأنها حالية).</p>
+<p><strong>السياق يتراكم؛ والانضباط طرح.</strong> داخل الجلسة النافذة لا تنمو إلا — بما في ذلك كل ما تبيّن
+أنه غير ذي صلة أو خاطئ. الحركات الطرحية (جلسة جديدة لكل مهمة، ضغط عند المعالم، إخراج حالة
+المهام الطويلة إلى ملف خطة) ليست تحسينات؛ فبعد طول جلسة متوسط هي ما يحافظ على تماسك الوكيل.</p>
+<p>تعريف عملي:</p>
+<blockquote>
+<p><strong>هندسة السياق هي التحكم فيما يعرفه النموذج وقت التصرف: نواة محمَّلة دائمًا بالحد الأدنى،
+ومستودع منظم بحيث تكون المعرفة الصحيحة قابلة للاسترجاع الرخيص في لحظة الحاجة (ويكون
+استرجاع المعرفة الخاطئة أو المتقادمة صعبًا)، ونظافة جلسة — تحديد نطاق، وإعادة ضبط، وضغط،
+وحالة مُخرَجة — تحافظ على صلة النافذة مع تراكم العمل. وحدتها المحاسبية هي الـtoken؛
+ومعيار جودتها هو هل يستطيع وكيل (أو مهندس) بلا تاريخ أن يصبح منتجًا من المستودع وحده.</strong></p>
+</blockquote>
+<h2 id="_5">مثال إنتاجي<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>تحتوي <strong>Invoicely</strong> على تسع مراحل من القرارات مغروسة فيها: لماذا الأموال سنتات صحيحة
+(المرحلة 3)، ولماذا تحديد نطاق المستأجرين concern لطبقة المستودع (المرحلة 3)، ولماذا وحدة
+<code>billing/</code> القديمة مجمَّدة في انتظار الانتقال إلى <code>credit_notes/</code> (إعادة هيكلة المرحلة 6)،
+وأي طبقة اختبار تُشغَّل متى (المرحلة 8)، وأي endpoints حساسة لتحديد معدل الطلبات
+(المرحلة 9). اليوم، يعيش معظم ذلك في ثلاثة أماكن لا يستطيع الوكلاء الوصول إليها: رؤوس
+المهندسين الكبار، وخيوط PR المغلقة، وسجل المحادثات.</p>
+<p>العرض متكرر ومكلف. الوكيل المطلوب منه إضافة ميزة خصم يعيد تنفيذ مساعد تنسيق أموال موجود
+بالفعل (لأنه لم يعلم أن يبحث)، وينسخ نمط إدراج الفواتير من وحدة <code>billing/</code> المهملة (لأنه
+استرجع النموذج الخاطئ)، ولا يسأل شيئًا عن تحديد نطاق المستأجرين (لأنه لم يعلم أن هناك ما
+يُسأل عنه). كل إخفاق كان إخفاق سياق — النموذج كان على ما يرام.</p>
+<p>يجعل هذا الفصل Invoicely <em>تصف نفسها ذاتيًا</em>. خريطة <code>docs/</code> قصيرة في <code>AGENTS.md</code> تخبر أي
+وكيل أين توجد المعرفة. يمنح <code>docs/architecture.md</code> خريطة النظام في شاشة واحدة بمسارات
+ملفات حقيقية. تسجّل ADRs القرارات التي تقيد العمل الجديد، وتقول الوحدة المهملة ذلك <em>في
+الكود</em>، حيث لا يمكن أن يفوت الاسترجاع ذلك. تعطي ملفات README للوحدات القواعد المحلية
+والنموذج المعياري لكل منطقة. تتغير ممارسة الجلسة أيضًا: مهمة واحدة لكل جلسة، وملف
+مسودة <code>docs/plans/</code> للعمل متعدد الجلسات، وسجلات تُرشَّح قبل اللصق، وضغط عند المعالم بدلاً
+من منتصف الاستدلال. اختبار القبول هو ذاك الوارد في ملف README للمرحلة: وكيل جديد، لا يمتلك
+إلا المستودع وتذكرة، ينتج عملًا يقع داخل الاتفاقيات — لأن المستودع نفسه يحمل الآن المعرفة.</p>
+<h2 id="_6">بنية المجلدات<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>invoicely/
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>├── AGENTS.md                      # always-loaded core + THE DOCS MAP: five lines
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>│                                  #   telling any agent where knowledge lives
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>├── docs/
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>│   ├── architecture.md            # one-screen system map WITH FILE PATHS — the
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>│   │                              #   agent&#39;s (and new hire&#39;s) first read; small
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>│   │                              #   because every line competes for the budget
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>│   ├── decisions/                 # ADRs — one decision each, numbered, immutable;
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>│   │   ├── 0007-money-as-integer-cents.md     # small files = cheap retrieval,
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>│   │   └── 0012-tenant-scoping-in-repos.md    #   load one without loading all
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>│   ├── domain.md                  # glossary: invoice vs credit note vs receipt —
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>│   │                              #   the vocabulary bugs are made of
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>│   ├── runbooks/                  # operational how-tos (Stage 7); agents doing
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>│   │                              #   ops tasks retrieve these, not tribal memory
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>│   └── plans/                     # scratchpads for multi-session work — the
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>│       └── 2026-07-discounts.md   #   externalized state that survives resets
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>├── backend/
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>│   ├── app/
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>│   │   ├── billing/
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>│   │   │   └── README.md          # &quot;DEPRECATED — frozen; new work in
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>│   │   │                          #   credit_notes/. See ADR-0015.&quot; Deprecation
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>│   │   │                          #   lives WHERE RETRIEVAL HAPPENS, in the code
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>│   │   └── invoices/
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>│   │       └── README.md          # local rules + &quot;canonical exemplar: api.py&quot; —
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>│   │                              #   answers &quot;what do I copy?&quot; before it&#39;s asked
+<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>│   └── tests/README.md            # which tier is which, factories, how to add
+<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>└── .cursorignore / ignore config  # keeps build artifacts, fixtures, and vendored
+<a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>                                   #   code out of index-based retrieval (Ch 02)
+</code></pre></div>
+<p>لماذا هذا الشكل: <strong>ملفات صغيرة في عناوين متوقعة.</strong> يسترجع الوكلاء بالاسم وبالبحث؛
+<code>docs/decisions/0007-money-as-integer-cents.md</code> قابل للاكتشاف بثلاث طرق مختلفة (الخريطة،
+واسم الملف، والمحتوى) ويكاد لا يكلف شيئًا لتحميله وحده. وثيقة مجمعة بطول 3000 سطر ستكون
+قابلة للاكتشاف بطريقة واحدة بالضبط وستكلف الميزانية كاملة في كل مرة. دليل <code>plans/</code> هو أداة
+نظافة الجلسة: يحتفظ العمل طويل الأمد بحالته في ملف — الهدف، والقرارات المتخذة، والخطوات
+المتبقية — بحيث تستأنف جلسة جديدة من قراءة 40 سطرًا بدلاً من وراثة 100 ألف token من السجل.</p>
+<h2 id="_7">التنفيذ<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<h3 id="_8">خريطة الوثائق — خمسة أسطر تغير الاسترجاع<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<p>تُلحَق بـ <code>AGENTS.md</code> (الفصل 02)، بحيث يبدأ كل وكيل ممسكًا بالخريطة:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gu">## Where knowledge lives (read on demand, not upfront)</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">-</span><span class="w"> </span>System map + file paths:      docs/architecture.md
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">-</span><span class="w"> </span>Why decisions were made:      docs/decisions/ (check before structural changes)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">-</span><span class="w"> </span>Domain vocabulary:            docs/domain.md
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="k">-</span><span class="w"> </span>Module-local rules/exemplars: README.md inside each app/ module
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">-</span><span class="w"> </span>Multi-session task state:     docs/plans/&lt;task&gt;.md
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>Before writing a helper, search app/common/ and the target module —
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>assume it exists until proven otherwise.
+</code></pre></div>
+<p>السطران الأخيران يقابلان أكثر فشلَي استرجاع شيوعًا: عدم البحث عن كود موجود، وعدم معرفة أن
+لقيد ما سببًا مسجلاً.</p>
+<h3 id="architecturemd">architecture.md — خريطة، لا جدارية<a class="headerlink" href="#architecturemd" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gh"># Invoicely — system map</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>Request path: Next.js (frontend/) → FastAPI routers (backend/app/api/)
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>→ services (app/services/) → repositories (app/repositories/)
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>→ PostgreSQL. Async jobs: Celery (app/workers/) via Redis.
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="k">-</span><span class="w"> </span>AuthN/AuthZ: app/core/auth.py — JWT access + rotating refresh
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>  (ADR-0009). Tenant = account_id claim; scoping enforced in
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>  repositories (ADR-0012).
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="k">-</span><span class="w"> </span>Money: integer cents end-to-end (ADR-0007). Format only in
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>  frontend/lib/money.ts and app/common/money.py.
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="k">-</span><span class="w"> </span>billing/ is FROZEN (ADR-0015) — being replaced by credit_notes/.
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>  Never use it as a pattern.
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="k">-</span><span class="w"> </span>Test tiers: tests/README.md. Fast tier must stay under 60s.
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>Update this file in the same PR as any change that invalidates it.
+</code></pre></div>
+<p>شاشة واحدة، كل سطر مؤشر أو ثابت، مسارات حقيقية في كل مكان. التعليم الختامي هو آلية
+الحداثة: <strong>الوثائق التي يقرأها الوكيل وثائق حاملة للأحمال</strong>، لذا تُحدَّث في نفس PR الذي
+يحوي الكود، ويعامل المراجعون الخريطة المتقادمة كاختبار فاشل. وثيقة لا أحد ملزم بتحديثها
+هي وثيقة ستكذب في النهاية — والوكلاء يصدقون الوثائق.</p>
+<h3 id="adrs">ADRs — قرارات حيث يستطيع الاسترجاع إيجادها<a class="headerlink" href="#adrs" title="Permanent link">&para;</a></h3>
+<p>التنسيق هو تنسيق المرحلة 1
+(<a href="../../../templates/adr/">templates/adr.md</a>)؛ الجديد هو الجمهور. <code>docs/decisions/0007-money-as-integer-cents.md</code>
+موجود لكي يسترجع وكيل (أو مهندس) على وشك "تنظيف" السنتات الصحيحة إلى <code>Decimal</code>، في ملف
+صغير واحد: السياق (أخطاء تقريب float في النماذج الأولية المبكرة)، والقرار، والنتائج
+(التنسيق عند الأطراف فقط). الوكيل الذي يعرف <em>سبب</em> القرار يمكنه احترام القصد في حالات
+لا يغطيها نص القاعدة — ويمكنه الاعتراض بشكل صحيح عندما تتعارض مهمة مع قرار مسجل بدلاً
+من الامتثال بصمت.</p>
+<h3 id="_9">الإهمال عند نقطة الاسترجاع<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p><code>backend/app/billing/README.md</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="gh"># DEPRECATED — do not extend, do not copy patterns</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Frozen since 2026-03 (ADR-0015); replaced by app/credit_notes/.
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Bug fixes only, and only with a failing test demonstrating the bug.
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Canonical patterns for new work: app/invoices/.
+</code></pre></div>
+<p>إعلانات المحادثات وصفحات wiki لا تصل إلى وكيل يبحث عن نموذج؛ أما README في الدليل فيصل.
+بالنسبة للاسترجاع القائم على الفهرس (بنمط Cursor)، يحافظ ملف التجاهل على عدم ترشح الكود
+المُولَّد والأدلة المشتراة مطلقًا. المبدأ يتعمم: <strong>ضع المعرفة حيث سيحدث الاسترجاع الذي
+يحتاجها</strong> — حالات الإهمال في الكود المُهمل، والقواعد المحلية في الوحدة، والخطوات التشغيلية
+في runbooks مسماة باسم العملية.</p>
+<h3 id="_10">نظافة الجلسة — تحديد النطاق، والإخراج، وإعادة الضبط<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="gh"># docs/plans/2026-07-discounts.md   (maintained by the agent, reviewed by you)</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="gu">## Goal</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Percentage + fixed discounts on invoices; applies before tax; audit-logged.
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="gu">## Decisions</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">-</span><span class="w"> </span>Stored as basis points (int) on invoice_lines — consistent w/ ADR-0007
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="k">-</span><span class="w"> </span>New service method, no changes to totals API contract
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="gu">## Done</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="k">- [x]</span> migration 00-add-discount-columns  [x] service + unit tests
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="gu">## Next</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="k">- [ ]</span> API surface + validation  [ ] frontend form  [ ] E2E happy path
+</code></pre></div>
+<p>قواعد العمل التي تصاحبها: <strong>مهمة واحدة لكل جلسة</strong> — عمل الخصم وتحقيق الاختبار المتقلب لا
+يتشاركان نافذة أبدًا، لأن البقايا غير المتعلقة هي الملوث الرئيسي. <strong>اضغط عند المعالم،
+ليس في منتصف الطيران</strong> — هبوط الـmigration هو نقطة تلخيص؛ منتصف التصحيح ليس كذلك، لأن
+الضغط فاقد للمعلومات ويفقد بالضبط التفاصيل الدقيقة التي يحتاجها التصحيح الحي. <strong>رشّح قبل
+اللصق</strong> — مخرج الاختبار الفاشل، لا سجل CI بالكامل؛ إطار المكدس ذو الصلة، لا 400 سطر من
+INFO (وأبدًا سجل يحتوي رموزًا أو أسرارًا). <strong>استأنف من ملف الخطة</strong> — جلسة الغد تقرأ 40
+سطرًا من الحالة المنتقاة بدلاً من إعادة عرض سجل اليوم البالغ 100 ألف token، وهو أرخص
+<em>وأدق</em>: الخطة تحتفظ بالاستنتاجات، لا المسدودات التي قادت إليها.</p>
+<h2 id="_11">القرارات الهندسية<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<p><strong>القرار 1: تحميل مسبق أم استرجاع؟</strong> التكرار × الشمول. مطلوب في كل مهمة فعليًا (الأوامر،
+والثوابت الأساسية، وخريطة الوثائق) ← ملف محمَّل دائمًا، يُحفظ قاسيًا في صغره. مطلوب في
+بعض المهام (تفصيل البنية، ومبرر قرار ما، وقواعد الوحدة) ← وثيقة قابلة للاسترجاع في عنوان
+متوقع. مطلوب مرة (قيود هذه التذكرة) ← الموجِّه. عندما يريد ملف محمَّل دائمًا أن ينمو، فإن
+السؤال ليس "هل هذا صحيح؟" بل "هل يستحق إيجارًا لكل token في كل مهمة مستقبلية؟" — والجواب
+عادةً مؤشر، لا فقرة.</p>
+<p><strong>القرار 2: أين تعيش حقيقة معينة؟</strong> بلحظة استرجاعها. تقيد الكود في موضع واحد ← تعليق أو
+نوع في ذلك الموضع. تحكم وحدة واحدة ← README الخاص بها. تقطع النظام ← <code>architecture.md</code>.
+تشرح <em>سبب</em> وجودها هكذا ← ADR. تشغيلية ← runbook. حالة مهمة عابرة ← <code>plans/</code>. القرار
+المعاكس هو Slack، وخيوط PR، والرؤوس — المعرفة التي لا يصلها أي استرجاع هي المعرفة التي يدفع
+الفريق ثمن إعادة اكتشافها، وكيلًا كان أم لا.</p>
+<p><strong>القرار 3: كيف تبقى الوثائق صادقة؟</strong> تحديثات نفس-PR، مفروضة في المراجعة — الخريطة، وREADME
+الوحدة، وأي ADR يتأثر بالتغيير، يركبون في diff التغيير نفسه. لهذا السبب تبقى الوثائق
+<em>صغيرة</em>: تكلفة صيانة الوثائق تتناسب مع حجمها، ولا تبقى جديرة بالثقة بما يكفي لتحميلها سوى
+الوثائق الرخيصة بما يكفي لصيانتها. شبكة أمان مفيدة: عندما يكشف مخرج الوكيل أنه أُضلّ
+بوثيقة متقادمة، يُلزَم الإصلاح بإيداع تصحيح الوثيقة إلى جانب إصلاح الكود — نفس المنعكس
+كإضافة اختبار انحدار.</p>
+<p><strong>القرار 4: جلسة واحدة أم كثير لمهمة كبيرة؟</strong> أخرج وقسّم. إذا كان للعمل معالم طبيعية
+(migration → service → API → frontend)، فلكل واحدة جلسة تبدأ بقراءة ملف الخطة وتنتهي
+بتحديثه. تبدو الجلسات الطويلة المفردة مستمرة لكنها تتدهور بصمت؛ يحوّل ملف الخطة الاستمرارية
+من خاصية داخل النافذة (هشّة، ومكلفة) إلى خاصية على القرص (متينة، وقابلة للمراجعة).
+احتفظ بالضغط داخل الجلسة للعمل الذي لا يمكن حقًا عمل checkpoint له.</p>
+<p><strong>القرار 5: ما الذي لا يجب أن يدخل النافذة أبدًا؟</strong> القيم السرية، وبيانات PII الإنتاجية،
+وبيانات العملاء — مفروضة هيكليًا (قواعد الرفض من الفصل 01؛ fixtures مُطهَّرة من المرحلة 8)،
+لا بالنية. السياسة الأكثر دقة: <em>الكميات غير المفلترة</em> (سجلات كاملة، وتفريغات قاعدة بيانات
+كاملة، وقوائم <code>node_modules</code>) محظورة ليس للسرية بل للتلوث — أي شيء يُلصَق يجب أن يمر أولًا
+على "ما الجزء من هذا الدليل؟" تلك العادة، عرضيًا، هي معظم انضباط التصحيح في الفصل 07.</p>
+<h2 id="_12">المقايضات<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>الاختيار</th>
+<th>الفائدة</th>
+<th>التكلفة</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>طبقة وثائق غنية</td>
+<td>الوكلاء + البشر يتأهلون من المستودع؛ إخفاقات سياق أقل</td>
+<td>تكلفة تأليف حقيقية وصيانة في نفس-PR؛ الوثائق المتقادمة تضلّل أسوأ من غيابه</td>
+</tr>
+<tr>
+<td>وثائق minimal، الكود فقط</td>
+<td>لا شيء يُصان؛ لا شيء يشيخ</td>
+<td>كل سؤال "لماذا" يصطدم بإنسان؛ الوكلاء يعيدون الاختراع وينتهكون بصمت</td>
+</tr>
+<tr>
+<td>وثائق صغيرة وكثيرة</td>
+<td>استرجاع مستهدف رخيص؛ قابلة للتحميل فرديًا</td>
+<td>ملفات أكثر للحفاظ على تماسكها؛ تحتاج الخريطة لتجنب رحلات البحث</td>
+</tr>
+<tr>
+<td>وثيقة واحدة كبيرة</td>
+<td>مكان واحد للنظر</td>
+<td>تكلف الميزانية كاملة لكل تحميل؛ تدفن الشاشة ذات الصلة؛ تشيخ كوحدة واحدة</td>
+</tr>
+<tr>
+<td>جلسة جديدة لكل مهمة</td>
+<td>انتباه نظيف، سلوك متوقع</td>
+<td>تكلفة إعادة تحميل مجموعة العمل (تُخفَّف بالخريطة + ملفات الخطة)</td>
+</tr>
+<tr>
+<td>جلسات طويلة العمر</td>
+<td>لا إعادة تحميل؛ تبدو مستمرة</td>
+<td>تدهور صامت؛ نسخ ملفات متقادمة؛ مسدودات توجّه العمل الحي</td>
+</tr>
+<tr>
+<td>الضغط</td>
+<td>الاستمرار بعد حدود الميزانية</td>
+<td>فاقد للمعلومات — الملخصات تُسقط التفاصيل التي لم تكن تعلم أنك تحتاجها؛ سيء في منتصف التصحيح</td>
+</tr>
+<tr>
+<td>ملفات خطة مُخرَجة</td>
+<td>حالة متينة، قابلة للمراجعة، قابلة للاستئناف</td>
+<td>انضباط للصيانة؛ قد تنحرف عن الواقع إن لم تُحدَّث عند المعالم</td>
+</tr>
+<tr>
+<td>نظافة استرجاع عدوانية (ملفات تجاهل، README إهمال)</td>
+<td>الأمثلة الخاطئة صعبة الوصول هيكليًا</td>
+<td>جهد إعداد؛ قواعد التجاهل تحتاج مراجعة عرضية</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_13">الأخطاء الشائعة<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>إلقاء اللوم على النموذج عند إخفاق السياق.</strong> "أعاد اختراع مساعدنا / استخدم الوحدة القديمة
+  / تجاهل الثابت" — قبل تبديل النماذج، اسأل: <em>كيف كان سيعرف؟</em> إذا كان الجواب "سجل
+  المحادثة" أو "الجميع يعرفون فقط"، فإن الفشل خطؤكم، وسينجو من أي ترقية نموذج.</li>
+<li><strong>الإغراق بدل الانتقاء.</strong> لصق السجل كاملًا، وقراءة الدليل كاملًا، "ها هو كل شيء، استنتج."
+  الحجم يبدو مساعدًا وهو العكس: يدفن الإشارة، ويُضعف الانتباه، ويُنفق ميزانية كانت المهمة
+  تحتاجها. رشّح أولًا — الدليل يدخل، الضوضاء تخرج.</li>
+<li><strong>الجلسة الخالدة.</strong> نافذة واحدة تحمل تصحيح الصباح، وإعادة هيكلة، واستكشافين، والآن تغيير
+  schema. يتدهور السلوك تدريجيًا ببطء لدرجة يُقرأ على أنه "النموذج يمر بيوم سيئ." الجلسات
+  مجانية؛ حدد نطاقها كمعاملات.</li>
+<li><strong>وثائق تُكتب مرة، وتُصدَّق إلى الأبد.</strong> وثيقة بنية من إعادة هيكلتين قبل الآن خطر نشط:
+  الوكلاء يولون أهمية كبيرة للوثائق وسيسيرون بها إلى الهاوية. لا توجد قاعدة تحديث في نفس
+  PR ← طبقة الوثائق تصبح خصمًا على مؤقت تأخير.</li>
+<li><strong>تكرار الكود في الوثائق.</strong> أوصاف API دالة بدالة، وschemas مُعاد سردها — متقادمة عند
+  الوصول، وهدر ميزانية صرف: الوكيل يقرأ الكود بطلاقة والكود دائمًا حديث. تحمل الوثائق ما
+  لا يستطيع الكود <em>قوله</em>: السبب، والحدود، وأي الأشياء الخمسة المتشابهة هو المعياري.</li>
+<li><strong>الخلط بين حجم النافذة والمناعة.</strong> "النموذج يتعامل الآن مع مليون token" — لا يزال يحضر
+  بشكل غير متساوٍ عبر نافذة محشوة، وكل دوران يعيد قراءة ما حمّلته. تغيّر الهامش؛ الاقتصاد
+  والانضباط لم يتغيرا.</li>
+<li><strong>السماح لأي شيء حساس بالدخول "هذه المرة فقط".</strong> جلسة التصحيح التي يُقرأ فيها <code>.env</code>،
+  والسجل الذي يحتوي رمزًا حيًا يُلصق كاملًا. النافذة سطح تسريب؛ قواعد المرحلة 9 تنطبق
+  عليها تمامًا كما تنطبق على git.</li>
+</ul>
+<h2 id="_14">أخطاء الذكاء الاصطناعي<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h2>
+<p>يفشل المساعدون الثلاثة في السياق في اتجاهات مميزة — وكل إخفاقات الثلاثة تبدو ككفاءة للوهلة
+الأولى.</p>
+<h3 id="claude-code">Claude Code: عمل واثق على خريطة جزئية<a class="headerlink" href="#claude-code" title="Permanent link">&para;</a></h3>
+<p>يقرأ Claude Code بسرعة ويتصرف بحسم — مما يعني أنه بعد قراءة ملفين أو ثلاثة غالبًا <em>يظن
+أنه حصل على الصورة</em> ويشرع: يعيد تنفيذ مساعد موجود في <code>app/common/</code> ولم يفتحه، ويضيف
+استعلامًا يتجاوز mixin تحديد نطاق المستأجرين المعرَّف في فئة أساسية لم يقرأها، ويمدد نمطًا
+من الوحدة (المهملة) الوحيدة التي صادف النظر إليها. العمل متماسك، ومتعارف عليه، وخاطئ حول
+نظامك بطرق لا يمكن أن يكتشفها إلا من يعرف <em>بقية</em> المستودع.</p>
+<p><strong>الاكتشاف:</strong> خدمات جديدة مشبوهة في شبهها بالموجودة؛ سلوك الفئة الأساسية أو الـ middleware
+مُكرَّر inline؛ diffs لا يلمس أثر "Read" فيها (المرئي في الجلسة) الوحدات التي تعرّف الاتفاقيات
+ذات الصلة؛ كود يُصرَّف ضد نظامك لكنه يتجاهل تعبيراته الاصطلاحية.</p>
+<p><strong>الإصلاح:</strong> اجعل الخريطة حاملة للأحمال والبحث إلزاميًا:</p>
+<blockquote>
+<p>Before implementing, locate the existing conventions: read docs/architecture.md, the README of
+every module you will touch, and search app/common/ and the target module for existing helpers
+that cover any part of this task. List what you found and what you'll reuse BEFORE writing new
+code. Assume a helper exists until a search proves otherwise.</p>
+</blockquote>
+<h3 id="gpt">GPT: استدلال من لقطة قديمة لملفاتك الخاصة<a class="headerlink" href="#gpt" title="Permanent link">&para;</a></h3>
+<p>في الجلسات الطويلة، تحفظ نماذج عائلة GPT في الاستدلال من نسخة الملف التي قرأتها سابقًا —
+حتى بعد أن غيّرها (أو غيّرتها أنت). تحتوي النافذة على النسختين؛ يثبّت النموذج على الأولى.
+الأعراض: تعديلات تعيد تقديم كود تمت إزالته للتو، وإشارات إلى توقيع دالة من قبل إعادة
+تسميتها، و"إصلاح" مُطبَّق على سطر لم يعد موجودًا، ورقع تتعارض مع الملف كما هو قائم حاليًا.
+يبدو كإهمال؛ إنه في الحقيقة سياق — النسخة المتقادمة <em>هناك</em>، تنافس الجديدة.</p>
+<p><strong>الاكتشاف:</strong> إخفاقات رقع وتعديلات قريبة من الإصابة في أواخر الجلسة؛ انحدارات لتغييرات أُجريت
+في وقت سابق من الجلسة نفسها؛ النموذج يصف محتوى ملف لا يطابق <code>git diff</code>؛ ارتباك يزول فورًا في
+جلسة جديدة.</p>
+<p><strong>الإصلاح:</strong> أعد القراءة قبل الكتابة، وأعد الضبط عند المعالم:</p>
+<blockquote>
+<p>Before editing any file, re-read its current contents — never edit from memory of an earlier
+read. After each completed step, state the current form of what changed. (And operationally:
+end the session at the milestone; start the next one from the plan file, not from history.)</p>
+</blockquote>
+<h3 id="cursor">Cursor: مثال أقرب جار، إلى أينما يشير<a class="headerlink" href="#cursor" title="Permanent link">&para;</a></h3>
+<p>قوة Cursor — السحب التلقائي لكود مشابه إلى السياق — هي أيضًا فشله المميز: التشابه لفظي،
+لا معماري. اطلب ميزة جديدة مجاورة لميزة المدفوعات والمثال المسترجع هو وحدة <code>billing/</code>
+<em>المهملة</em> (لأنها تطابق أفضل)؛ اطلب نموذجًا ويأخذ النموذج من المكون legacy الوحيد الذي يسبق
+نظام التصميم الخاص بك؛ تطفو fixtures الاختبار والملفات المُولَّدة كما لو كانت كود منتج. ثم
+يكتب الوكيل كودًا بطلاقة بالأسلوب الذي تحاول استئصاله — استرجاع غسل النمط legacy إلى عمل
+جديد.</p>
+<p><strong>الاكتشاف:</strong> كود جديد يشبه أنماطًا مهملة أو فريدة بدلاً من أمثلتك المعيارية؛ استيراد من
+وحدات مجمّدة؛ كود مُولَّد/مشترى يظهر في سياق الوكيل المُشار إليه؛ انحدارات أسلوب متجمعة في
+مناطق لها توأم legacy.</p>
+<p><strong>الإصلاح:</strong> انتقي مجموعة الاسترجاع وسمِّ المعيار:</p>
+<blockquote>
+<p>Add the deprecated and generated paths to the ignore configuration so they never enter
+retrieval. Put a DEPRECATED README inside each frozen module. In each active module's README,
+name the canonical exemplar file for new work — and when given a task, state which exemplar
+you are following before you write.</p>
+</blockquote>
+<h2 id="_15">أفضل الممارسات<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>شغّل اختبار "الوكيل البارد" كمعيار جودتك.</strong> جلسة جديدة، تذكرة حقيقية، بدون إحاطة لفظية:
+  هل يقع المخرج داخل الاتفاقيات؟ كل إخفاق يطابق قطعة سياق مفقودة أو غير قابلة للوصول —
+  أصلح المستودع، وأعد التشغيل.</li>
+<li><strong>حافظ على النواة المحمَّلة دائمًا minimal ومدفوعة إلى المؤشرات.</strong> الخريطة تستحق الإقامة
+  الدائمة؛ لا شيء آخر جديد تقريبًا يستحقها. ضغط النمو على <code>AGENTS.md</code> يعني عادة أن وجود
+  وثيقة أنسب.</li>
+<li><strong>اكتب وثائق بحجم استرجاع واحد.</strong> قرار واحد لكل ADR، وشاشة واحدة للخريطة، وREADME واحد
+  لكل وحدة. الوثائق الصغيرة تُحمَّل وحدها، وتبقى قابلة للصيانة، وتبقى صادقة.</li>
+<li><strong>اجعل المعرفة متجاورة مع لحظة استرجاعها.</strong> حالات الإهمال في الدليل المُهمل، والقواعد
+  المحلية في الوحدة، وخطوات التشغيل في runbooks، والحالة العابرة في ملفات الخطة. إذا كان
+  عليك أن تتذكر إخبار الوكيل، فهي في المكان الخطأ.</li>
+<li><strong>حدّث الوثائق في نفس PR مع الكود — بلا استثناءات.</strong> الوثائق الحاملة للأحمال هي كود. تُحذف
+  الإدخالات المتقادمة على الفور؛ وثيقة خاطئة أسوأ من وثيقة مفقودة.</li>
+<li><strong>حدد نطاق الجلسات كمعاملات؛ أخرج العمل الطويل.</strong> مهمة واحدة لكل نافذة؛ ملفات خطة لأي
+  شيء متعدد الجلسات؛ الضغط عند المعالم فقط.</li>
+<li><strong>رشّح كل ما تلصقه.</strong> الاختبار الفاشل، والإطارات ذات الصلة، وكتلة التكوين المعنية. إذا
+  لم تكن ستقتبسها في وصف PR كدليل، فلا تدخل النافذة.</li>
+<li><strong>راجع سطح الاسترجاع عرضيًا.</strong> قواعد التجاهل لا تزال صحيحة؟ أي أدلة مُولَّدة/مشتراة جديدة
+  تتسرب إلى البحث؟ الوحدات المهملة موسومة بشكل صحيح؟ الاسترجاع الخاطئ صامت؛ لا تكتشفه إلا
+  المراجعات.</li>
+<li><strong>حافظ على عدم قابلية الوصول الهيكلي للأسرار.</strong> قواعد الرفض + fixtures مُطهَّرة + عادة
+  عدم اللصق بالجملة. "الوكيل لا يرى القيم السرية أبدًا" يجب أن تكون خاصية معمارية، لا
+  أملًا.</li>
+</ul>
+<h2 id="_16">الأنماط المعاكسة<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<p><strong>نافذة حوض المطبخ.</strong> "اقرأ قاعدة الكود كاملة أولًا، ثم نبدأ." تبدو شاملة؛ تقدم جلسة
+متدهورة ومكلفة مثبّتة على مادة غير ذات صلة إلى حد كبير — والوكيل لن يكون قد قرأ ADR الواحد
+الذي يهم. حمِّل الخريطة، واسترجع مجموعة العمل، واجلب الباقي عند الطلب.</p>
+<p><strong>مقبرة المعرفة.</strong> بنية الفريق الحقيقية تعيش في خيوط Slack، وتعليقات PR، ورأسي كبيرين؛
+المستودع يحتوي كودًا وصمتًا. كل جلسة وكيل (وشهر أول لكل موظف جديد) تدفع ضريبة إعادة
+الاكتشاف. إذا كانت تقيد العمل، تعيش في المستودع — هذه القاعدة أقدم من AI؛ الوكلاء جعلوا
+انتهاكها مكلفًا لكل جلسة بدلًا من لكل موظف.</p>
+<p><strong>الجدارية الوثائقية.</strong> ARCHITECTURE.md بطول 3000 سطر، مكتملة بحب، تُحدَّث مرتين في
+السنة. كبيرة جدًا لتحميلها، أحادية جدًا لئلا يُعتمد عليها، ومكلفة جدًا لصيانتها — مكافئ
+الوثائق لـgod object. فككها على خطوط الاسترجاع: خريطة، وقرارات، ووحدات، وrunbooks.</p>
+<p><strong>اكتناز السياق.</strong> رفض الجلسات الجديدة بحجة "لقد فهم قاعدة الكود أخيرًا." ما لديه نافذة
+ممتلئة بقراءات لمرة واحدة تتقدم نحو التقادم — فهم لا يمكن فحصه، أو مشاركته، أو الوثوق به
+غدًا. أي شيء يستحق الاحتفاظ به من جلسة ينتمي إلى وثيقة أو ملف خطة؛ ثم الجلسة قابلة
+للتصرف. المعرفة المتينة تعيش على القرص، أبدًا في نافذة.</p>
+<p><strong>اعتماد الإحاطة اللفظية.</strong> جودة المخرج تعتمد على تنزيل شفهي مدته خمس عشرة دقيقة ممن
+يعرف المنطقة. لا تتسع لوكلاء متوازيين (الفصل 05)، ولا تنجو من إجازة ذلك الشخص، وتعفي
+المستودع سرًا من أن يكون صفًا لذاته. الإحاطة <em>هي</em> الوثيقة المفقودة — اكتبها مرة.</p>
+<h2 id="_17">شجرة القرار<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<p>"قطعة من المعرفة تهم العمل — إلى أين تذهب؟"</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Is it a secret / credential / customer data?
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>├── YES ──► It never enters the window. Deny rules, sanitized
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>│           fixtures, filtered pastes. (Stage 9 Ch 04.)
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>└── NO ──► Is it discoverable by reading current code?
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    ├── YES ──► Leave it in code. Duplicating it into docs creates
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    │           a staleness liability and spends budget twice.
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    └── NO ──► Is it needed on effectively EVERY task?
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>        ├── YES ──► Always-loaded file (AGENTS.md) — one imperative
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>        │           line, or a pointer if it&#39;s bigger than a line.
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        └── NO ──► Does it explain WHY something is the way it is?
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>            ├── YES ──► ADR in docs/decisions/, linked from the map.
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>            └── NO ──► Is it scoped to one module / one operation?
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>                ├── module ──► that module&#39;s README (+ canonical
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>                │              exemplar named).
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>                ├── operation ──► runbook.
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>                └── crosscutting ──► architecture.md — kept to one
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>                                     screen; if it won&#39;t fit, it&#39;s
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>                                     probably several module facts.
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>&quot;Should I load X into THIS session?&quot;
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>    Does the current task need it → load the relevant PART.
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>    Might it help → point the agent at the map and let it decide.
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>    It&#39;s bulk (log/dump/tree) → filter to evidence first.
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>    The session is old and X contradicts something read earlier →
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>        don&#39;t add — reset, and start clean from the plan file.
+</code></pre></div>
+<h2 id="_18">قائمة المراجعة<a class="headerlink" href="#_18" title="Permanent link">&para;</a></h2>
+<p><strong>قائمة مراجعة التنفيذ</strong></p>
+<ul>
+<li>[ ] خريطة الوثائق في الملف المحمَّل دائمًا: نحو خمسة أسطر، مسارات حقيقية</li>
+<li>[ ] <code>docs/architecture.md</code> — شاشة واحدة، مسارات ملفات، ثوابت، قاعدة تحديث في نفس-PR مذكورة
+  في الملف نفسه</li>
+<li>[ ] توجد ADRs للقرارات التي ينتهكها الوكلاء في الأغلب (الأموال، والمستأجرون، والوحدات المجمّدة)</li>
+<li>[ ] الوحدات المهملة تحمل README DEPRECATED تسمّي البديل والمثال المعياري</li>
+<li>[ ] ملفات README للوحدات في المناطق النشطة: قواعد محلية + ملف مثال</li>
+<li>[ ] تهيئة التجاهل تحافظ على المحتوى المُولَّد والمشترى وfixtures خارج الاسترجاع</li>
+<li>[ ] <code>docs/plans/</code> قيد الاستخدام لمهام متعددة الجلسات؛ تستأنف الجلسات من ملفات الخطة</li>
+<li>[ ] المسارات الحساسة غير قابلة للقراءة هيكليًا (تم التحقق المباشر من قواعد الرفض في الفصل 01)</li>
+</ul>
+<p><strong>قائمة مراجعة البنية</strong></p>
+<ul>
+<li>[ ] النواة المحمَّلة دائمًا minimal؛ كل شيء آخر قابل للاسترجاع في عنوان متوقع</li>
+<li>[ ] كل حقيقة حاملة للأحمال لها بيت واحد بالضبط (كود / خريطة / ADR / README / runbook)</li>
+<li>[ ] الوثائق بحجم استرجاع واحد؛ لا جداريات</li>
+<li>[ ] سياسة جلسة مكتوبة: مهمة واحدة لكل نافذة، ضغط عند المعالم، استئناف من ملف الخطة</li>
+<li>[ ] اختبار الوكيل البارد يجتاز تذكرة تمثيلية — ويُعاد تشغيله بعد التغييرات الهيكلية</li>
+</ul>
+<p><strong>قائمة مراجعة الكود</strong></p>
+<ul>
+<li>[ ] التغيير يُبطل وثيقة؟ تحديث الوثيقة في هذا diff — وإلا فالـ PR غير منتهي</li>
+<li>[ ] وحدة جديدة ← README بقواعد + مثال؛ قرار جديد ← ADR؛ إهمال جديد ← README في المكان</li>
+<li>تحديثات التجاهل/الخريطة</li>
+<li>[ ] لا أسرار ولا رموز ولا بيانات عملاء في أي وثيقة أو ملف خطة أو مثال مُلتزَم</li>
+<li>[ ] ملفات الخطة تعكس الواقع وقت الدمج (الخطط المتقادمة تضلّل الجلسة التالية)</li>
+<li>[ ] diffs من إنتاج الوكيل: تحقق من العلامات — مساعدات مُعادة اختراعها، استيرادات أنماط
+  مهملة، تعديلات تحارب حالة الملف الحالية</li>
+</ul>
+<h2 id="_19">التمارين<a class="headerlink" href="#_19" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>شغّل تدقيق الوكيل البارد.</strong> جلسة جديدة، تذكرة حقيقية من ركامك، سياق لفظي صفري. سجّل
+   كل إخفاق (نمط خاطئ، مساعد مُعاد اختراعه، ثابت مُنتهَك، سبب مفقود) واكتب إصلاح <em>السياق</em>
+   لكل واحد — سطر خريطة، أو ADR، أو README، أو قاعدة تجاهل. أعد تشغيل نفس التذكرة باردًا.
+   الفرق هو عائد طبقة السياق لديك، مقاسًا.</li>
+<li><strong>ابنِ الخريطة.</strong> اكتب <code>docs/architecture.md</code> لمستودعك بأقل من 40 سطرًا بمسارات ملفات
+   حقيقية، وخريطة الوثائق ذات الأسطر الخمسة لملف التعليمات لديك. سلّمهما لزميل لا يعرف
+   المنطقة: ما يعجز عن إيجاده هو ما لا يزال مفقودًا.</li>
+<li><strong>استخرج ثلاثة قرارات.</strong> اعثر على ثلاثة قواعد في قاعدة كودك موجودة لأسباب غير مسجلة في
+   أي مكان (اسأل الشخص الذي يعرف — هذه هي النقطة). اكتب ADRs الثلاثة. ثم اطلب من وكيل
+   "تحسين" كود مقيد بكل منها لترى هل يسترجعها ويحترمها — أم يجادلها، وهي أيضًا نجاح.</li>
+<li><strong>أصلح فخ استرجاع.</strong> حدد أخطر مثال في مستودعك (وحدة مهملة، أو مكون legacy، أو كود
+   مُولَّد) وتأكد أن وكيلًا يمكنه حاليًا استرجاعه كنمط. ثبّت الإجراءات المضادة — README في
+   المكان، وقواعد تجاهل، ومعيار مسمّى في الوحدة النشطة — وتأكد أن نفس المهمة تأخذ الآن
+   نمطها من الكود الصحيح.</li>
+<li><strong>حوّل جلسة طويلة.</strong> خذ مهمتك التالية متعددة الأيام وشغّلها كجلسات ملف خطة: أخرج الحالة
+   عند كل معلم، واقتل كل نافذة، واستأنف باردًا. قارن ضد جلستك الماراثونية المعتادة في تماسك
+   مخرج المرحلة المتأخرة — وفي ما أمسك به ملف الخطة عند مراجعتك لم يكن ليستكشفه أي نافذة.</li>
+</ol>
+<h2 id="_20">قراءات إضافية<a class="headerlink" href="#_20" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic — Effective context engineering for AI agents</a>
+  — المعالجة من جانب المزود: الانتقاء، والاسترجاع، والضغط، ولماذا تفشل "فقط أضف مزيدًا من
+  السياق".</li>
+<li><a href="https://arxiv.org/abs/2307.03172">Liu et al. — Lost in the Middle: How Language Models Use Long Contexts</a>
+  — الأساس البحثي لتدهور الانتباه المعتمد على الموضع والحجم.</li>
+<li><a href="../../../templates/adr/">ADR templates and rationale</a> — تنسيق ADR في هذا الكتيب؛ قدمته
+  المرحلة 1 للبشر، ويوجهه هذا الفصل نحو الاسترجاع.</li>
+<li>الفصل 01 (<a href="../01-claude-code/">Claude Code</a>) — الطبقة المحمَّلة دائمًا وقواعد الرفض التي
+  يبني حولها هذا الفصل.</li>
+<li>الفصل 04 (<a href="../04-prompt-engineering/">Prompt Engineering</a>) — المُدخَل الآخر: ما تسأل، بالنظر
+  إلى ما يعرفه الآن.</li>
+<li>الفصل 07 (<a href="../07-ai-debugging/">AI Debugging</a>) — تصفية الأدلة كانضباط تصحيح؛ عادة "التصفية
+  قبل اللصق" مأخوذة إلى عمقها الكامل.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  عد إلى الأعلى
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="هامش سفلي" >
+        
+          
+          <a href="../02-openai-codex-and-cursor/" class="md-footer__link md-footer__link--prev" aria-label="السابقة: OpenAI Codex و Cursor">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                السابقة
+              </span>
+              <div class="md-ellipsis">
+                OpenAI Codex و Cursor
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../04-prompt-engineering/" class="md-footer__link md-footer__link--next" aria-label="التالية: هندسة الموجّهات">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                التالية
+              </span>
+              <div class="md-ellipsis">
+                هندسة الموجّهات
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tracking", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u062a\u0645 \u0627\u0644\u0646\u0633\u062e \u0627\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "clipboard.copy": "\u0646\u0633\u062e \u0625\u0644\u0649 \u0627\u0644\u062d\u0627\u0641\u0638\u0629", "search.result.more.one": "\u0623\u0643\u062b\u0631 \u0645\u0646 1 \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.more.other": "\u0623\u0643\u062b\u0631 \u0645\u0646 # \u0641\u064a \u0647\u0630\u0647 \u0627\u0644\u0635\u0641\u062d\u0629", "search.result.none": "\u0644\u0627 \u062a\u0648\u062c\u062f \u0646\u062a\u0627\u0626\u062c", "search.result.one": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b \u0645\u0633\u062a\u0646\u062f \u0648\u0627\u062d\u062f", "search.result.other": "\u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b # \u0645\u0633\u062a\u0646\u062f\u0627\u062a", "search.result.placeholder": "\u0627\u0643\u062a\u0628 \u0644\u0628\u062f\u0621 \u0627\u0644\u0628\u062d\u062b", "search.result.term.missing": "\u0645\u0641\u0642\u0648\u062f", "select.version": "\u0625\u062e\u062a\u0631 \u0627\u0644\u0625\u0635\u062f\u0627\u0631"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
