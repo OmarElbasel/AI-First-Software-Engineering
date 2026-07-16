@@ -86,7 +86,6 @@ handbook/    The content, one folder per curriculum stage
 templates/   Documents to copy and fill in: ADR, PR, project brief, CLAUDE.md starter
 checklists/  Verification lists for moments of action: code review, production readiness
 playbooks/   Step-by-step processes that tie the templates and checklists together
-docs/        Design specs and implementation plans for the repo itself
 web/         MkDocs config for reading the handbook as a local website
 examples/    (planned) Invoicely reference implementation — the app the chapters build
 starter-kits/ (planned) Clone-and-ship SaaS templates extracted from the reference app
